@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowRight,
   Users,
@@ -10,14 +10,29 @@ import {
   Zap,
   Shield,
   Clock,
+  ArrowUpRightIcon,
 } from "lucide-react";
+import { useRouter } from "next/router";
+import Footer from "@/components/LandingFooter";
+import { useSession } from "next-auth/react";
 
 export default function BilvoLanding() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [email, setEmail] = useState("");
 
-  const handleGoogleSignIn = () => {
-    alert("Google sign-in would redirect to OAuth flow");
+  const handleNavButtonClick = () => {
+    status === "authenticated"
+      ? router.push("/dashboard")
+      : router.push("/login");
   };
+
+  // useEffect(() => {
+  //     if (status === "authenticated") {
+  //       // Redirect signed-in users straight to the dashboard
+  //       router.replace("/protected/dashboard");
+  //     }
+  //   }, [status, router]);
 
   return (
     <div
@@ -116,10 +131,17 @@ export default function BilvoLanding() {
               <span className="text-2xl font-bold text-gray-900">Bilvo</span>
             </div>
             <button
-              onClick={handleGoogleSignIn}
+              onClick={handleNavButtonClick}
               className="px-6 py-3 bg-gray-900 text-white rounded-full font-semibold hover:bg-gray-800 transition-all"
             >
-              Sign In
+              {status === "authenticated" ? (
+                <div className="flex flex-row">
+                  Bilvo Dashboard
+                  <ArrowUpRightIcon className="w-3 h-3 mt-1 ml-1" />
+                </div>
+              ) : (
+                "Sign In"
+              )}
             </button>
           </div>
         </div>
@@ -150,7 +172,7 @@ export default function BilvoLanding() {
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <button
-                  onClick={handleGoogleSignIn}
+                  onClick={handleNavButtonClick}
                   className="flex items-center justify-center gap-2 px-8 py-4 bg-gray-900 text-white text-lg font-semibold rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl"
                 >
                   Get Early Access
@@ -456,7 +478,7 @@ export default function BilvoLanding() {
             Join 1,000+ households splitting bills on autopilot
           </p>
           <button
-            onClick={handleGoogleSignIn}
+            onClick={handleNavButtonClick}
             className="inline-flex items-center gap-3 px-10 py-5 bg-white text-gray-900 text-lg font-bold rounded-full hover:bg-gray-50 transition-all shadow-2xl"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24">
@@ -487,97 +509,7 @@ export default function BilvoLanding() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-16">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid md:grid-cols-5 gap-12 mb-12">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">B</span>
-                </div>
-                <span className="text-2xl font-bold text-white">Bilvo</span>
-              </div>
-              <p className="text-sm leading-relaxed mb-4">
-                Split bills with roommates, automatically. Bank-level security,
-                zero drama.
-              </p>
-              <div className="text-xs text-gray-500">
-                © 2025 Bilvo. All rights reserved.
-              </div>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Product</h4>
-              <ul className="space-y-3 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    How it Works
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Security
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Company</h4>
-              <ul className="space-y-3 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Legal</h4>
-              <ul className="space-y-3 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Privacy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Terms
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Compliance
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

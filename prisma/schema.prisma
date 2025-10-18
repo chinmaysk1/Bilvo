@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String      @id @default(cuid())
+  name                   String?
+  email                  String?     @unique
+  emailVerified          DateTime?
+  image                  String?
+  householdId            String?
+  hasCompletedOnboarding Boolean     @default(false)
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+  accounts               Account[]
+  createdHouseholds      Household[] @relation("HouseholdCreator")
+  sessions               Session[]
+  household              Household?  @relation(fields: [householdId], references: [id])
+  activities             Activity[]
+  paymentMethods         PaymentMethod[]
+  autopayEnabled         Boolean @default(false)
+}
+
+model Household {
+  id         String   @id @default(cuid())
+  name       String
+  address    String
+  inviteCode String   @unique @default(cuid())
+  creatorId  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  creator    User     @relation("HouseholdCreator", fields: [creatorId], references: [id])
+  members    User[]
+  bills      Bill[]
+  activities Activity[]
+
+  @@index([inviteCode])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Bill {
+  id              String   @id @default(cuid())
+  householdId     String
+  household       Household @relation(fields: [householdId], references: [id])
+  
+  source          String   // "Gmail" or "Manual"
+  biller          String   // e.g., "Internet", "Gas"
+  billerType      String   // e.g., "internet", "gas", "water"
+  amount          Float
+  
+  dueDate         DateTime
+  scheduledCharge DateTime
+  status          String   @default("Scheduled") // "Scheduled", "Paid", "Overdue"
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([householdId])
+  @@index([dueDate])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  type        String   // "payment_success", "bill_uploaded", "payment_method_added"
+  description String
+  detail      String?
+  amount      Float?
+  source      String?
+  
+  timestamp   DateTime @default(now())
+  
+  @@index([householdId, timestamp])
+}
+
+model PaymentMethod {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  type        String   // "card", "bank"
+  last4       String
+  brand       String?  // "Visa", "Mastercard", etc.
+  isDefault   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+}
