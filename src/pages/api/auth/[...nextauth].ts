@@ -1,7 +1,7 @@
 // pages/api/auth/[...nextauth].ts
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
 // Augment the JWT so we can carry onboarding status in middleware
