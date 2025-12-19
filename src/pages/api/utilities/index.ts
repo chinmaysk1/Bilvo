@@ -55,7 +55,7 @@ async function handleGetUtilities(req: NextApiRequest, res: NextApiResponse) {
     },
   });
 
-  const result: UtilityAccountResponse[] = utilityAccounts.map((u) => ({
+  const result: UtilityAccountResponse[] = utilityAccounts.map((u: any) => ({
     id: u.id,
     householdId: u.householdId,
     ownerUserId: u.ownerUserId,

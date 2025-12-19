@@ -54,7 +54,7 @@ export default async function handler(
       orderBy: { timestamp: "desc" },
       take: 10,
     });
-    const recentActivity = dbActivities.map((activity) => ({
+    const recentActivity = dbActivities.map((activity: any) => ({
       id: activity.id,
       type: activity.type,
       description: activity.description,
@@ -87,7 +87,7 @@ export default async function handler(
         id: user.household.id,
         name: user.household.name,
         address: user.household.address,
-        members: user.household.members.map((m) => ({
+        members: user.household.members.map((m: any) => ({
           id: m.id,
           name: m.name || "",
           email: m.email || "",
