@@ -1,217 +1,651 @@
-// components/dashboard/ActiveBillsTable.tsx
+import { Card } from "../ui/card";
+import { Button } from "../ui/button";
+import { Switch } from "../ui/switch";
 import {
-  FileText,
-  Mail,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import {
   Upload,
-  Wifi,
-  Flame,
-  Trash2,
   Zap,
-  Droplet,
-  MoreVertical,
+  Droplets,
+  Flame,
+  Wifi,
+  Recycle,
+  Info,
+  RefreshCw,
+  AlertCircle,
 } from "lucide-react";
-
-interface Bill {
-  id: string;
-  source: string;
-  biller: string;
-  billerType: string;
-  amount: number;
-  yourShare: number;
-  dueDate: string;
-  scheduledCharge: string;
-  status: string;
-}
+import { useState } from "react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { useAutopay } from "@/hooks/useAutopay";
+import ScanGmailUploadButton from "@/components/bills/ScanGmailUploadButton";
+import { Bill } from "@/interfaces/bills";
+import { Household } from "@/interfaces/household";
 
 interface ActiveBillsTableProps {
   bills: Bill[];
+  hasPaymentMethod: boolean;
+  household: Household;
+  onBillsImported: (bills: Bill[]) => void;
 }
 
-export default function ActiveBillsTable({ bills }: ActiveBillsTableProps) {
-  const getBillerIcon = (type: string) => {
-    const iconClass = "w-4 h-4";
-    switch (type.toLowerCase()) {
-      case "internet":
-        return <Wifi className={iconClass} />;
-      case "gas":
-        return <Flame className={iconClass} />;
-      case "waste":
-        return <Trash2 className={iconClass} />;
-      case "electricity":
-        return <Zap className={iconClass} />;
-      case "water":
-        return <Droplet className={iconClass} />;
-      default:
-        return <FileText className={iconClass} />;
-    }
-  };
+const getBillerIcon = (biller: string) => {
+  const billerLower = biller.toLowerCase();
 
-  const getBillerColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "internet":
-        return "bg-purple-100 text-purple-600";
-      case "gas":
-        return "bg-red-100 text-red-600";
-      case "waste":
-        return "bg-gray-100 text-gray-600";
-      case "electricity":
-        return "bg-yellow-100 text-yellow-600";
-      case "water":
-        return "bg-blue-100 text-blue-600";
-      default:
-        return "bg-gray-100 text-gray-600";
-    }
-  };
+  if (billerLower.includes("spectrum") || billerLower.includes("internet")) {
+    return { icon: Wifi, bgColor: "#EDE9FE", iconColor: "#8B5CF6" };
+  } else if (billerLower.includes("socalgas") || billerLower.includes("gas")) {
+    return { icon: Flame, bgColor: "#FEE2E2", iconColor: "#EF4444" };
+  } else if (billerLower.includes("water")) {
+    return { icon: Droplets, bgColor: "#DBEAFE", iconColor: "#3B82F6" };
+  } else if (
+    billerLower.includes("pacific") ||
+    billerLower.includes("electric")
+  ) {
+    return { icon: Zap, bgColor: "#FEF3C7", iconColor: "#F59E0B" };
+  } else if (billerLower.includes("waste")) {
+    return { icon: Recycle, bgColor: "#D1FAE5", iconColor: "#10B981" };
+  }
+  return { icon: Wifi, bgColor: "#F3F4F6", iconColor: "#6B7280" };
+};
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+// Roommate data for split visualization
+const avatarColors = ["#F2C94C", "#00B948", "#BB6BD9", "#3B82F6", "#EF4444"];
+
+// Gmail sync status component
+type SyncStatus = "active" | "delayed" | "error";
+
+const GmailSyncBanner = ({ status }: { status: SyncStatus }) => {
+  if (status === "active") {
+    return (
+      <div
+        className="mx-6 mt-2 mb-3 px-2.5 py-2 rounded-md flex items-center gap-2"
+        style={{
+          backgroundColor: "#ECFDF5",
+        }}
+      >
+        <RefreshCw
+          className="h-3.5 w-3.5 flex-shrink-0 animate-spin"
+          style={{ color: "#047857" }}
+        />
+        <span
+          style={{
+            fontSize: "13px",
+            fontWeight: 500,
+            color: "#00B948",
+            fontFamily: "Inter, sans-serif",
+            lineHeight: 1.3,
+          }}
+        >
+          Gmail Autoparsing active — syncing live
+        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info
+                className="h-3.5 w-3.5 flex-shrink-0 cursor-help"
+                style={{ color: "#047857" }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-xs">
+                Bills are automatically detected from your Gmail inbox and added
+                here.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    );
+  }
+
+  if (status === "delayed") {
+    return (
+      <div
+        className="mx-6 mt-2 mb-3 px-2.5 py-2 rounded-md flex items-center gap-2"
+        style={{
+          backgroundColor: "#FEF3C7",
+        }}
+      >
+        <AlertCircle
+          className="h-3.5 w-3.5 flex-shrink-0"
+          style={{ color: "#B45309" }}
+        />
+        <span
+          style={{
+            fontSize: "13px",
+            fontWeight: 500,
+            color: "#B45309",
+            fontFamily: "Inter, sans-serif",
+            lineHeight: 1.3,
+          }}
+        >
+          Gmail sync delayed — last update 2 days ago
+        </span>
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div
+        className="mx-6 mt-2 mb-3 px-2.5 py-2 rounded-md flex items-center gap-2"
+        style={{
+          backgroundColor: "#FEE2E2",
+        }}
+      >
+        <AlertCircle
+          className="h-3.5 w-3.5 flex-shrink-0"
+          style={{ color: "#DC2626" }}
+        />
+        <span
+          style={{
+            fontSize: "13px",
+            fontWeight: 500,
+            color: "#DC2626",
+            fontFamily: "Inter, sans-serif",
+            lineHeight: 1.3,
+          }}
+        >
+          Gmail sync error — reconnect in settings
+        </span>
+        <Button
+          variant="ghost"
+          className="ml-auto h-6 px-2 rounded-md"
+          style={{
+            fontSize: "11px",
+            fontWeight: 500,
+            color: "#DC2626",
+            backgroundColor: "transparent",
+          }}
+        >
+          Reconnect
+        </Button>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+function AutopayToggleCell({
+  billId,
+  hasPaymentMethod,
+  initialEnabled = false,
+}: {
+  billId: string;
+  hasPaymentMethod: boolean;
+  initialEnabled?: boolean;
+}) {
+  const { isEnabled, isLoading, toggleAutopay } = useAutopay(billId, {
+    enabled: initialEnabled,
+  });
+
+  const onToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await toggleAutopay({ hasPaymentMethod });
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 mb-6">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <FileText className="w-5 h-5 text-yellow-600" />
-              <h2 className="text-lg font-semibold text-gray-900">
-                Active Bills
-              </h2>
+    <div className="flex items-center justify-center">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div onClick={onToggle}>
+              <Switch
+                checked={isEnabled}
+                disabled={isLoading}
+                onCheckedChange={() => {}}
+                className="data-[state=checked]:bg-[#00B948]"
+              />
             </div>
-            <p className="text-sm text-gray-600">
-              Upcoming bills and payment schedule
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="max-w-xs">
+              {isEnabled
+                ? "Autopay enabled — your share will be charged automatically."
+                : hasPaymentMethod
+                ? "Enable autopay to charge your share automatically."
+                : "Add a payment method to enable autopay."}
             </p>
-          </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+  );
+}
 
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700">
-            <Upload className="w-4 h-4" />
-            Upload Bill
-          </button>
-        </div>
+export default function ActiveBillsTable({
+  bills,
+  hasPaymentMethod,
+  household,
+  onBillsImported,
+}: ActiveBillsTableProps) {
+  const [syncStatus] = useState<SyncStatus>("active");
+
+  const totalHousehold = bills.reduce((sum, bill) => sum + bill.amount, 0);
+  const totalYourShare = bills.reduce((sum, bill) => sum + bill.yourShare, 0);
+
+  return (
+    <Card
+      className="rounded-xl border bg-white relative"
+      style={{
+        boxShadow:
+          "0 1px 3px rgba(16,24,40,0.08), 0 1px 2px rgba(16,24,40,0.04)",
+        borderColor: "#E5E7EB",
+      }}
+    >
+      {/* Inner border */}
+      <div
+        className="absolute inset-0 rounded-xl pointer-events-none"
+        style={{ border: "1px solid #F3F4F6" }}
+      />
+
+      {/* Gmail Sync Banner */}
+      <div className="mt-5">
+        <GmailSyncBanner status={syncStatus} />
       </div>
 
-      {/* Gmail Auto-import Banner */}
-      <div className="px-6 py-3 bg-green-50 border-b border-green-100 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Mail className="w-4 h-4 text-green-600" />
-          <span className="text-sm text-green-900">
-            Gmail auto-import is <strong>ON</strong> — bills syncing
-            automatically · Last sync Today 2:14 PM
-          </span>
-          <button className="text-green-600 hover:text-green-700">
-            <svg
-              className="w-4 h-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-          </button>
+      {/* Gray Header Bar */}
+      <div
+        className="px-6 flex items-center justify-between mt-5"
+        style={{ backgroundColor: "#F9FAFB", height: "40px" }}
+      >
+        <div className="flex items-center gap-2">
+          <h2
+            style={{
+              fontSize: "13px",
+              fontWeight: 600,
+              color: "#111827",
+              lineHeight: 1.5,
+              fontFamily: "Inter, sans-serif",
+            }}
+          >
+            This Month's Bills
+          </h2>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info
+                  className="h-3.5 w-3.5 cursor-help"
+                  style={{ color: "#9CA3AF" }}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">
+                  All bills are split equally among roommates. Click any bill to
+                  see full details.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
+        <ScanGmailUploadButton
+          householdMemberCount={household.members.length || 1}
+          onBillsImported={onBillsImported}
+          className="rounded-xl transition-all flex-shrink-0"
+          style={{
+            fontWeight: 500,
+            fontSize: "13px",
+            backgroundColor: "#00B948",
+            color: "#FFFFFF",
+            border: "none",
+            height: "32px",
+            paddingLeft: "12px",
+            paddingRight: "12px",
+          }}
+        />
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Source
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <div className="mt-3 [&>div.relative.w-full.overflow-auto]:overflow-visible">
+        <Table>
+          <TableHeader>
+            <TableRow
+              className="border-b"
+              style={{ borderColor: "#E5E7EB", height: "32px" }}
+            >
+              <TableHead
+                className="pl-6"
+                style={{
+                  fontWeight: 600,
+                  color: "#9CA3AF",
+                  textTransform: "uppercase",
+                  fontSize: "11px",
+                  letterSpacing: "0.05em",
+                  fontFamily: "Inter, sans-serif",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                }}
+              >
                 Biller
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead
+                style={{
+                  fontWeight: 600,
+                  color: "#9CA3AF",
+                  textTransform: "uppercase",
+                  fontSize: "11px",
+                  letterSpacing: "0.05em",
+                  fontFamily: "Inter, sans-serif",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                }}
+              >
                 Your Share
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead
+                style={{
+                  fontWeight: 600,
+                  color: "#9CA3AF",
+                  textTransform: "uppercase",
+                  fontSize: "11px",
+                  letterSpacing: "0.05em",
+                  fontFamily: "Inter, sans-serif",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                }}
+              >
                 Due Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Scheduled Charge
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </TableHead>
+              <TableHead
+                style={{
+                  fontWeight: 600,
+                  color: "#9CA3AF",
+                  textTransform: "uppercase",
+                  fontSize: "11px",
+                  letterSpacing: "0.05em",
+                  fontFamily: "Inter, sans-serif",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                }}
+              >
                 Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {bills.map((bill) => (
-              <tr key={bill.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    {bill.source === "Gmail" ? (
-                      <Mail className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <Upload className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm text-gray-900">{bill.source}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`p-1.5 rounded-lg ${getBillerColor(
-                        bill.billerType
-                      )}`}
-                    >
-                      {getBillerIcon(bill.billerType)}
+              </TableHead>
+              <TableHead
+                className="pr-6"
+                style={{
+                  fontWeight: 600,
+                  color: "#9CA3AF",
+                  textTransform: "uppercase",
+                  fontSize: "11px",
+                  letterSpacing: "0.05em",
+                  fontFamily: "Inter, sans-serif",
+                  textAlign: "center",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                }}
+              >
+                Autopay
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {bills.map((bill, index) => {
+              const {
+                icon: Icon,
+                bgColor,
+                iconColor,
+              } = getBillerIcon(bill.biller);
+              const isLast = index === bills.length - 1;
+              const isEven = index % 2 === 0;
+
+              const roommatesWithShare = household.members.map(
+                (member, memberIndex) => {
+                  const initials = member.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2);
+
+                  // match member with BillParticipant
+                  const participant = bill.participants?.find(
+                    (p) => p.userId === member.id
+                  );
+
+                  return {
+                    id: member.id,
+                    name: member.name,
+                    initials,
+                    color: avatarColors[memberIndex % avatarColors.length],
+                    share:
+                      participant?.shareAmount ??
+                      bill.amount / (household.members.length || 1),
+                  };
+                }
+              );
+
+              return (
+                <TableRow
+                  key={bill.id}
+                  className="group transition-all duration-200 cursor-pointer border-b"
+                  style={{
+                    borderColor: isLast ? "transparent" : "#E5E7EB",
+                    height: "44px",
+                    backgroundColor: isEven ? "transparent" : "#FAFBFC",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#F9FAFB";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = isEven
+                      ? "transparent"
+                      : "#FAFBFC";
+                  }}
+                >
+                  {/* Biller */}
+                  <TableCell
+                    className="pl-6"
+                    style={{ paddingTop: "12px", paddingBottom: "12px" }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          backgroundColor: bgColor,
+                        }}
+                      >
+                        <Icon
+                          className="h-4 w-4"
+                          style={{ color: iconColor }}
+                          strokeWidth={2}
+                        />
+                      </div>
+
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 500,
+                          color: "#111827",
+                          fontFamily: "Inter, sans-serif",
+                        }}
+                      >
+                        {bill.biller}
+                      </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900">
-                      {bill.biller}
+                  </TableCell>
+                  {/* Your Share with Split Breakdown */}
+                  <TableCell
+                    style={{ paddingTop: "12px", paddingBottom: "12px" }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#111827",
+                          fontFamily: "Inter, sans-serif",
+                        }}
+                      >
+                        ${bill.yourShare.toFixed(2)}
+                      </span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex -space-x-1 cursor-help transition-transform hover:scale-110">
+                              {roommatesWithShare.map((roommate) => (
+                                <Avatar
+                                  key={roommate.id}
+                                  className="max-h-7 max-w-7 border-2 border-white transition-all"
+                                >
+                                  <AvatarFallback
+                                    style={{
+                                      backgroundColor: roommate.color,
+                                      color: "white",
+                                      fontSize: "9px",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {roommate.initials}
+                                  </AvatarFallback>
+                                </Avatar>
+                              ))}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <div className="space-y-2 min-w-[200px]">
+                              <p className="font-medium mb-2 text-white">
+                                Split Breakdown
+                              </p>
+                              <div className="text-xs space-y-1.5">
+                                {roommatesWithShare.map((roommate) => (
+                                  <div
+                                    key={roommate.id}
+                                    className="flex items-center justify-between gap-4"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <Avatar className="h-4 w-4">
+                                        <AvatarFallback
+                                          style={{
+                                            backgroundColor: roommate.color,
+                                            color: "white",
+                                            fontSize: "8px",
+                                            fontWeight: 600,
+                                          }}
+                                        >
+                                          {roommate.initials}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                      <span>{roommate.name}</span>
+                                    </div>
+                                    <span className="font-medium">
+                                      ${bill.yourShare.toFixed(2)}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="border-t pt-2 mt-2 flex justify-between font-medium">
+                                <span>Total</span>
+                                <span>${bill.amount.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </TableCell>
+                  {/* Due Date */}
+                  <TableCell
+                    style={{ paddingTop: "12px", paddingBottom: "12px" }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: "#6B7280",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      {new Date(bill.dueDate).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${bill.amount.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                  ${bill.yourShare.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {formatDate(bill.dueDate)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {formatDate(bill.scheduledCharge)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {bill.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </TableCell>
+                  {/* Status */}
+                  <TableCell
+                    style={{ paddingTop: "12px", paddingBottom: "12px" }}
+                  >
+                    <span
+                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                      style={{
+                        backgroundColor: "#DBEAFE",
+                        color: "#1E40AF",
+                      }}
+                    >
+                      {bill.status}
+                    </span>
+                  </TableCell>
+                  {/* Autopay Toggle */}
+                  <TableCell
+                    className="pr-6"
+                    style={{ paddingTop: "12px", paddingBottom: "12px" }}
+                  >
+                    <AutopayToggleCell
+                      billId={bill.id}
+                      hasPaymentMethod={hasPaymentMethod}
+                      initialEnabled={false} // set true if you hydrate from API later
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+
+            {/* Totals Row */}
+            <TableRow
+              className="border-t-2"
+              style={{
+                borderColor: "#E5E7EB",
+                height: "46px",
+                backgroundColor: "#F9FAFB",
+              }}
+            >
+              <TableCell
+                className="pl-6"
+                style={{ paddingTop: "12px", paddingBottom: "12px" }}
+              >
+                <span
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#111827",
+                    fontFamily: "Inter, sans-serif",
+                  }}
+                >
+                  Total
+                </span>
+              </TableCell>
+              <TableCell style={{ paddingTop: "12px", paddingBottom: "12px" }}>
+                <span
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#111827",
+                    fontFamily: "Inter, sans-serif",
+                  }}
+                >
+                  ${totalYourShare.toFixed(2)}
+                </span>
+              </TableCell>
+              <TableCell colSpan={3} />
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
-    </div>
+    </Card>
   );
 }

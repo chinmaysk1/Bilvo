@@ -66,7 +66,6 @@ export async function middleware(req: NextRequest) {
 
   // ========== ONBOARDING LOGIC ==========
   // If user is authenticated, check onboarding status
-  // const hasCompletedOnboarding = token.hasCompletedOnboarding;
   const hasCompletedOnboarding = token.hasCompletedOnboarding;
 
   // User hasn't completed onboarding

@@ -38,7 +38,13 @@ export default async function handler(
 
     const household = await prisma.$transaction(async (tx: any) => {
       const newHousehold = await tx.household.create({
-        data: { name, address, inviteCode, creatorId: user.id },
+        data: {
+          name,
+          address,
+          inviteCode,
+          creatorId: user.id,
+          adminId: user.id,
+        },
       });
       await tx.user.update({
         where: { id: user.id },

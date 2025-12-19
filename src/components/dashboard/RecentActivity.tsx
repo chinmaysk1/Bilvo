@@ -1,210 +1,228 @@
-// components/dashboard/RecentActivity.tsx
-import { Clock, CheckCircle2, Upload, CreditCard, Mail } from "lucide-react";
+import { Card } from "../ui/card";
+import {
+  Mail,
+  Upload,
+  CheckCircle,
+  CreditCard,
+  AlertCircle,
+  Clock,
+} from "lucide-react";
+import { useRouter } from "next/router";
+import { Activity } from "@/interfaces/activity";
 
-interface Activity {
-  id: string;
-  type: string;
-  description: string;
-  amount?: number;
-  detail?: string;
-  source?: string;
-  timestamp: string;
-}
-
-interface RecentActivityProps {
+export interface RecentActivityProps {
   activities: Activity[];
 }
 
+const getActivityIcon = (type: string) => {
+  switch (type) {
+    case "payment_success":
+      return { icon: CheckCircle, bgColor: "#DCFCE7", iconColor: "#16A34A" };
+    case "bill_uploaded":
+      return { icon: Upload, bgColor: "#F3F4F6", iconColor: "#6B7280" };
+    case "bill_imported":
+      return { icon: Mail, bgColor: "#DBEAFE", iconColor: "#3B82F6" };
+    case "payment_method_added":
+      return { icon: CreditCard, bgColor: "#F3E8FF", iconColor: "#9333EA" };
+    case "payment_failed":
+      return { icon: AlertCircle, bgColor: "#FEE2E2", iconColor: "#DC2626" };
+    default:
+      return { icon: Clock, bgColor: "#F3F4F6", iconColor: "#6B7280" };
+  }
+};
+
+const formatTimestamp = (timestamp: string) => {
+  const now = new Date();
+  const date = new Date(timestamp);
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffHours < 1) {
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    return diffMins <= 0 ? "Just now" : `${diffMins}m ago`;
+  } else if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  } else if (diffDays === 1) {
+    return "1d ago";
+  } else {
+    return `${diffDays}d ago`;
+  }
+};
+
 export default function RecentActivity({ activities }: RecentActivityProps) {
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "payment_success":
-        return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-      case "bill_uploaded":
-        return <Upload className="w-5 h-5 text-blue-600" />;
-      case "payment_method_added":
-        return <CreditCard className="w-5 h-5 text-purple-600" />;
-      default:
-        return <Clock className="w-5 h-5 text-gray-400" />;
-    }
-  };
+  const router = useRouter();
 
-  const getIconBg = (type: string) => {
-    switch (type) {
-      case "payment_success":
-        return "bg-green-100";
-      case "bill_uploaded":
-        return "bg-blue-100";
-      case "payment_method_added":
-        return "bg-purple-100";
-      default:
-        return "bg-gray-100";
-    }
-  };
-
-  const formatTimestamp = (timestamp: string) => {
-    const now = new Date();
-    const date = new Date(timestamp);
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffHours < 1) {
-      const diffMins = Math.floor(diffMs / (1000 * 60));
-      return `${diffMins} minutes ago`;
-    } else if (diffHours < 24) {
-      return `${diffHours} hours ago`;
-    } else if (diffDays === 1) {
-      return (
-        "Yesterday at " +
-        date.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
-      );
-    } else {
-      return (
-        date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
-        " at " +
-        date.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
-      );
-    }
-  };
-
-  const groupActivitiesByDate = () => {
-    const today: Activity[] = [];
-    const yesterday: Activity[] = [];
-
-    activities.forEach((activity) => {
-      const date = new Date(activity.timestamp);
-      const now = new Date();
-      const isToday = date.toDateString() === now.toDateString();
-      const yesterdayDate = new Date(now);
-      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-      const isYesterday = date.toDateString() === yesterdayDate.toDateString();
-
-      if (isToday) {
-        today.push(activity);
-      } else if (isYesterday) {
-        yesterday.push(activity);
-      }
-    });
-
-    return { today, yesterday };
-  };
-
-  const { today, yesterday } = groupActivitiesByDate();
+  // Show only the 5 most recent activities
+  const recentActivities = activities.slice(0, 5);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-3 mb-1">
-          <Clock className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-semibold text-gray-900">
-            Recent Activity
-          </h2>
-        </div>
-        <p className="text-sm text-gray-600">Latest payments and updates</p>
+    <Card
+      className="rounded-xl border bg-white relative overflow-hidden"
+      style={{
+        boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+        borderColor: "#E5E7EB",
+      }}
+    >
+      {/* Inner border */}
+      <div
+        className="absolute inset-0 rounded-xl pointer-events-none"
+        style={{ border: "1px solid #F3F4F6" }}
+      />
+
+      {/* Header */}
+      <div
+        className="px-6 flex items-center justify-between"
+        style={{ backgroundColor: "#F9FAFB", height: "40px" }}
+      >
+        <h2
+          style={{
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "#111827",
+            lineHeight: 1.5,
+            fontFamily: "Inter, sans-serif",
+          }}
+        >
+          Recent Activity
+        </h2>
+        <button
+          onClick={() => router.push("/protected/dashboard/activity")}
+          className="transition-colors"
+          style={{
+            fontSize: "12px",
+            fontWeight: 500,
+            color: "#00B948",
+            lineHeight: 1.5,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "#00A040";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "#00B948";
+          }}
+        >
+          View All
+        </button>
       </div>
 
-      <div className="p-6">
-        {today.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Today</h3>
-            <div className="space-y-4">
-              {today.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4">
-                  <div
-                    className={`rounded-full p-2 ${getIconBg(activity.type)}`}
-                  >
-                    {getIcon(activity.type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {activity.description}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          {activity.amount && (
-                            <span className="text-sm font-semibold text-gray-900">
-                              ${activity.amount.toFixed(2)} to {activity.detail}
-                            </span>
-                          )}
-                          {!activity.amount && activity.detail && (
-                            <span className="text-sm text-gray-600">
-                              {activity.detail}
-                            </span>
-                          )}
-                          {activity.source && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                              <Mail className="w-3 h-3" />
-                              {activity.source}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
-                        {formatTimestamp(activity.timestamp)}
-                      </span>
+      {/* Activity List */}
+      <div className="px-6 py-2">
+        {recentActivities.length === 0 ? (
+          <div className="text-center py-8">
+            <Clock
+              className="h-8 w-8 mx-auto mb-2"
+              style={{ color: "#D1D5DB" }}
+            />
+            <p
+              style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "#9CA3AF",
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              No recent activity
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-0">
+            {recentActivities.map((activity, index) => {
+              const {
+                icon: Icon,
+                bgColor,
+                iconColor,
+              } = getActivityIcon(activity.type);
+
+              return (
+                <div
+                  key={activity.id}
+                  className="flex gap-2.5 py-2.5 transition-all duration-200"
+                  style={{
+                    backgroundColor: "transparent",
+                    borderBottom:
+                      index < recentActivities.length - 1
+                        ? "1px solid #F3F4F6"
+                        : "none",
+                    minHeight: "36px",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#F9FAFB";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  {/* Icon */}
+                  <div className="flex items-start pt-0.5">
+                    <div
+                      className="h-5 w-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: bgColor }}
+                    >
+                      <Icon
+                        className="h-2.5 w-2.5"
+                        style={{ color: iconColor }}
+                      />
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {yesterday.length > 0 && (
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">
-              Yesterday
-            </h3>
-            <div className="space-y-4">
-              {yesterday.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4">
-                  <div
-                    className={`rounded-full p-2 ${getIconBg(activity.type)}`}
-                  >
-                    {getIcon(activity.type)}
-                  </div>
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            color: "#111827",
+                            lineHeight: 1.4,
+                            fontFamily: "Inter, sans-serif",
+                          }}
+                        >
                           {activity.description}
-                        </p>
-                        {activity.detail && (
-                          <p className="text-sm text-gray-600 mt-1">
+                        </div>
+                        {(activity.detail || activity.amount) && (
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              color: "#6B7280",
+                              lineHeight: 1.4,
+                              fontFamily: "Inter, sans-serif",
+                              marginTop: "1px",
+                            }}
+                          >
+                            {activity.amount && (
+                              <span className="font-medium">
+                                ${activity.amount.toFixed(2)}
+                              </span>
+                            )}
+                            {activity.amount && activity.detail && (
+                              <span> · </span>
+                            )}
                             {activity.detail}
-                          </p>
+                          </div>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
+                      <div
+                        className="text-right whitespace-nowrap flex-shrink-0"
+                        style={{
+                          fontSize: "11px",
+                          fontWeight: 500,
+                          color: "#9CA3AF",
+                          fontFamily: "Inter, sans-serif",
+                          lineHeight: 1.5,
+                        }}
+                      >
                         {formatTimestamp(activity.timestamp)}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         )}
-
-        <div className="mt-6 text-center">
-          <a
-            href="/dashboard/activity"
-            className="inline-flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700"
-          >
-            View Full Ledger →
-          </a>
-        </div>
       </div>
-    </div>
+    </Card>
   );
 }

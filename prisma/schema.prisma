@@ -7,55 +7,111 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum BillSource {
+  GMAIL
+  MANUAL
+  UTILITY
+}
+
+enum BillStatus {
+  SCHEDULED
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+}
+
 model User {
-  id                     String      @id @default(cuid())
+  id                     String            @id @default(cuid())
   name                   String?
-  email                  String?     @unique
+  email                  String?           @unique
   emailVerified          DateTime?
   image                  String?
   householdId            String?
-  hasCompletedOnboarding Boolean     @default(false)
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @updatedAt
+  hasCompletedOnboarding Boolean           @default(false)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  autopayEnabled         Boolean?          @default(false)
   accounts               Account[]
-  createdHouseholds      Household[] @relation("HouseholdCreator")
-  sessions               Session[]
-  household              Household?  @relation(fields: [householdId], references: [id])
   activities             Activity[]
+  createdBills           Bill[]            @relation("BillCreator")
+  ownedBills             Bill[]            @relation("BillOwner")
+  billParticipants       BillParticipant[]
+  adminHouseholds        Household[]       @relation("HouseholdAdmin")
+  createdHouseholds      Household[]       @relation("HouseholdCreator")
   paymentMethods         PaymentMethod[]
-  autopayEnabled         Boolean @default(false)
+  sessions               Session[]
+  household              Household?        @relation(fields: [householdId], references: [id])
+  utilityAccounts        UtilityAccount[]
 }
 
 model Household {
-  id         String   @id @default(cuid())
+  id         String     @id @default(cuid())
   name       String
   address    String
-  inviteCode String   @unique @default(cuid())
+  inviteCode String     @unique @default(cuid())
   creatorId  String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  creator    User     @relation("HouseholdCreator", fields: [creatorId], references: [id])
-  members    User[]
-  bills      Bill[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  adminId    String
   activities Activity[]
+  bills      Bill[]
+  admin      User       @relation("HouseholdAdmin", fields: [adminId], references: [id], onDelete: SetNull)
+  creator    User       @relation("HouseholdCreator", fields: [creatorId], references: [id])
+  members    User[]
+  utilityAccounts UtilityAccount[]
 
   @@index([inviteCode])
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
+model UtilityAccount {
+  id                String   @id @default(cuid())
+  householdId       String
+  ownerUserId       String?
+
+  // UI fields
   type              String
   provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerWebsite   String?
+  accountHolderName String?
+  loginEmail        String?
+  accountNumber     String?
+
+  // Credentials for Playwright login — encrypted at rest
+  encryptedPassword String?   // AES-256 encrypted
+  passwordIv        String?   // IV used to encrypt/decrypt
+
+  // Sync state
+  isLinked          Boolean   @default(false)
+  externalAccountId String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  household         Household @relation(fields: [householdId], references: [id])
+  owner             User?     @relation(fields: [ownerUserId], references: [id])
+  bills             Bill[]
+
+  @@index([householdId])
+  @@index([ownerUserId])
+  @@index([type, provider])
+}
+
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  refresh_token_expires_in Int?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -69,56 +125,85 @@ model Session {
 }
 
 model Bill {
-  id              String   @id @default(cuid())
+  id              String            @id @default(cuid())
   householdId     String
-  household       Household @relation(fields: [householdId], references: [id])
-  
-  source          String   // "Gmail" or "Manual"
-  biller          String   // e.g., "Internet", "Gas"
-  billerType      String   // e.g., "internet", "gas", "water"
-  amount          Float
-  
+  ownerUserId     String
+  createdByUserId String
+  source          BillSource
+  externalId      String?
+
+  // link to a utility account when applicable
+  utilityAccountId String?
+  utilityAccount   UtilityAccount?   @relation(fields: [utilityAccountId], references: [id])
+
+  biller          String
+  billerType      String
+  amount          Float?
   dueDate         DateTime
-  scheduledCharge DateTime
-  status          String   @default("Scheduled") // "Scheduled", "Paid", "Overdue"
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  @@index([householdId])
-  @@index([dueDate])
+  scheduledCharge DateTime?
+  status          BillStatus        @default(SCHEDULED)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  createdBy       User              @relation("BillCreator", fields: [createdByUserId], references: [id])
+  household       Household         @relation(fields: [householdId], references: [id])
+  owner           User              @relation("BillOwner", fields: [ownerUserId], references: [id])
+  participants    BillParticipant[]
+
+  @@index([householdId, source, externalId])
+  @@index([ownerUserId])
+  @@index([createdByUserId])
+  @@index([utilityAccountId]) 
+  @@index([householdId, dueDate])
+}
+
+model BillParticipant {
+  id               String         @id @default(cuid())
+  billId           String
+  userId           String
+  shareAmount      Float          @default(0)
+  autopayEnabled   Boolean        @default(false)
+  paymentMethodId  String?
+  capAmount        Float?
+  nextChargeAt     DateTime?
+  notifyBeforeDays Int?           @default(2)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  bill             Bill           @relation(fields: [billId], references: [id], onDelete: Cascade)
+  paymentMethod    PaymentMethod? @relation("ParticipantPaymentMethod", fields: [paymentMethodId], references: [id])
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([billId, userId])
+  @@index([userId])
+  @@index([billId, autopayEnabled])
 }
 
 model Activity {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   householdId String
-  household   Household @relation(fields: [householdId], references: [id])
   userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  
-  type        String   // "payment_success", "bill_uploaded", "payment_method_added"
+  type        String
   description String
   detail      String?
   amount      Float?
   source      String?
-  
-  timestamp   DateTime @default(now())
-  
+  timestamp   DateTime  @default(now())
+  household   Household @relation(fields: [householdId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
+
   @@index([householdId, timestamp])
 }
 
 model PaymentMethod {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  
-  type        String   // "card", "bank"
-  last4       String
-  brand       String?  // "Visa", "Mastercard", etc.
-  isDefault   Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id               String            @id @default(cuid())
+  userId           String
+  type             String
+  last4            String
+  brand            String?
+  isDefault        Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  billParticipants BillParticipant[] @relation("ParticipantPaymentMethod")
+  user             User              @relation(fields: [userId], references: [id])
+
   @@index([userId])
 }
