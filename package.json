@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -k -n next,worker \"next dev\" \"npx tsx src/scripts/utility-link-worker.mjs\"",
-    "build": "next build --turbopack",
+    "build": "prisma generate && next build --turbopack",
     "start": "next start",
     "lint": "eslint"
   },
