@@ -21,6 +21,14 @@ enum BillStatus {
   CANCELED
 }
 
+enum UtilityLinkJobStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  NEEDS_2FA
+}
+
 model User {
   id                     String            @id @default(cuid())
   name                   String?
@@ -46,28 +54,28 @@ model User {
 }
 
 model Household {
-  id         String     @id @default(cuid())
-  name       String
-  address    String
-  inviteCode String     @unique @default(cuid())
-  creatorId  String
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  adminId    String
-  activities Activity[]
-  bills      Bill[]
-  admin      User       @relation("HouseholdAdmin", fields: [adminId], references: [id], onDelete: SetNull)
-  creator    User       @relation("HouseholdCreator", fields: [creatorId], references: [id])
-  members    User[]
+  id              String           @id @default(cuid())
+  name            String
+  address         String
+  inviteCode      String           @unique @default(cuid())
+  creatorId       String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  adminId         String
+  activities      Activity[]
+  bills           Bill[]
+  admin           User             @relation("HouseholdAdmin", fields: [adminId], references: [id], onDelete: SetNull)
+  creator         User             @relation("HouseholdCreator", fields: [creatorId], references: [id])
+  members         User[]
   utilityAccounts UtilityAccount[]
 
   @@index([inviteCode])
 }
 
 model UtilityAccount {
-  id                String   @id @default(cuid())
-  householdId       String
-  ownerUserId       String?
+  id          String  @id @default(cuid())
+  householdId String
+  ownerUserId String?
 
   // UI fields
   type              String
@@ -78,23 +86,53 @@ model UtilityAccount {
   accountNumber     String?
 
   // Credentials for Playwright login — encrypted at rest
-  encryptedPassword String?   // AES-256 encrypted
-  passwordIv        String?   // IV used to encrypt/decrypt
+  encryptedPassword String? // AES-256 encrypted
+  passwordIv        String? // IV used to encrypt/decrypt
 
   // Sync state
-  isLinked          Boolean   @default(false)
+  isLinked          Boolean @default(false)
   externalAccountId String?
 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  household         Household @relation(fields: [householdId], references: [id])
-  owner             User?     @relation(fields: [ownerUserId], references: [id])
-  bills             Bill[]
+  household Household        @relation(fields: [householdId], references: [id])
+  owner     User?            @relation(fields: [ownerUserId], references: [id])
+  bills     Bill[]
+  linkJobs  UtilityLinkJob[]
 
   @@index([householdId])
   @@index([ownerUserId])
   @@index([type, provider])
+}
+
+model UtilityLinkJob {
+  id               String @id @default(cuid())
+  utilityAccountId String
+  householdId      String
+  createdByUserId  String
+
+  provider String // e.g. "Pacific Gas & Electric"
+  status   UtilityLinkJobStatus @default(PENDING)
+  twoFactorCode String?
+
+  attempts    Int @default(0)
+  maxAttempts Int @default(3)
+
+  lastError  String?
+  lockedAt   DateTime?
+  lockedBy   String? // worker instance id
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  utilityAccount UtilityAccount @relation(fields: [utilityAccountId], references: [id], onDelete: Cascade)
+
+  @@index([status, lockedAt])
+  @@index([utilityAccountId])
+  @@index([householdId])
 }
 
 model Account {
@@ -125,7 +163,7 @@ model Session {
 }
 
 model Bill {
-  id              String            @id @default(cuid())
+  id              String     @id @default(cuid())
   householdId     String
   ownerUserId     String
   createdByUserId String
@@ -134,7 +172,7 @@ model Bill {
 
   // link to a utility account when applicable
   utilityAccountId String?
-  utilityAccount   UtilityAccount?   @relation(fields: [utilityAccountId], references: [id])
+  utilityAccount   UtilityAccount? @relation(fields: [utilityAccountId], references: [id])
 
   biller          String
   billerType      String
@@ -152,7 +190,7 @@ model Bill {
   @@index([householdId, source, externalId])
   @@index([ownerUserId])
   @@index([createdByUserId])
-  @@index([utilityAccountId]) 
+  @@index([utilityAccountId])
   @@index([householdId, dueDate])
 }
 

@@ -49,24 +49,56 @@ export default async function handler(
         .json({ error: "loginEmail and password required" });
     }
 
-    // Encrypt password for DB storage
     const enc = encryptPassword(password);
 
-    const updated = await prisma.utilityAccount.update({
-      where: { id },
-      data: {
-        loginEmail,
-        accountNumber: accountNumber ?? null,
-        accountHolderName: accountHolderName ?? null,
-        encryptedPassword: enc.encrypted,
-        passwordIv: enc.iv,
-        isLinked: false, // stays false until Playwright verifies login
-      },
+    const { jobCreated } = await prisma.$transaction(async (tx) => {
+      // 1) Save credentials to utility account
+      await tx.utilityAccount.update({
+        where: { id },
+        data: {
+          loginEmail,
+          accountNumber: accountNumber ?? null,
+          accountHolderName: accountHolderName ?? null,
+          encryptedPassword: enc.encrypted,
+          passwordIv: enc.iv,
+          isLinked: false, // stays false until worker succeeds
+        },
+      });
+
+      // 2) Prevent duplicate "in-flight" jobs
+      const existing = await tx.utilityLinkJob.findFirst({
+        where: {
+          utilityAccountId: id,
+          status: { in: ["PENDING", "RUNNING", "NEEDS_2FA"] },
+        },
+        select: { id: true, status: true },
+      });
+
+      if (existing) {
+        return { jobCreated: false };
+      }
+
+      // 3) Enqueue job
+      await tx.utilityLinkJob.create({
+        data: {
+          utilityAccountId: id,
+          householdId: household.id,
+          createdByUserId: user.id,
+          provider: utility.provider,
+          status: "PENDING",
+          // attempts defaults to 0
+          maxAttempts: 3,
+        },
+      });
+
+      return { jobCreated: true };
     });
 
     return res.status(200).json({
       success: true,
-      message: "Credentials saved. Link attempt will proceed.",
+      message: jobCreated
+        ? "Credentials saved. Link attempt will proceed."
+        : "Credentials saved. A link attempt is already in progress.",
     });
   } catch (err) {
     if (err instanceof AuthError) {

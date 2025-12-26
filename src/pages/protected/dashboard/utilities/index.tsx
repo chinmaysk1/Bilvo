@@ -27,6 +27,7 @@ import {
   X,
   ChevronRight,
   Trash,
+  ShieldCheck,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -75,13 +76,17 @@ function UtilitiesContent() {
   const [expandedUtility, setExpandedUtility] = useState<string | null>(null);
   const [editingUtility, setEditingUtility] = useState<string | null>(null);
 
+  const [jobStatus, setJobStatus] = useState<string | null>(null);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [isPolling, setIsPolling] = useState(false);
+
   // Form state for expanded / editing utility
   const [formData, setFormData] = useState({
-    accountHolderName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    accountNumber: "",
+    accountHolderName: "Alec Sanchez",
+    email: "alecsanchep@gmail.com",
+    password: "JellyBoy5384!",
+    confirmPassword: "JellyBoy5384!",
+    accountNumber: "111",
   });
 
   // Add Utility modal state
@@ -196,6 +201,24 @@ function UtilitiesContent() {
     fetchData();
   }, []);
 
+  // Polling Logic
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPolling) {
+      interval = setInterval(async () => {
+        const res = await fetch(`/api/utilities/${expandedUtility}/job-status`);
+        const data = await res.json();
+        setJobStatus(data.status);
+
+        if (data.status === "SUCCESS" || data.status === "FAILED") {
+          setIsPolling(false);
+          if (data.status === "SUCCESS") toast.success("Account Linked!");
+        }
+      }, 3000); // Poll every 3 seconds
+    }
+    return () => clearInterval(interval);
+  }, [isPolling, expandedUtility]);
+
   // ------------------------------------------------------
   // Handlers (all local state for now)
   // ------------------------------------------------------
@@ -230,6 +253,21 @@ function UtilitiesContent() {
     }
   };
 
+  // Submit 2FA Code
+  const handleTwoFactorSubmit = async () => {
+    try {
+      await fetch(`/api/utilities/${expandedUtility}/job-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: twoFactorCode }),
+      });
+      toast.info("Submitting code...");
+      setJobStatus("RUNNING"); // Optimistic UI update
+    } catch (err) {
+      toast.error("Failed to submit 2FA code");
+    }
+  };
+
   const handleLinkUtility = async () => {
     if (
       !formData.accountHolderName ||
@@ -253,12 +291,18 @@ function UtilitiesContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          loginEmail: formData.email,
-          password: formData.password,
-          accountNumber: formData.accountNumber,
-          accountHolderName: formData.accountHolderName,
+          accountHolderName: "Alec Sanchez",
+          loginEmail: "alecsanchep@gmail.com",
+          password: "JellyBoy5384!",
+          confirmPassword: "JellyBoy5384!",
+          accountNumber: "111",
         }),
       });
+
+      if (res.ok) {
+        setIsPolling(true); // Start watching the job status
+        setJobStatus("PENDING");
+      }
 
       const body = await res.json().catch(() => ({}));
 
@@ -618,7 +662,8 @@ function UtilitiesContent() {
                   {/* Expanded content */}
                   {isExpanded && (
                     <div className="px-6 py-4 border-b border-gray-200 bg-white">
-                      {utility.isLinked && (
+                      {/* 1. Success Banner (Only show if not currently polling) */}
+                      {utility.isLinked && !isPolling && (
                         <div
                           className="mb-4 px-3 py-2 rounded-lg flex items-center gap-2"
                           style={{
@@ -637,332 +682,373 @@ function UtilitiesContent() {
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Provider info */}
-                        <Card className="rounded-lg border border-gray-200 bg-white p-4">
-                          <h3
-                            className="text-base text-gray-900 mb-2 text-center"
-                            style={{ fontWeight: 600 }}
-                          >
-                            {utility.provider}
-                          </h3>
+                      {/* 2. INTERACTIVE SESSION MODE (Shows when isPolling is true) */}
+                      {isPolling ? (
+                        <div className="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-blue-100 rounded-2xl bg-gradient-to-b from-slate-50 to-white">
+                          <div className="max-w-md w-full space-y-6 text-center">
+                            {/* Status Icon/Animation */}
+                            <div className="relative mx-auto w-16 h-16">
+                              <div className="absolute inset-0 rounded-full border-4 border-blue-50"></div>
+                              <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
+                              <ShieldCheck className="absolute inset-0 m-auto h-8 w-8 text-blue-600" />
+                            </div>
 
-                          <div className="space-y-3 text-sm text-gray-700">
-                            <p className="text-center">
-                              Visit the {utility.provider} website{" "}
-                              <a
-                                href={utility.providerWebsite ?? ""}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[#00B948] hover:underline"
-                                style={{ fontWeight: 600 }}
-                              >
-                                here
-                              </a>{" "}
-                              to set up service.
-                            </p>
+                            {jobStatus === "NEEDS_2FA" ? (
+                              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-slate-900">
+                                    Verification Required
+                                  </h3>
+                                  <p className="text-sm text-slate-500 mt-1">
+                                    PG&E sent a 6-digit security code to your
+                                    registered phone number.
+                                  </p>
+                                </div>
 
-                            <div className="text-center py-2 px-3 bg-gray-50 rounded-lg border border-gray-200">
-                              <p
-                                className="text-sm"
-                                style={{ fontWeight: 600 }}
-                              >
-                                Setup Your Account Online
+                                <div className="flex flex-col items-center gap-3">
+                                  <div className="flex gap-2">
+                                    <Input
+                                      value={twoFactorCode}
+                                      onChange={(e) =>
+                                        setTwoFactorCode(e.target.value)
+                                      }
+                                      placeholder="000000"
+                                      className="h-12 text-center text-xl tracking-[0.5em] font-mono max-w-[180px] border-2 focus:border-blue-500"
+                                      maxLength={6}
+                                    />
+                                    <Button
+                                      onClick={handleTwoFactorSubmit}
+                                      className="h-12 px-6 bg-blue-600 hover:bg-blue-700 shadow-md transition-all active:scale-95"
+                                    >
+                                      Verify
+                                    </Button>
+                                  </div>
+                                  <p className="text-xs text-slate-400">
+                                    Secure encrypted connection established...
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                <h3 className="text-sm font-medium text-blue-800 uppercase tracking-wider">
+                                  Active Session
+                                </h3>
+                                <div className="space-y-1">
+                                  <p className="text-lg font-semibold text-slate-900">
+                                    {jobStatus === "PENDING"
+                                      ? "Establishing connection..."
+                                      : "Fetching latest bill data..."}
+                                  </p>
+                                  <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    {jobStatus === "PENDING"
+                                      ? "Authenticating with PG&E servers"
+                                      : "Bypassing portal redirects..."}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        /* 3. STANDARD UI (Shows when NOT polling) */
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Provider info */}
+                          <Card className="rounded-lg border border-gray-200 bg-white p-4">
+                            <h3
+                              className="text-base text-gray-900 mb-2 text-center"
+                              style={{ fontWeight: 600 }}
+                            >
+                              {utility.provider}
+                            </h3>
+
+                            <div className="space-y-3 text-sm text-gray-700">
+                              <p className="text-center">
+                                Visit the {utility.provider} website{" "}
+                                <a
+                                  href={utility.providerWebsite ?? ""}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[#00B948] hover:underline"
+                                  style={{ fontWeight: 600 }}
+                                >
+                                  here
+                                </a>{" "}
+                                to set up service.
+                              </p>
+
+                              <div className="text-center py-2 px-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <p
+                                  className="text-sm"
+                                  style={{ fontWeight: 600 }}
+                                >
+                                  Setup Your Account Online
+                                </p>
+                              </div>
+
+                              <p className="text-center text-xs">
+                                After setting up service, create an online
+                                account on their website. You will need a recent
+                                bill to fill in some of the information.
                               </p>
                             </div>
+                          </Card>
 
-                            <p className="text-center text-xs">
-                              After setting up service, create an online account
-                              on their website. You will need a recent bill to
-                              fill in some of the information.
-                            </p>
-                          </div>
-                        </Card>
+                          {/* Link / edit form */}
+                          <Card className="rounded-lg border border-gray-200 bg-white p-4">
+                            <h3
+                              className="text-base text-gray-900 mb-4 text-center"
+                              style={{ fontWeight: 600 }}
+                            >
+                              Link Utility
+                            </h3>
 
-                        {/* Link / edit form */}
-                        <Card className="rounded-lg border border-gray-200 bg-white p-4">
-                          <h3
-                            className="text-base text-gray-900 mb-4 text-center"
-                            style={{ fontWeight: 600 }}
-                          >
-                            Link Utility
-                          </h3>
+                            <div className="space-y-3">
+                              {/* Account holder */}
+                              <div>
+                                <Label
+                                  className="text-sm text-gray-700 mb-1 block"
+                                  style={{ fontWeight: 500 }}
+                                >
+                                  Account Holder Name
+                                </Label>
+                                <Input
+                                  type="text"
+                                  value={formData.accountHolderName}
+                                  onChange={(e) =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      accountHolderName: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={
+                                    utility.isLinked ? "Alex Chen" : ""
+                                  }
+                                  className="h-10 rounded-lg border-gray-300"
+                                  disabled={
+                                    utility.isLinked &&
+                                    editingUtility !== utility.id
+                                  }
+                                />
+                              </div>
 
-                          <div className="space-y-3">
-                            {/* Account holder */}
-                            <div>
-                              <Label
-                                className="text-sm text-gray-700 mb-1 block"
-                                style={{ fontWeight: 500 }}
-                              >
-                                Account Holder Name
-                              </Label>
-                              <Input
-                                type="text"
-                                value={formData.accountHolderName}
-                                onChange={(e) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    accountHolderName: e.target.value,
-                                  }))
-                                }
-                                placeholder={
-                                  utility.isLinked ? "Alex Chen" : ""
-                                }
-                                className="h-10 rounded-lg border-gray-300"
-                                disabled={
-                                  utility.isLinked &&
-                                  editingUtility !== utility.id
-                                }
-                              />
-                            </div>
+                              {/* Email */}
+                              <div>
+                                <Label
+                                  className="text-sm text-gray-700 mb-1 block"
+                                  style={{ fontWeight: 500 }}
+                                >
+                                  Email Address
+                                </Label>
+                                <Input
+                                  type="email"
+                                  value={
+                                    isOwner
+                                      ? formData.email
+                                      : "••••••@••••••.com"
+                                  }
+                                  onChange={(e) =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      email: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={
+                                    utility.isLinked
+                                      ? "alec.sanchez@email.com"
+                                      : ""
+                                  }
+                                  className="h-10 rounded-lg border-gray-300"
+                                  disabled={
+                                    utility.isLinked &&
+                                    (editingUtility !== utility.id || !isOwner)
+                                  }
+                                />
+                              </div>
 
-                            {/* Email (masked if not owner) */}
-                            <div>
-                              <Label
-                                className="text-sm text-gray-700 mb-1 block"
-                                style={{ fontWeight: 500 }}
-                              >
-                                Email Address
-                              </Label>
-                              <Input
-                                type="email"
-                                value={
-                                  isOwner ? formData.email : "••••••@••••••.com"
-                                }
-                                onChange={(e) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    email: e.target.value,
-                                  }))
-                                }
-                                placeholder={
-                                  utility.isLinked
-                                    ? "alec.sanchez@email.com"
-                                    : ""
-                                }
-                                className="h-10 rounded-lg border-gray-300"
-                                disabled={
-                                  utility.isLinked &&
-                                  (editingUtility !== utility.id || !isOwner)
-                                }
-                              />
-                            </div>
+                              {/* Password Fields */}
+                              <div>
+                                <Label
+                                  className="text-sm text-gray-700 mb-1 block"
+                                  style={{ fontWeight: 500 }}
+                                >
+                                  Password{" "}
+                                  {editingUtility === utility.id && isOwner && (
+                                    <span className="text-gray-500 text-xs">
+                                      (leave blank to keep current)
+                                    </span>
+                                  )}
+                                </Label>
+                                <Input
+                                  type="password"
+                                  value={
+                                    isOwner ? formData.password : "••••••••"
+                                  }
+                                  onChange={(e) =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      password: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={
+                                    utility.isLinked ? "••••••••" : ""
+                                  }
+                                  className="h-10 rounded-lg border-gray-300"
+                                  disabled={
+                                    utility.isLinked &&
+                                    (editingUtility !== utility.id || !isOwner)
+                                  }
+                                />
+                              </div>
 
-                            {/* Password */}
-                            <div>
-                              <Label
-                                className="text-sm text-gray-700 mb-1 block"
-                                style={{ fontWeight: 500 }}
-                              >
-                                Password{" "}
-                                {editingUtility === utility.id && isOwner && (
-                                  <span className="text-gray-500 text-xs">
-                                    (leave blank to keep current)
-                                  </span>
-                                )}
-                              </Label>
-                              <Input
-                                type="password"
-                                value={isOwner ? formData.password : "••••••••"}
-                                onChange={(e) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    password: e.target.value,
-                                  }))
-                                }
-                                placeholder={utility.isLinked ? "••••••••" : ""}
-                                className="h-10 rounded-lg border-gray-300"
-                                disabled={
-                                  utility.isLinked &&
-                                  (editingUtility !== utility.id || !isOwner)
-                                }
-                              />
-                            </div>
+                              <div>
+                                <Label
+                                  className="text-sm text-gray-700 mb-1 block"
+                                  style={{ fontWeight: 500 }}
+                                >
+                                  Confirm Password{" "}
+                                  {editingUtility === utility.id && isOwner && (
+                                    <span className="text-gray-500 text-xs">
+                                      (leave blank to keep current)
+                                    </span>
+                                  )}
+                                </Label>
+                                <Input
+                                  type="confirmPassword"
+                                  value={
+                                    isOwner
+                                      ? formData.confirmPassword
+                                      : "••••••••"
+                                  }
+                                  onChange={(e) =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      confirmPassword: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={
+                                    utility.isLinked ? "••••••••" : ""
+                                  }
+                                  className="h-10 rounded-lg border-gray-300"
+                                  disabled={
+                                    utility.isLinked &&
+                                    (editingUtility !== utility.id || !isOwner)
+                                  }
+                                />
+                              </div>
 
-                            {/* Confirm password */}
-                            <div>
-                              <Label
-                                className="text-sm text-gray-700 mb-1 block"
-                                style={{ fontWeight: 500 }}
-                              >
-                                Confirm Password
-                              </Label>
-                              <Input
-                                type="password"
-                                value={
-                                  isOwner
-                                    ? formData.confirmPassword
-                                    : "••••••••"
-                                }
-                                onChange={(e) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    confirmPassword: e.target.value,
-                                  }))
-                                }
-                                placeholder={utility.isLinked ? "••••••••" : ""}
-                                className="h-10 rounded-lg border-gray-300"
-                                disabled={
-                                  utility.isLinked &&
-                                  (editingUtility !== utility.id || !isOwner)
-                                }
-                              />
-                            </div>
+                              <div>
+                                <Label
+                                  className="text-sm text-gray-700 mb-1 block"
+                                  style={{ fontWeight: 500 }}
+                                >
+                                  Account Number
+                                </Label>
+                                <Input
+                                  type="text"
+                                  value={
+                                    isOwner
+                                      ? formData.accountNumber
+                                      : "****-****"
+                                  }
+                                  onChange={(e) =>
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      accountNumber: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={
+                                    utility.isLinked ? "055873-000" : ""
+                                  }
+                                  className="h-10 rounded-lg border-gray-300"
+                                  disabled={
+                                    utility.isLinked &&
+                                    (editingUtility !== utility.id || !isOwner)
+                                  }
+                                />
+                              </div>
 
-                            {/* Account number */}
-                            <div>
-                              <Label
-                                className="text-sm text-gray-700 mb-1 block"
-                                style={{ fontWeight: 500 }}
-                              >
-                                Account Number
-                              </Label>
-                              <Input
-                                type="text"
-                                value={
-                                  isOwner ? formData.accountNumber : "****-****"
-                                }
-                                onChange={(e) =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    accountNumber: e.target.value,
-                                  }))
-                                }
-                                placeholder={
-                                  utility.isLinked ? "055873-000" : ""
-                                }
-                                className="h-10 rounded-lg border-gray-300"
-                                disabled={
-                                  utility.isLinked &&
-                                  (editingUtility !== utility.id || !isOwner)
-                                }
-                              />
-                            </div>
-
-                            {/* Actions */}
-                            <div className="pt-1 space-y-2">
-                              {utility.isLinked &&
-                              editingUtility !== utility.id ? (
-                                isOwner ? (
-                                  // Linked & owner
+                              {/* Actions (Buttons) */}
+                              <div className="pt-1 space-y-2">
+                                {utility.isLinked &&
+                                editingUtility !== utility.id ? (
+                                  isOwner ? (
+                                    <div className="space-y-2">
+                                      <Button
+                                        onClick={() =>
+                                          handleEditUtility(utility.id)
+                                        }
+                                        variant="outline"
+                                        className="w-full h-10 rounded-lg border-gray-300 text-gray-700"
+                                        style={{ fontWeight: 600 }}
+                                      >
+                                        <Edit2 className="h-4 w-4 mr-2" />
+                                        Edit Account
+                                      </Button>
+                                      <Button
+                                        onClick={handleUnlinkUtility}
+                                        variant="outline"
+                                        className="w-full h-10 rounded-lg border-red-300 text-red-600 hover:bg-red-50"
+                                        style={{ fontWeight: 600 }}
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Unlink Account
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-2 text-center italic text-xs text-gray-400">
+                                      Only {utility.accountHolderName} can
+                                      modify this link.
+                                    </div>
+                                  )
+                                ) : editingUtility === utility.id ? (
                                   <div className="space-y-2">
                                     <Button
-                                      onClick={() =>
-                                        handleEditUtility(utility.id)
-                                      }
-                                      variant="outline"
-                                      className="w-full h-10 rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50"
+                                      onClick={handleSaveEdit}
+                                      className="w-full h-10 rounded-lg bg-[#00B948] hover:bg-[#00A040]"
                                       style={{ fontWeight: 600 }}
                                     >
-                                      <Edit2 className="h-4 w-4 mr-2" />
-                                      Edit Account
+                                      <Save className="h-4 w-4 mr-2" />
+                                      Save Changes
                                     </Button>
                                     <Button
-                                      onClick={handleUnlinkUtility}
+                                      onClick={handleCancelEdit}
                                       variant="outline"
-                                      className="w-full h-10 rounded-lg border-red-300 text-red-600 hover:bg-red-50"
+                                      className="w-full h-10 rounded-lg border-gray-300 text-gray-700"
                                       style={{ fontWeight: 600 }}
                                     >
-                                      <Trash2 className="h-4 w-4 mr-2" />
-                                      Unlink Account
+                                      <X className="h-4 w-4 mr-2" />
+                                      Cancel
                                     </Button>
                                   </div>
                                 ) : (
-                                  // Linked & non-owner
                                   <div className="space-y-2">
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div>
-                                          <Button
-                                            disabled
-                                            variant="outline"
-                                            className="w-full h-10 rounded-lg border-gray-300 text-gray-400 cursor-not-allowed"
-                                            style={{ fontWeight: 600 }}
-                                          >
-                                            <Edit2 className="h-4 w-4 mr-2" />
-                                            Edit Account
-                                          </Button>
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p className="max-w-xs">
-                                          Only {utility.accountHolderName} can
-                                          edit this account
-                                        </p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div>
-                                          <Button
-                                            disabled
-                                            variant="outline"
-                                            className="w-full h-10 rounded-lg border-gray-300 text-gray-400 cursor-not-allowed"
-                                            style={{ fontWeight: 600 }}
-                                          >
-                                            <Trash2 className="h-4 w-4 mr-2" />
-                                            Unlink Account
-                                          </Button>
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p className="max-w-xs">
-                                          Only {utility.accountHolderName} can
-                                          unlink this account
-                                        </p>
-                                      </TooltipContent>
-                                    </Tooltip>
+                                    <Button
+                                      onClick={handleLinkUtility}
+                                      className="w-full h-10 rounded-lg bg-[#00B948] hover:bg-[#00A040]"
+                                      style={{ fontWeight: 600 }}
+                                      disabled={isPolling}
+                                    >
+                                      Link Account
+                                    </Button>
+                                    <Button
+                                      onClick={() =>
+                                        handleRemoveUtility(utility.id)
+                                      }
+                                      variant="outline"
+                                      className="w-full h-10 rounded-lg border-gray-300 text-gray-600"
+                                      style={{ fontWeight: 600 }}
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Remove
+                                    </Button>
                                   </div>
-                                )
-                              ) : editingUtility === utility.id ? (
-                                // Editing
-                                <div className="space-y-2">
-                                  <Button
-                                    onClick={handleSaveEdit}
-                                    className="w-full h-10 rounded-lg bg-[#00B948] hover:bg-[#00A040] text-white"
-                                    style={{ fontWeight: 600 }}
-                                  >
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save Changes
-                                  </Button>
-                                  <Button
-                                    onClick={handleCancelEdit}
-                                    variant="outline"
-                                    className="w-full h-10 rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50"
-                                    style={{ fontWeight: 600 }}
-                                  >
-                                    <X className="h-4 w-4 mr-2" />
-                                    Cancel
-                                  </Button>
-                                </div>
-                              ) : (
-                                // Not linked
-                                <div className="space-y-2">
-                                  <Button
-                                    onClick={handleLinkUtility}
-                                    className="w-full h-10 rounded-lg bg-[#00B948] hover:bg-[#00A040] text-white"
-                                    style={{ fontWeight: 600 }}
-                                  >
-                                    Link Account
-                                  </Button>
-                                  <Button
-                                    onClick={() =>
-                                      handleRemoveUtility(utility.id)
-                                    }
-                                    variant="outline"
-                                    className="w-full h-10 rounded-lg border-gray-300 text-gray-600 hover:bg-gray-50"
-                                    style={{ fontWeight: 600 }}
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Remove
-                                  </Button>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </Card>
-                      </div>
+                          </Card>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
