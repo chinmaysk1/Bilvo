@@ -6,7 +6,8 @@
     "dev": "concurrently -k -n next,worker \"next dev\" \"npx tsx src/scripts/utility-link-worker.mjs\"",
     "build": "prisma generate && next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "worker": "prisma generate && npx tsx src/scripts/utility-link-worker.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",

@@ -82,11 +82,11 @@ function UtilitiesContent() {
 
   // Form state for expanded / editing utility
   const [formData, setFormData] = useState({
-    accountHolderName: "Alec Sanchez",
-    email: "alecsanchep@gmail.com",
-    password: "JellyBoy5384!",
-    confirmPassword: "JellyBoy5384!",
-    accountNumber: "111",
+    accountHolderName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    accountNumber: "",
   });
 
   // Add Utility modal state
@@ -291,11 +291,11 @@ function UtilitiesContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          accountHolderName: "Alec Sanchez",
-          loginEmail: "alecsanchep@gmail.com",
-          password: "JellyBoy5384!",
-          confirmPassword: "JellyBoy5384!",
-          accountNumber: "111",
+          accountHolderName: formData.accountHolderName,
+          loginEmail: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          accountNumber: formData.accountNumber,
         }),
       });
 
