@@ -2,7 +2,7 @@
 import { PrismaClient } from "@prisma/client";
 import crypto from "node:crypto";
 import { chromium } from "playwright";
-import { decryptPassword } from "../utils/common/crypto.ts";
+import { decryptPassword } from "../utils/common/crypto";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ const POLL_MS = Number(process.env.UTILITY_WORKER_POLL_MS || 2000);
 const LOCK_STALE_SECONDS = Number(
   process.env.UTILITY_WORKER_LOCK_STALE_SECONDS || 10 * 60
 ); // 10 min
-const HEADLESS = false;
+const HEADLESS = true;
 const DEBUG = true;
 
 const PGE_LOGIN_URL = "https://www.pge.com/myaccount/";
