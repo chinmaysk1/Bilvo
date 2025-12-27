@@ -92,23 +92,25 @@ async function markJobFailed(job, errMsg) {
 
   const msg = errMsg?.slice(0, 2000) || "Unknown error";
 
-  // If max attempts reached -> FAILED, else back to PENDING (retry)
-  const latest = await prisma.utilityLinkJob.findUnique({
-    where: { id: job.id },
-    select: { attempts: true, maxAttempts: true },
-  });
+  // // If max attempts reached -> FAILED, else back to PENDING (retry)
+  // const latest = await prisma.utilityLinkJob.findUnique({
+  //   where: { id: job.id },
+  //   select: { attempts: true, maxAttempts: true },
+  // });
 
-  const reachedMax =
-    latest?.attempts != null &&
-    latest?.maxAttempts != null &&
-    latest.attempts >= latest.maxAttempts;
+  // const reachedMax =
+  //   latest?.attempts != null &&
+  //   latest?.maxAttempts != null &&
+  //   latest.attempts >= latest.maxAttempts;
 
   await prisma.utilityLinkJob.update({
     where: { id: job.id },
     data: {
-      status: reachedMax ? "FAILED" : "PENDING",
+      // status: reachedMax ? "FAILED" : "PENDING",
+      status: "FAILED",
       lastError: msg,
-      finishedAt: reachedMax ? new Date() : null,
+      // finishedAt: reachedMax ? new Date() : null,
+      finishedAt: new Date(),
       lockedAt: null,
       lockedBy: null,
     },
@@ -269,7 +271,6 @@ async function runPgeLink(job) {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   });
   const page = await context.newPage();
-  const currentUrl = page.url();
 
   try {
     page.setDefaultTimeout(45_000);
@@ -346,47 +347,41 @@ async function runPgeLink(job) {
         throw new Error("2FA entry was cancelled or timed out.");
 
       if (DEBUG) log("Code received. Filling input...");
-      await otpInput.fill(userProvidedCode);
 
-      if (DEBUG) log("Code received. Filling input...");
-      await otpInput.fill(userProvidedCode);
+      // 1. Ensure focus and type like a human
+      await otpInput.click();
+      await otpInput.focus();
+      await page.keyboard.type(userProvidedCode, { delay: 100 });
 
-      // PG&E often needs a delay or a specific event to enable the "Confirm" button
+      // 2. Force-trigger events so the "Confirm" button knows it's time to wake up
+      await otpInput.dispatchEvent("input");
       await otpInput.dispatchEvent("change");
-      await sleep(1000);
+      await otpInput.dispatchEvent("blur"); // Moving away from the field often triggers validation
 
+      if (DEBUG) log("Waiting for button to enable...");
+
+      // 3. Wait for the button to be clickable (the modern, more reliable way)
       const confirmButton = page.locator(
         '.mfaFieldset button.PrimaryButton:has-text("Confirm")'
       );
+      await confirmButton.waitFor({ state: "visible" });
+      // This ensures the button is not 'disabled' in the HTML
+      await page.waitForFunction(
+        (btn) => !btn.disabled,
+        await confirmButton.elementHandle()
+      );
 
-      // Click and wait for the page to actually do something
+      if (DEBUG) log("Confirming...");
+
+      // 4. Click and wait for the dashboard
       await Promise.all([
-        confirmButton.click(),
-        // Race between navigation or an error message appearing
-        Promise.race([
-          page
-            .waitForURL((url) => url.href.includes("dashboard"), {
-              timeout: 15000,
-            })
-            .then(() => "NAVIGATED"),
-          page
-            .waitForSelector(".error-message, .login-error", { timeout: 15000 })
-            .then(() => "ERROR_VISIBLE"),
-        ]).catch(() => "STILL_ON_PAGE"),
+        confirmButton.click({ force: true }), // Force handles cases where overlays block the click
+        page.waitForURL((url) => url.href.includes("dashboard"), {
+          timeout: 30000,
+        }),
       ]);
 
-      // Check if we are still on the MFA page
-      if (page.url().includes("mfa") || (await confirmButton.isVisible())) {
-        const errorText = await page
-          .locator(".mfaFieldset .error-text")
-          .textContent()
-          .catch(() => "Unknown MFA Error");
-        throw new Error(
-          `MFA failed or stayed on page. PG&E says: ${errorText}`
-        );
-      }
-
-      if (DEBUG) log("Dashboard reached, starting extraction...");
+      if (DEBUG) log("Landed on Dashboard!");
     } else if (detectionResult === "DASHBOARD") {
       if (DEBUG) log("Direct login success: Landed on Dashboard without 2FA.");
     }
@@ -483,6 +478,8 @@ async function runPgeLink(job) {
     if (errorMsg?.includes("Error:")) {
       throw new Error(`PG&E Login Error: ${errorMsg.trim()}`);
     }
+
+    const currentUrl = page.url();
 
     if (!currentUrl.includes("login")) {
       return { status: "SUCCESS" };
