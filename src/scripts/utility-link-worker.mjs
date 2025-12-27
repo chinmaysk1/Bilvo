@@ -2,7 +2,8 @@
 import { PrismaClient } from "@prisma/client";
 import crypto from "node:crypto";
 import { chromium } from "playwright";
-import { decryptPassword } from "../utils/common/crypto.ts";
+import * as CryptoUtils from "../utils/common/crypto.ts";
+const { decryptPassword } = CryptoUtils;
 
 const prisma = new PrismaClient();
 
