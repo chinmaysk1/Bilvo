@@ -348,21 +348,45 @@ async function runPgeLink(job) {
       if (DEBUG) log("Code received. Filling input...");
       await otpInput.fill(userProvidedCode);
 
-      // PG&E Confirm button is often disabled until the input event fires properly
+      if (DEBUG) log("Code received. Filling input...");
+      await otpInput.fill(userProvidedCode);
+
+      // PG&E often needs a delay or a specific event to enable the "Confirm" button
       await otpInput.dispatchEvent("change");
+      await sleep(1000);
 
       const confirmButton = page.locator(
         '.mfaFieldset button.PrimaryButton:has-text("Confirm")'
       );
-      await confirmButton.click();
 
-      if (DEBUG) log("Waiting for Dashboard components to render...");
-      await page.locator(".CurrBalance span").first().waitFor({
-        state: "visible",
-        timeout: 45000, // Dashboard can be slow
-      });
+      // Click and wait for the page to actually do something
+      await Promise.all([
+        confirmButton.click(),
+        // Race between navigation or an error message appearing
+        Promise.race([
+          page
+            .waitForURL((url) => url.href.includes("dashboard"), {
+              timeout: 15000,
+            })
+            .then(() => "NAVIGATED"),
+          page
+            .waitForSelector(".error-message, .login-error", { timeout: 15000 })
+            .then(() => "ERROR_VISIBLE"),
+        ]).catch(() => "STILL_ON_PAGE"),
+      ]);
 
-      if (DEBUG) log("Dashboard reached.");
+      // Check if we are still on the MFA page
+      if (page.url().includes("mfa") || (await confirmButton.isVisible())) {
+        const errorText = await page
+          .locator(".mfaFieldset .error-text")
+          .textContent()
+          .catch(() => "Unknown MFA Error");
+        throw new Error(
+          `MFA failed or stayed on page. PG&E says: ${errorText}`
+        );
+      }
+
+      if (DEBUG) log("Dashboard reached, starting extraction...");
     } else if (detectionResult === "DASHBOARD") {
       if (DEBUG) log("Direct login success: Landed on Dashboard without 2FA.");
     }
