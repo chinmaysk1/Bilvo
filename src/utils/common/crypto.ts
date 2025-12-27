@@ -35,3 +35,5 @@ export function decryptPassword(encrypted: string, ivHex: string) {
 
   return decrypted;
 }
+
+export default { encryptPassword, decryptPassword };

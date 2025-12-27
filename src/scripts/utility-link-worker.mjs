@@ -2,8 +2,15 @@
 import { PrismaClient } from "@prisma/client";
 import crypto from "node:crypto";
 import { chromium } from "playwright";
-import * as CryptoUtils from "../utils/common/crypto.ts";
+import CryptoUtils from "../utils/common/crypto.ts";
 const { decryptPassword } = CryptoUtils;
+
+// Immediate safety check
+if (typeof decryptPassword !== "function") {
+  throw new Error(
+    `decryptPassword is still not a function. Type is: ${typeof decryptPassword}`
+  );
+}
 
 const prisma = new PrismaClient();
 
