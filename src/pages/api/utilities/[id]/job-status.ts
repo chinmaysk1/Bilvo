@@ -28,8 +28,26 @@ export default async function handler(
     const job = await prisma.utilityLinkJob.findFirst({
       where: { utilityAccountId: id as string },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        status: true,
+        lastError: true,
+        startedAt: true,
+        finishedAt: true,
+        updatedAt: true,
+        lockedAt: true,
+        lockedBy: true,
+      },
     });
-    return res.status(200).json({ status: job?.status, jobId: job?.id });
+
+    return res.status(200).json({
+      status: job?.status ?? "IDLE",
+      jobId: job?.id ?? null,
+      lastError: job?.lastError ?? null,
+      startedAt: job?.startedAt ?? null,
+      finishedAt: job?.finishedAt ?? null,
+      updatedAt: job?.updatedAt ?? null,
+    });
   }
 
   if (req.method === "POST") {

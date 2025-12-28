@@ -20,7 +20,7 @@ const POLL_MS = Number(process.env.UTILITY_WORKER_POLL_MS || 2000);
 const LOCK_STALE_SECONDS = Number(
   process.env.UTILITY_WORKER_LOCK_STALE_SECONDS || 10 * 60
 ); // 10 min
-const HEADLESS = true;
+const HEADLESS = false;
 const DEBUG = true;
 
 const PGE_LOGIN_URL = "https://www.pge.com/myaccount/";
@@ -33,14 +33,38 @@ function log(...args) {
   console.log(`[utility-worker ${WORKER_ID}]`, ...args);
 }
 
+// =====================================================
+// ENHANCED STATUS TRACKING
+// =====================================================
+
+async function updateJobProgress(jobId, phase, message = null) {
+  const validPhases = ["PENDING", "RUNNING", "NEEDS_2FA", "SUCCESS", "FAILED"];
+
+  if (!validPhases.includes(phase)) {
+    log(`Warning: Invalid phase "${phase}". Using "RUNNING".`);
+    phase = "RUNNING";
+  }
+
+  try {
+    await prisma.utilityLinkJob.update({
+      where: { id: jobId },
+      data: {
+        status: phase,
+        lastError:
+          phase === "FAILED" ? message : `[PROGRESS] ${message || phase}`,
+        lockedAt: ["SUCCESS", "FAILED"].includes(phase) ? null : new Date(),
+        lockedBy: ["SUCCESS", "FAILED"].includes(phase) ? null : WORKER_ID,
+        finishedAt: ["SUCCESS", "FAILED"].includes(phase) ? new Date() : null,
+      },
+    });
+
+    if (DEBUG) log(`Job ${jobId} → ${phase}${message ? `: ${message}` : ""}`);
+  } catch (err) {
+    log(`Failed to update job progress:`, err.message);
+  }
+}
+
 async function claimOnePendingJob() {
-  // Atomically:
-  // - pick oldest PENDING job
-  // - ignore stale locks
-  // - lock row with SKIP LOCKED
-  // - set RUNNING + lock fields + attempts++
-  //
-  // IMPORTANT: Prisma doesn't expose SKIP LOCKED nicely, so we use raw SQL.
   const rows = await prisma.$queryRawUnsafe(
     `
     WITH cte AS (
@@ -92,24 +116,11 @@ async function markJobFailed(job, errMsg) {
 
   const msg = errMsg?.slice(0, 2000) || "Unknown error";
 
-  // // If max attempts reached -> FAILED, else back to PENDING (retry)
-  // const latest = await prisma.utilityLinkJob.findUnique({
-  //   where: { id: job.id },
-  //   select: { attempts: true, maxAttempts: true },
-  // });
-
-  // const reachedMax =
-  //   latest?.attempts != null &&
-  //   latest?.maxAttempts != null &&
-  //   latest.attempts >= latest.maxAttempts;
-
   await prisma.utilityLinkJob.update({
     where: { id: job.id },
     data: {
-      // status: reachedMax ? "FAILED" : "PENDING",
       status: "FAILED",
       lastError: msg,
-      // finishedAt: reachedMax ? new Date() : null,
       finishedAt: new Date(),
       lockedAt: null,
       lockedBy: null,
@@ -131,7 +142,6 @@ async function markJobNeeds2FA(job, note) {
 }
 
 async function waitForTwoFactorCode(jobId, timeoutMs = 180000) {
-  // 3 minute timeout
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     const job = await prisma.utilityLinkJob.findUnique({
@@ -139,13 +149,10 @@ async function waitForTwoFactorCode(jobId, timeoutMs = 180000) {
       select: { twoFactorCode: true, status: true },
     });
 
-    // If the user cancelled or the job was marked failed elsewhere
     if (job?.status === "FAILED") return null;
-
-    // If the code has arrived
     if (job?.twoFactorCode) return job.twoFactorCode;
 
-    await sleep(3000); // Poll DB every 3 seconds
+    await sleep(3000);
   }
   throw new Error("Timed out waiting for 2FA code from user.");
 }
@@ -156,7 +163,7 @@ async function markJobSuccess(job) {
       where: { id: job.id },
       data: {
         status: "SUCCESS",
-        lastError: null,
+        lastError: "[PROGRESS] Complete",
         finishedAt: new Date(),
         lockedAt: null,
         lockedBy: null,
@@ -172,17 +179,11 @@ async function markJobSuccess(job) {
   });
 }
 
-/**
- * Helper to clean and save the bill data to the database.
- * Mimics the logic in your /api/bills/index.ts
- */
 async function saveScrapedBill(
   prisma,
   { amount, dueDate, accountNumber, utilityAccountId, householdId, ownerUserId }
 ) {
   return await prisma.$transaction(async (tx) => {
-    // 1. Check if this specific bill already exists (idempotency)
-    // We use a combination of account number and due date as a pseudo-externalId
     const externalId = `pge-${accountNumber}-${dueDate.getTime()}`;
     const existing = await tx.bill.findFirst({
       where: { householdId, externalId },
@@ -190,7 +191,6 @@ async function saveScrapedBill(
 
     if (existing) return existing;
 
-    // 2. Create the Bill
     const scheduledChargeDate = new Date(dueDate);
     scheduledChargeDate.setDate(scheduledChargeDate.getDate() - 3);
 
@@ -198,7 +198,7 @@ async function saveScrapedBill(
       data: {
         householdId,
         ownerUserId,
-        createdByUserId: ownerUserId, // System/Worker acted as owner
+        createdByUserId: ownerUserId,
         source: "UTILITY",
         externalId,
         utilityAccountId,
@@ -211,7 +211,6 @@ async function saveScrapedBill(
       },
     });
 
-    // 3. Create Participants (Equal Split)
     const members = await tx.user.findMany({
       where: { householdId },
     });
@@ -228,7 +227,6 @@ async function saveScrapedBill(
       })),
     });
 
-    // 4. Activity Log
     await tx.activity.create({
       data: {
         householdId,
@@ -245,8 +243,14 @@ async function saveScrapedBill(
   });
 }
 
-// ---- Playwright PG&E runner ----
+// =====================================================
+// ENHANCED PG&E RUNNER WITH STATUS UPDATES
+// =====================================================
+
 async function runPgeLink(job) {
+  // Step 1: Fetch utility account
+  await updateJobProgress(job.id, "RUNNING", "Initializing secure session");
+
   const utility = await prisma.utilityAccount.findUnique({
     where: { id: job.utilityAccountId },
     select: {
@@ -264,6 +268,9 @@ async function runPgeLink(job) {
     utility.passwordIv
   );
 
+  // Step 2: Launch browser
+  await updateJobProgress(job.id, "RUNNING", "Starting secure browser");
+
   const browser = await chromium.launch({ headless: HEADLESS });
   const context = await browser.newContext({
     viewport: { width: 1280, height: 800 },
@@ -275,10 +282,19 @@ async function runPgeLink(job) {
   try {
     page.setDefaultTimeout(45_000);
 
+    // Step 3: Navigate to login
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Navigating to PG&E login portal"
+    );
+
     if (DEBUG) log("Navigating to", PGE_LOGIN_URL);
     await page.goto(PGE_LOGIN_URL, { waitUntil: "networkidle" });
 
-    // --- 1. LOGIN PHASE ---
+    // Step 4: Fill login form
+    await updateJobProgress(job.id, "RUNNING", "Submitting login credentials");
+
     const userSelector = 'input[name="username"]';
     const passSelector = 'input[name="password"]';
     const loginBtnSelector = "button.PrimarySignInButton";
@@ -290,19 +306,22 @@ async function runPgeLink(job) {
     if (DEBUG) log("Fields filled, clicking Sign In...");
 
     await Promise.all([
-      // We don't use waitForNavigation because PG&E might stay on the same URL for MFA
       page.click(loginBtnSelector),
       page.waitForLoadState("networkidle"),
     ]);
 
-    // --- 2. 2FA DETECTION & EXECUTION ---
+    // Step 5: Handle 2FA or proceed
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Checking authentication status"
+    );
+
     if (DEBUG) log("Waiting for transition (MFA or Dashboard)...");
 
-    // We "race" to see which one shows up first
     const mfaSelector = ".mfaFieldset";
     const dashboardUrlPart = "dashboard";
 
-    // This helper waits for either the MFA box to appear OR the URL to change to dashboard
     const detectionResult = await Promise.race([
       page
         .waitForSelector(mfaSelector, { state: "visible", timeout: 15000 })
@@ -324,18 +343,21 @@ async function runPgeLink(job) {
     });
 
     if (detectionResult === "MFA") {
+      // Step 6: Handle 2FA
+      await updateJobProgress(
+        job.id,
+        "RUNNING",
+        "Two-factor authentication required"
+      );
+
       if (DEBUG) log("2FA detected via selector. Selecting SMS Text option...");
 
-      // Ensure the button is actually clickable (sometimes obscured by a loading spinner)
       const smsButton = page.locator('button:has-text("SMS Text")');
       await smsButton.waitFor({ state: "visible" });
-
-      // Force click in case there's a transparent overlay
       await smsButton.click({ force: true });
 
       if (DEBUG) log("SMS Button clicked. Waiting for code input field...");
 
-      // Wait for the OTP field to appear before signaling the UI
       const otpInput = page.locator(".otpfield_input");
       await otpInput.waitFor({ state: "visible", timeout: 10000 });
 
@@ -346,26 +368,25 @@ async function runPgeLink(job) {
       if (!userProvidedCode)
         throw new Error("2FA entry was cancelled or timed out.");
 
+      // Step 7: Submit 2FA code
+      await updateJobProgress(job.id, "RUNNING", "Verifying security code");
+
       if (DEBUG) log("Code received. Filling input...");
 
-      // 1. Ensure focus and type like a human
       await otpInput.click();
       await otpInput.focus();
       await page.keyboard.type(userProvidedCode, { delay: 100 });
 
-      // 2. Force-trigger events so the "Confirm" button knows it's time to wake up
       await otpInput.dispatchEvent("input");
       await otpInput.dispatchEvent("change");
-      await otpInput.dispatchEvent("blur"); // Moving away from the field often triggers validation
+      await otpInput.dispatchEvent("blur");
 
       if (DEBUG) log("Waiting for button to enable...");
 
-      // 3. Wait for the button to be clickable (the modern, more reliable way)
       const confirmButton = page.locator(
         '.mfaFieldset button.PrimaryButton:has-text("Confirm")'
       );
       await confirmButton.waitFor({ state: "visible" });
-      // This ensures the button is not 'disabled' in the HTML
       await page.waitForFunction(
         (btn) => !btn.disabled,
         await confirmButton.elementHandle()
@@ -373,12 +394,15 @@ async function runPgeLink(job) {
 
       if (DEBUG) log("Confirming...");
 
-      // 4. Click and wait for the dashboard
       await Promise.all([
-        confirmButton.click({ force: true }), // Force handles cases where overlays block the click
-        page.waitForURL((url) => url.href.includes("dashboard"), {
-          timeout: 30000,
-        }),
+        confirmButton.click({ force: true }),
+        page.waitForURL(
+          (url) =>
+            url.href.includes("dashboard") ||
+            url.href.includes("/s/") ||
+            url.href.includes("myaccount"),
+          { timeout: 30000 }
+        ),
       ]);
 
       if (DEBUG) log("Landed on Dashboard!");
@@ -386,17 +410,26 @@ async function runPgeLink(job) {
       if (DEBUG) log("Direct login success: Landed on Dashboard without 2FA.");
     }
 
+    // Step 8: Access granted
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Successfully authenticated - accessing dashboard"
+    );
+
+    // Step 9: Extract bill data
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Extracting current bill information"
+    );
+
     try {
-      // 1. SELECTORS: Use the specific PG&E component tags
       const cardSelector = ".dashboardCurrentBalanceCardCache-component";
       const accountSelectorTag = "c-my-acct_-l-w-c_-account-selector";
-
-      // This targets the specific 'part' Salesforce uses to render the active selection text
       const accountValueSelector =
         'button[part="input-button"] [part="input-button-value"]';
 
-      // 2. WAIT for the components
-      // Wait for the main card and the account selector component to be in the DOM
       await Promise.all([
         page.waitForSelector(cardSelector, {
           state: "visible",
@@ -408,12 +441,9 @@ async function runPgeLink(job) {
         }),
       ]);
 
-      // 3. EXTRACT
       const balanceCard = page.locator(cardSelector);
       const accountComponent = page.locator(accountSelectorTag);
 
-      // Get raw values using narrowed locators
-      // We use .first() on the balance/date because the card might contain hidden mobile vs desktop views
       const rawAmount = await balanceCard
         .locator(".CurrBalance")
         .first()
@@ -422,18 +452,14 @@ async function runPgeLink(job) {
         .locator(".DueDateValue")
         .first()
         .textContent();
-
-      // Drill down specifically into the account component's active button value
       const rawAccount = await accountComponent
         .locator(accountValueSelector)
         .textContent();
 
-      // 4. CLEAN DATA
       const amountClean = parseFloat(rawAmount.replace(/[$,\s]/g, ""));
       const dateClean = new Date(rawDate.trim());
       const accountClean = rawAccount.trim();
 
-      // VALIDATION: Ensure we didn't get empty strings
       if (!accountClean || accountClean === "" || isNaN(amountClean)) {
         throw new Error(
           `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}"`
@@ -446,11 +472,23 @@ async function runPgeLink(job) {
         );
       }
 
-      if (amountClean <= 0)
+      if (amountClean <= 0) {
+        await updateJobProgress(
+          job.id,
+          "SUCCESS",
+          "No balance due - account linked successfully"
+        );
+        await markJobSuccess(job);
         return { status: "SUCCESS", note: "No balance due" };
+      }
 
-      // 5. SYNC TO DATABASE
-      // We need householdId and ownerUserId from the job/utility record
+      // Step 10: Save to database
+      await updateJobProgress(
+        job.id,
+        "RUNNING",
+        "Syncing bill to your account"
+      );
+
       const fullUtility = await prisma.utilityAccount.findUnique({
         where: { id: job.utilityAccountId },
       });
@@ -465,6 +503,9 @@ async function runPgeLink(job) {
       });
 
       if (DEBUG) log("Bill saved and participants created successfully.");
+
+      // Step 11: Complete
+      await updateJobProgress(job.id, "SUCCESS", "Bill synced successfully");
     } catch (scrapeError) {
       log("Scraping/Saving Error:", scrapeError.message);
       throw scrapeError;
@@ -501,6 +542,290 @@ async function runPgeLink(job) {
   }
 }
 
+// =====================================================
+// SLO WATER RUNNER
+// =====================================================
+
+async function runSloWaterLink(job) {
+  const SLO_LOGIN_URL = "https://slocity.merchanttransact.com/Login";
+
+  // Step 1: Fetch utility account
+  await updateJobProgress(job.id, "RUNNING", "Initializing secure session");
+
+  const utility = await prisma.utilityAccount.findUnique({
+    where: { id: job.utilityAccountId },
+    select: {
+      id: true,
+      loginEmail: true,
+      encryptedPassword: true,
+      passwordIv: true,
+    },
+  });
+
+  if (!utility) throw new Error("Utility account not found");
+
+  const password = decryptPassword(
+    utility.encryptedPassword,
+    utility.passwordIv
+  );
+
+  // Step 2: Launch browser
+  await updateJobProgress(job.id, "RUNNING", "Starting secure browser");
+
+  const browser = await chromium.launch({ headless: HEADLESS });
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  });
+  const page = await context.newPage();
+
+  try {
+    page.setDefaultTimeout(45_000);
+
+    // Step 3: Navigate to login
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Navigating to SLO Water login portal"
+    );
+
+    if (DEBUG) log("Navigating to", SLO_LOGIN_URL);
+    await page.goto(SLO_LOGIN_URL, { waitUntil: "networkidle" });
+
+    // Step 4: Fill login form
+    await updateJobProgress(job.id, "RUNNING", "Submitting login credentials");
+
+    const userSelector = 'input[name="Username"]';
+    const passSelector = 'input[name="Password"]';
+    const loginBtnSelector = 'button[type="submit"][data-cy="login"]';
+
+    await page.waitForSelector(userSelector, { state: "visible" });
+
+    if (DEBUG) log("Filling username field...");
+    await page.fill(userSelector, utility.loginEmail);
+
+    if (DEBUG) log("Filling password field...");
+    await page.fill(passSelector, password);
+
+    if (DEBUG) log("Fields filled, clicking Log In...");
+
+    await Promise.all([
+      page.click(loginBtnSelector),
+      page.waitForLoadState("networkidle"),
+    ]);
+
+    // Step 5: Check for login success or error
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Checking authentication status"
+    );
+
+    // Check for error message
+    const errorMessage = await page
+      .locator('.alert.alert-danger[data-cy="error-message"]')
+      .textContent()
+      .catch(() => null);
+
+    if (errorMessage) {
+      throw new Error("Login failed: Invalid email or password");
+    }
+
+    // Check if we landed on the home page
+    const currentUrl = page.url();
+    if (!currentUrl.includes("/secure/home")) {
+      throw new Error(
+        `Login failed. Expected to be on home page but got: ${currentUrl}`
+      );
+    }
+
+    if (DEBUG) log("Login successful - on home page");
+
+    // Step 6: Navigate to My Bill page
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Successfully authenticated - accessing bill details"
+    );
+
+    if (DEBUG) log("Clicking 'View My Bill' button...");
+
+    const viewBillButton = page.locator(
+      'a.cp-button.cp-button-raised.cp-button-outlined[href="/secure/MyBill"]'
+    );
+    await viewBillButton.waitFor({ state: "visible" });
+    await viewBillButton.click();
+
+    await page.waitForURL((url) => url.href.includes("/secure/MyBill"), {
+      timeout: 15000,
+    });
+
+    if (DEBUG) log("Landed on My Bill page");
+
+    // Step 7: Extract bill data
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Extracting current bill information"
+    );
+
+    try {
+      // Wait for the bill details to load
+      await page.waitForSelector("table#total", {
+        state: "visible",
+        timeout: 30000,
+      });
+
+      // Extract total amount due
+      const amountElement = page.locator("table#total strong.h3");
+      const rawAmount = await amountElement.textContent();
+
+      // Extract account number
+      const accountNumberElement = page.locator(
+        '#accountInfoCollapse .col-auto:has(.cp-text-caption:text("Account Number"))'
+      );
+      const accountText = await accountNumberElement.textContent();
+      const accountClean = accountText.replace(/Account Number/g, "").trim();
+
+      // Extract due date from bill summary table
+      const dueDateRow = page.locator(
+        'table#bill-summary-totals-table tbody tr:has-text("Current Charges Due By")'
+      );
+      const dueDateText = await dueDateRow.textContent();
+
+      // Parse "Current Charges Due By 1/15/2026" to get the date
+      const dueDateMatch = dueDateText.match(
+        /Due By\s+(\d{1,2}\/\d{1,2}\/\d{4})/
+      );
+      if (!dueDateMatch) {
+        throw new Error("Could not extract due date from bill");
+      }
+      const dueDateString = dueDateMatch[1];
+
+      // Clean and parse amount (strip $ and asterisk)
+      const amountClean = parseFloat(rawAmount.replace(/[$,\s*]/g, ""));
+
+      // Parse date (MM/DD/YYYY format)
+      const dateClean = new Date(dueDateString);
+
+      // Validation
+      if (!accountClean || accountClean === "" || isNaN(amountClean)) {
+        throw new Error(
+          `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}"`
+        );
+      }
+
+      if (DEBUG) {
+        log(
+          `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`
+        );
+      }
+
+      if (amountClean <= 0) {
+        await updateJobProgress(
+          job.id,
+          "SUCCESS",
+          "No balance due - account linked successfully"
+        );
+        await markJobSuccess(job);
+        return { status: "SUCCESS", note: "No balance due" };
+      }
+
+      // Step 8: Save to database
+      await updateJobProgress(
+        job.id,
+        "RUNNING",
+        "Syncing bill to your account"
+      );
+
+      const fullUtility = await prisma.utilityAccount.findUnique({
+        where: { id: job.utilityAccountId },
+      });
+
+      // Use SLO-specific external ID and biller
+      await prisma.$transaction(async (tx) => {
+        const externalId = `slo-${accountClean}-${dateClean.getTime()}`;
+        const existing = await tx.bill.findFirst({
+          where: { householdId: fullUtility.householdId, externalId },
+        });
+
+        if (existing) return existing;
+
+        const scheduledChargeDate = new Date(dateClean);
+        scheduledChargeDate.setDate(scheduledChargeDate.getDate() - 3);
+
+        const bill = await tx.bill.create({
+          data: {
+            householdId: fullUtility.householdId,
+            ownerUserId: fullUtility.ownerUserId || job.createdByUserId,
+            createdByUserId: fullUtility.ownerUserId || job.createdByUserId,
+            source: "UTILITY",
+            externalId,
+            utilityAccountId: fullUtility.id,
+            biller: "City of San Luis Obispo",
+            billerType: "Water/Sewer",
+            amount: amountClean,
+            dueDate: dateClean,
+            scheduledCharge: scheduledChargeDate,
+            status: "SCHEDULED",
+          },
+        });
+
+        const members = await tx.user.findMany({
+          where: { householdId: fullUtility.householdId },
+        });
+
+        const divisor = Math.max(members.length, 1);
+        const split = amountClean / divisor;
+
+        await tx.billParticipant.createMany({
+          data: members.map((m) => ({
+            billId: bill.id,
+            userId: m.id,
+            shareAmount: split,
+            autopayEnabled: false,
+          })),
+        });
+
+        await tx.activity.create({
+          data: {
+            householdId: fullUtility.householdId,
+            userId: fullUtility.ownerUserId || job.createdByUserId,
+            type: "bill_uploaded",
+            description: "Latest bill automatically synced from SLO Water",
+            detail: `SLO Water - $${amountClean.toFixed(2)}`,
+            amount: amountClean,
+            source: "UTILITY",
+          },
+        });
+
+        return bill;
+      });
+
+      if (DEBUG) log("Bill saved and participants created successfully.");
+
+      // Step 9: Complete
+      await updateJobProgress(job.id, "SUCCESS", "Bill synced successfully");
+    } catch (scrapeError) {
+      log("Scraping/Saving Error:", scrapeError.message);
+      throw scrapeError;
+    }
+
+    return { status: "SUCCESS" };
+  } catch (e) {
+    if (DEBUG) {
+      const path = `error-snapshot-${job.id}.png`;
+      await page.screenshot({ path });
+      log(`Saved error screenshot to ${path}`);
+    }
+    throw e;
+  } finally {
+    await context.close().catch(() => {});
+    await browser.close().catch(() => {});
+  }
+}
+
 async function processJob(job) {
   try {
     if (DEBUG) log("Processing job", job.id, "provider:", job.provider);
@@ -513,6 +838,17 @@ async function processJob(job) {
         log("Job NEEDS_2FA", job.id);
         return;
       }
+
+      await markJobSuccess(job);
+      log("Job SUCCESS", job.id);
+      return;
+    }
+
+    if (
+      job.provider?.toLowerCase().includes("san luis obispo") ||
+      job.provider?.toLowerCase().includes("slo")
+    ) {
+      const result = await runSloWaterLink(job);
 
       await markJobSuccess(job);
       log("Job SUCCESS", job.id);
@@ -550,19 +886,16 @@ async function main() {
       log("claim error:", e?.message || e);
     }
 
-    // If no job found, sleep and try again
     if (!job) {
       await sleep(POLL_MS);
       continue;
     }
 
-    // Double check job has an ID before processing
     if (job && job.id) {
       try {
         await processJob(job);
       } catch (e) {
         log(`Critical failure on job ${job.id}:`, e.message);
-        // Attempt one last update to the DB so the job isn't stuck 'RUNNING'
         await markJobFailed(
           job,
           `Worker caught unhandled exception: ${e.message}`

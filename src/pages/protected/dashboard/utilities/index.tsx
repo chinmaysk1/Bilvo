@@ -1,5 +1,5 @@
 // pages/protected/dashboard/utilities/index.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 
@@ -28,6 +28,13 @@ import {
   ChevronRight,
   Trash,
   ShieldCheck,
+  Loader2,
+  Lock,
+  FileText,
+  ArrowRight,
+  AlertCircle,
+  Globe,
+  Database,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -50,6 +57,391 @@ import { UtilityLink, UtilityAccountResponse } from "@/interfaces/utilities";
 import { getUtilityIconMeta, mapApiToUtilityLink } from "@/utils/utilities";
 
 // ------------------------------------------------------
+// Enhanced Status Types
+// ------------------------------------------------------
+
+type LinkingPhase =
+  | "IDLE"
+  | "PENDING"
+  | "INITIALIZING"
+  | "BROWSER_STARTING"
+  | "NAVIGATING"
+  | "AUTHENTICATING"
+  | "AUTH_CHECKING"
+  | "NEEDS_2FA"
+  | "VERIFYING_2FA"
+  | "AUTHENTICATED"
+  | "SCRAPING"
+  | "SYNCING"
+  | "SUCCESS"
+  | "FAILED";
+
+interface PhaseInfo {
+  label: string;
+  description: string;
+  icon: any;
+}
+
+const PHASE_INFO: Record<LinkingPhase, PhaseInfo> = {
+  IDLE: {
+    label: "Ready",
+    description: "Ready to begin linking",
+    icon: Link2,
+  },
+  PENDING: {
+    label: "Queued",
+    description: "Your request is queued and waiting for an available worker",
+    icon: Loader2,
+  },
+  INITIALIZING: {
+    label: "Initializing",
+    description: "Setting up secure session",
+    icon: ShieldCheck,
+  },
+  BROWSER_STARTING: {
+    label: "Starting Browser",
+    description: "Launching secure browser environment",
+    icon: Globe,
+  },
+  NAVIGATING: {
+    label: "Connecting",
+    description: "Navigating to PG&E login portal",
+    icon: ArrowRight,
+  },
+  AUTHENTICATING: {
+    label: "Logging In",
+    description: "Submitting your credentials securely",
+    icon: Lock,
+  },
+  AUTH_CHECKING: {
+    label: "Verifying",
+    description: "Checking authentication status",
+    icon: ShieldCheck,
+  },
+  NEEDS_2FA: {
+    label: "Verification Required",
+    description: "PG&E requires two-factor authentication",
+    icon: ShieldCheck,
+  },
+  VERIFYING_2FA: {
+    label: "Verifying Code",
+    description: "Confirming your security code with PG&E",
+    icon: ShieldCheck,
+  },
+  AUTHENTICATED: {
+    label: "Access Granted",
+    description: "Successfully authenticated - accessing dashboard",
+    icon: CheckCircle2,
+  },
+  SCRAPING: {
+    label: "Reading Bill Data",
+    description: "Extracting current balance and due date",
+    icon: FileText,
+  },
+  SYNCING: {
+    label: "Syncing",
+    description: "Saving bill details to your account",
+    icon: Database,
+  },
+  SUCCESS: {
+    label: "Complete",
+    description: "Your utility account is now linked",
+    icon: CheckCircle2,
+  },
+  FAILED: {
+    label: "Connection Failed",
+    description: "Unable to complete linking process",
+    icon: AlertCircle,
+  },
+};
+
+/**
+ * Parse backend status message to determine frontend phase
+ */
+function parseBackendStatus(
+  status: string,
+  lastError: string | null
+): LinkingPhase {
+  // Terminal states
+  if (status === "SUCCESS") return "SUCCESS";
+  if (status === "FAILED") return "FAILED";
+  if (status === "NEEDS_2FA") return "NEEDS_2FA";
+  if (status === "PENDING") return "PENDING";
+
+  console.log("parseBackendStatus: ", status, lastError);
+
+  // Parse progress messages from lastError field
+  if (status === "RUNNING" && lastError) {
+    const msg = lastError.toLowerCase();
+    console.log("lastError: ", msg);
+
+    // Check for progress indicators
+    if (msg.includes("[progress]")) {
+      if (msg.includes("initializing")) return "INITIALIZING";
+      if (msg.includes("starting secure browser")) return "BROWSER_STARTING";
+      if (msg.includes("navigating")) return "NAVIGATING";
+      if (
+        msg.includes("submitting login") ||
+        msg.includes("submitting credentials")
+      )
+        return "AUTHENTICATING";
+      if (msg.includes("checking authentication")) return "AUTH_CHECKING";
+      if (msg.includes("verifying security code")) return "VERIFYING_2FA";
+      if (msg.includes("authenticated") || msg.includes("accessing dashboard"))
+        return "AUTHENTICATED";
+      if (msg.includes("extracting") || msg.includes("reading bill"))
+        return "SCRAPING";
+      if (msg.includes("syncing") || msg.includes("saving")) return "SYNCING";
+      if (msg.includes("complete")) return "SUCCESS";
+    }
+  }
+
+  // Default RUNNING state
+  return "INITIALIZING";
+}
+
+/**
+ * Extract user-friendly message from backend
+ */
+function extractProgressMessage(lastError: string | null): string | null {
+  if (!lastError) return null;
+
+  // Remove [PROGRESS] prefix if present
+  const cleaned = lastError.replace(/^\[PROGRESS\]\s*/i, "");
+  return cleaned || null;
+}
+
+// ------------------------------------------------------
+// Enhanced Linking Session Component
+// ------------------------------------------------------
+
+interface LinkingSessionProps {
+  phase: LinkingPhase;
+  progressMessage: string | null;
+  twoFactorCode: string;
+  onTwoFactorChange: (code: string) => void;
+  onTwoFactorSubmit: () => void;
+  lastError?: string | null;
+  elapsedTime: number;
+}
+
+function LinkingSession({
+  phase,
+  progressMessage,
+  twoFactorCode,
+  onTwoFactorChange,
+  onTwoFactorSubmit,
+  lastError,
+  elapsedTime,
+}: LinkingSessionProps) {
+  const info = PHASE_INFO[phase];
+  const Icon = info.icon;
+
+  const getProgress = () => {
+    const progressMap: Record<LinkingPhase, number> = {
+      IDLE: 0,
+      PENDING: 5,
+      INITIALIZING: 10,
+      BROWSER_STARTING: 20,
+      NAVIGATING: 30,
+      AUTHENTICATING: 45,
+      AUTH_CHECKING: 55,
+      NEEDS_2FA: 60,
+      VERIFYING_2FA: 70,
+      AUTHENTICATED: 75,
+      SCRAPING: 85,
+      SYNCING: 95,
+      SUCCESS: 100,
+      FAILED: 0,
+    };
+    return progressMap[phase] || 0;
+  };
+
+  const isActive = !["IDLE", "SUCCESS", "FAILED"].includes(phase);
+  const isWaitingForUser = phase === "NEEDS_2FA";
+  const isTerminal = ["SUCCESS", "FAILED"].includes(phase);
+
+  return (
+    <div className="flex flex-col items-center justify-center py-8 px-6 border-2 border-dashed border-blue-100 rounded-2xl bg-gradient-to-b from-slate-50 to-white">
+      <div className="max-w-md w-full space-y-6">
+        {/* Progress Bar */}
+        {isActive && (
+          <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+            <div
+              className="bg-blue-600 h-full transition-all duration-700 ease-out rounded-full"
+              style={{ width: `${getProgress()}%` }}
+            />
+          </div>
+        )}
+
+        {/* Status Icon */}
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            {isActive && !isWaitingForUser && (
+              <>
+                <div className="absolute inset-0 rounded-full border-4 border-blue-50 w-20 h-20" />
+                <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin w-20 h-20" />
+              </>
+            )}
+
+            <div
+              className={`relative flex items-center justify-center w-20 h-20 rounded-full transition-colors ${
+                phase === "SUCCESS"
+                  ? "bg-green-100"
+                  : phase === "FAILED"
+                  ? "bg-red-100"
+                  : isWaitingForUser
+                  ? "bg-blue-100"
+                  : "bg-transparent"
+              }`}
+            >
+              <Icon
+                className={`w-10 h-10 ${
+                  phase === "SUCCESS"
+                    ? "text-green-600"
+                    : phase === "FAILED"
+                    ? "text-red-600"
+                    : "text-blue-600"
+                } ${isActive && !isWaitingForUser ? "animate-pulse" : ""}`}
+              />
+            </div>
+          </div>
+
+          {/* Phase Title */}
+          <div className="text-center space-y-2">
+            <h3 className="text-lg font-semibold text-slate-900">
+              {info.label}
+            </h3>
+            <p className="text-sm text-slate-600 max-w-xs">
+              {progressMessage || info.description}
+            </p>
+
+            {/* Elapsed Time */}
+            {isActive && !isTerminal && (
+              <p className="text-xs text-slate-400 font-mono">
+                Elapsed: {Math.floor(elapsedTime / 1000)}s
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* 2FA Input Section */}
+        {phase === "NEEDS_2FA" && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+              <div className="flex items-start gap-2">
+                <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-slate-700">
+                  <p className="font-medium">Check your phone</p>
+                  <p className="text-slate-600">
+                    {progressMessage ||
+                      "PG&E sent a 6-digit code to your registered phone number"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex gap-2 w-full">
+                <Input
+                  value={twoFactorCode}
+                  onChange={(e) => onTwoFactorChange(e.target.value)}
+                  placeholder="000000"
+                  className="h-12 text-center text-xl tracking-[0.5em] font-mono border-2 focus:border-blue-500"
+                  maxLength={6}
+                  autoFocus
+                />
+                <Button
+                  onClick={onTwoFactorSubmit}
+                  disabled={twoFactorCode.length < 6}
+                  className="h-12 px-6 bg-blue-600 hover:bg-blue-700 shadow-md transition-all active:scale-95 min-w-[100px]"
+                >
+                  Verify
+                </Button>
+              </div>
+              <p className="text-xs text-slate-400 text-center">
+                Enter the code to continue linking your account
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Processing 2FA Feedback */}
+        {phase === "VERIFYING_2FA" && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-slate-700">
+                {progressMessage || "Verifying your code with PG&E servers..."}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Active Progress Indicator */}
+        {isActive &&
+          !isWaitingForUser &&
+          !isTerminal &&
+          phase !== "VERIFYING_2FA" && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span>Active session in progress</span>
+              </div>
+
+              {/* Progress details */}
+              <div className="text-xs text-slate-400 bg-slate-50 rounded p-2 border border-slate-200">
+                {progressMessage || "Processing..."}
+              </div>
+            </div>
+          )}
+
+        {/* Error Message */}
+        {phase === "FAILED" && lastError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-red-900">
+                  Link attempt failed
+                </p>
+                <p className="text-xs text-red-700">
+                  {lastError.replace(/^\[PROGRESS\]\s*/i, "")}
+                </p>
+                <p className="text-xs text-red-600 mt-2">Common issues:</p>
+                <ul className="text-xs text-red-600 list-disc list-inside space-y-0.5">
+                  <li>Incorrect username or password</li>
+                  <li>Account locked due to too many attempts</li>
+                  <li>PG&E website maintenance</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Message */}
+        {phase === "SUCCESS" && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-green-900">
+                  Account successfully linked!
+                </p>
+                <p className="text-xs text-green-700">
+                  {progressMessage ||
+                    "Your latest bill has been synced and participants have been created."}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------
 // Page wrapper
 // ------------------------------------------------------
 
@@ -64,23 +456,27 @@ export default function UtilitiesPage() {
 }
 
 // ------------------------------------------------------
-// Main utilities content (UI only, no backend yet)
+// Main utilities content
 // ------------------------------------------------------
 
 function UtilitiesContent() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
   const [utilities, setUtilities] = useState<UtilityLink[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [expandedUtility, setExpandedUtility] = useState<string | null>(null);
   const [editingUtility, setEditingUtility] = useState<string | null>(null);
 
-  const [jobStatus, setJobStatus] = useState<string | null>(null);
+  // Enhanced state tracking
+  const [jobStatus, setJobStatus] = useState("IDLE");
+  const [linkingPhase, setLinkingPhase] = useState<LinkingPhase>("IDLE");
+  const [progressMessage, setProgressMessage] = useState<string | null>(null);
+  const [lastError, setLastError] = useState<string | null>(null);
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [isPolling, setIsPolling] = useState(false);
+  const [sessionStartTime, setSessionStartTime] = useState<number>(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
-  // Form state for expanded / editing utility
+  // Form state
   const [formData, setFormData] = useState({
     accountHolderName: "",
     email: "",
@@ -99,7 +495,6 @@ function UtilitiesContent() {
     iconBg: string;
   } | null>(null);
 
-  // Utility types
   const utilityTypes = [
     { name: "Electricity", icon: Zap, iconColor: "#F59E0B", iconBg: "#FEF3C7" },
     { name: "Water", icon: Droplets, iconColor: "#3B82F6", iconBg: "#DBEAFE" },
@@ -108,7 +503,6 @@ function UtilitiesContent() {
     { name: "Waste", icon: Trash, iconColor: "#10B981", iconBg: "#D1FAE5" },
   ];
 
-  // Companies per utility
   const companiesByUtility: Record<
     string,
     Array<{ name: string; website: string }>
@@ -147,10 +541,7 @@ function UtilitiesContent() {
       { name: "Southwest Gas", website: "https://www.swgas.com" },
     ],
     Internet: [
-      {
-        name: "Spectrum Internet",
-        website: "https://www.spectrum.com",
-      },
+      { name: "Spectrum Internet", website: "https://www.spectrum.com" },
       { name: "AT&T Internet", website: "https://www.att.com" },
       { name: "Xfinity", website: "https://www.xfinity.com" },
       { name: "Frontier", website: "https://www.frontier.com" },
@@ -162,65 +553,113 @@ function UtilitiesContent() {
         website: "https://www.republicservices.com",
       },
       { name: "Recology", website: "https://www.recology.com" },
-      {
-        name: "Athens Services",
-        website: "https://www.athensservices.com",
-      },
+      { name: "Athens Services", website: "https://www.athensservices.com" },
     ],
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 1) Fetch current user
-        const userRes = await fetch("/api/user/me");
-        if (userRes.ok) {
-          const user = await userRes.json();
-          setCurrentUserId(user.id);
-        } else {
-          console.error("Failed to fetch current user");
-        }
-
-        // 2) Fetch utility accounts
-        const res = await fetch("/api/utilities");
-        if (!res.ok) {
-          throw new Error("Failed to load utilities");
-        }
-        const data: { utilityAccounts: UtilityAccountResponse[] } =
-          await res.json();
-
-        setUtilities(data.utilityAccounts.map(mapApiToUtilityLink));
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load utility accounts");
-      } finally {
-        setLoading(false);
+  const fetchData = useCallback(async () => {
+    try {
+      const userRes = await fetch("/api/user/me");
+      if (userRes.ok) {
+        const user = await userRes.json();
+        setCurrentUserId(user.id);
       }
-    };
 
-    fetchData();
+      const res = await fetch("/api/utilities");
+      if (!res.ok) throw new Error("Failed to load utilities");
+
+      const data: { utilityAccounts: UtilityAccountResponse[] } =
+        await res.json();
+      setUtilities(data.utilityAccounts.map(mapApiToUtilityLink));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load utility accounts");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // Polling Logic
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // Elapsed time counter
+  useEffect(() => {
+    if (!isPolling || linkingPhase === "IDLE") return;
+
+    const interval = setInterval(() => {
+      setElapsedTime(Date.now() - sessionStartTime);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [isPolling, sessionStartTime, linkingPhase]);
+
+  // Enhanced polling with backend message parsing
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isPolling) {
-      interval = setInterval(async () => {
-        const res = await fetch(`/api/utilities/${expandedUtility}/job-status`);
-        const data = await res.json();
-        setJobStatus(data.status);
 
-        if (data.status === "SUCCESS" || data.status === "FAILED") {
-          setIsPolling(false);
-          if (data.status === "SUCCESS") toast.success("Account Linked!");
+    if (isPolling && expandedUtility) {
+      interval = setInterval(async () => {
+        try {
+          const res = await fetch(
+            `/api/utilities/${expandedUtility}/job-status`
+          );
+          if (!res.ok) return;
+
+          const data = await res.json();
+          const backendStatus = data.status;
+          const error = data.lastError;
+
+          // Parse phase from backend
+          const newPhase = parseBackendStatus(backendStatus, error);
+
+          // Extract progress message
+          const message = extractProgressMessage(error);
+          setProgressMessage(message);
+
+          // Only update actual errors (not progress messages)
+          if (backendStatus === "FAILED") {
+            setLastError(error);
+          }
+
+          // Terminal states
+          if (backendStatus === "SUCCESS") {
+            setLinkingPhase("SUCCESS");
+            setIsPolling(false);
+            toast.success("Account Linked!");
+            await fetchData();
+            return;
+          }
+
+          if (backendStatus === "FAILED") {
+            setLinkingPhase("FAILED");
+            setIsPolling(false);
+            toast.error("Linking failed. Please check your credentials.");
+            return;
+          }
+
+          // Prevent 2FA state from reverting after code submission
+          if (
+            linkingPhase === "VERIFYING_2FA" &&
+            backendStatus === "NEEDS_2FA"
+          ) {
+            return;
+          }
+
+          setLinkingPhase(newPhase);
+        } catch (error) {
+          console.error("Polling error:", error);
         }
-      }, 3000); // Poll every 3 seconds
+      }, 2000);
     }
-    return () => clearInterval(interval);
-  }, [isPolling, expandedUtility]);
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPolling, expandedUtility, fetchData, linkingPhase]);
 
   // ------------------------------------------------------
-  // Handlers (all local state for now)
+  // Handlers
   // ------------------------------------------------------
 
   const handleToggleExpand = (utilityId: string) => {
@@ -301,7 +740,10 @@ function UtilitiesContent() {
 
       if (res.ok) {
         setIsPolling(true); // Start watching the job status
-        setJobStatus("PENDING");
+        setSessionStartTime(Date.now());
+        setElapsedTime(0);
+        setLinkingPhase("PENDING");
+        setLastError(null);
       }
 
       const body = await res.json().catch(() => ({}));
@@ -328,7 +770,6 @@ function UtilitiesContent() {
       toast.success(
         body.message || "Credentials saved. Link attempt will proceed."
       );
-      setExpandedUtility(null);
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Failed to link utility");
@@ -684,72 +1125,15 @@ function UtilitiesContent() {
 
                       {/* 2. INTERACTIVE SESSION MODE (Shows when isPolling is true) */}
                       {isPolling ? (
-                        <div className="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-blue-100 rounded-2xl bg-gradient-to-b from-slate-50 to-white">
-                          <div className="max-w-md w-full space-y-6 text-center">
-                            {/* Status Icon/Animation */}
-                            <div className="relative mx-auto w-16 h-16">
-                              <div className="absolute inset-0 rounded-full border-4 border-blue-50"></div>
-                              <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
-                              <ShieldCheck className="absolute inset-0 m-auto h-8 w-8 text-blue-600" />
-                            </div>
-
-                            {jobStatus === "NEEDS_2FA" ? (
-                              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                <div>
-                                  <h3 className="text-lg font-semibold text-slate-900">
-                                    Verification Required
-                                  </h3>
-                                  <p className="text-sm text-slate-500 mt-1">
-                                    PG&E sent a 6-digit security code to your
-                                    registered phone number.
-                                  </p>
-                                </div>
-
-                                <div className="flex flex-col items-center gap-3">
-                                  <div className="flex gap-2">
-                                    <Input
-                                      value={twoFactorCode}
-                                      onChange={(e) =>
-                                        setTwoFactorCode(e.target.value)
-                                      }
-                                      placeholder="000000"
-                                      className="h-12 text-center text-xl tracking-[0.5em] font-mono max-w-[180px] border-2 focus:border-blue-500"
-                                      maxLength={6}
-                                    />
-                                    <Button
-                                      onClick={handleTwoFactorSubmit}
-                                      className="h-12 px-6 bg-blue-600 hover:bg-blue-700 shadow-md transition-all active:scale-95"
-                                    >
-                                      Verify
-                                    </Button>
-                                  </div>
-                                  <p className="text-xs text-slate-400">
-                                    Secure encrypted connection established...
-                                  </p>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="space-y-3">
-                                <h3 className="text-sm font-medium text-blue-800 uppercase tracking-wider">
-                                  Active Session
-                                </h3>
-                                <div className="space-y-1">
-                                  <p className="text-lg font-semibold text-slate-900">
-                                    {jobStatus === "PENDING"
-                                      ? "Establishing connection..."
-                                      : "Fetching latest bill data..."}
-                                  </p>
-                                  <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
-                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                                    {jobStatus === "PENDING"
-                                      ? "Authenticating with PG&E servers"
-                                      : "Bypassing portal redirects..."}
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                        <LinkingSession
+                          phase={linkingPhase}
+                          progressMessage={progressMessage}
+                          twoFactorCode={twoFactorCode}
+                          onTwoFactorChange={setTwoFactorCode}
+                          onTwoFactorSubmit={handleTwoFactorSubmit}
+                          lastError={lastError}
+                          elapsedTime={elapsedTime}
+                        />
                       ) : (
                         /* 3. STANDARD UI (Shows when NOT polling) */
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1160,7 +1544,6 @@ function UtilitiesContent() {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-
   if (!session?.user?.email) {
     return {
       redirect: {
@@ -1169,8 +1552,5 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-
-  return {
-    props: {},
-  };
+  return { props: {} };
 };

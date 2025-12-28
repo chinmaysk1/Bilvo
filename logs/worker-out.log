@@ -1,0 +1,178 @@
+[utility-worker 0e18e8f6-c26e-4b5f-ae0f-1c144a4f6384] Starting utility link worker
+[utility-worker 0e18e8f6-c26e-4b5f-ae0f-1c144a4f6384] poll 3000 ms | headless: true
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Starting utility link worker
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] poll 3000 ms | headless: true
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Processing job cmjntafad0001ky04t5kvn1xs provider: Pacific Gas & Electric
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Navigating to https://www.pge.com/myaccount/
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Fields filled, clicking Sign In...
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Waiting for transition (MFA or Dashboard)...
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] SMS Button clicked. Waiting for code input field...
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Code received. Filling input...
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Waiting for button to enable...
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Confirming...
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Saved error screenshot to error-snapshot-cmjntafad0001ky04t5kvn1xs.png
+[utility-worker 99d122f2-ad59-489c-8c67-a3e1bb6851c1] Job failed cmjntafad0001ky04t5kvn1xs page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+  navigated to "https://myaccount.pge.com/myaccount/secur/frontdoor.jsp?allp=1&apv=1&cshc=W000006MxNi1000000eSS3&refURL=https%3A%2F%2Fmyaccount.pge.com%2Fmyaccount%2Fsecur%2Ffrontdoor.jsp&retURL=%2Fmyaccount%2Fs%2F%3Fvnt%3Dmyaccount&sid=00D41000000eSS3%21AQYAQHge82MuzBTo5wRURRgX4mmURT_kQC8htXA695ln0wwJn1yYYXg8A.juza.FofsImWTEIJHH2RIdNHDb0mlcLF4NgeSA&untethered="
+  navigated to "https://myaccount.pge.com/myaccount/s/?vnt=myaccount"
+============================================================
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Starting utility link worker
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] poll 3000 ms | headless: true
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Processing job cmjntg59v0001js04stgieuby provider: Pacific Gas & Electric
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Navigating to https://www.pge.com/myaccount/
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Fields filled, clicking Sign In...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Waiting for transition (MFA or Dashboard)...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] SMS Button clicked. Waiting for code input field...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Code received. Filling input...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Waiting for button to enable...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Confirming...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Landed on Dashboard!
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Scraped: $181.91 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Bill saved and participants created successfully.
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Job SUCCESS cmjntg59v0001js04stgieuby
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Processing job cmjntp22e0001jm04kqpadcpv provider: Pacific Gas & Electric
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Navigating to https://www.pge.com/myaccount/
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Fields filled, clicking Sign In...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Waiting for transition (MFA or Dashboard)...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] SMS Button clicked. Waiting for code input field...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Code received. Filling input...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Waiting for button to enable...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Confirming...
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Landed on Dashboard!
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Scraped: $181.91 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Bill saved and participants created successfully.
+[utility-worker 5e63e8c0-d863-4f29-a87f-fbe4641f62ac] Job SUCCESS cmjntp22e0001jm04kqpadcpv
+[utility-worker 5d9b64b0-f5ef-4fde-a8f5-77fc8c24198a] Starting utility link worker
+[utility-worker 5d9b64b0-f5ef-4fde-a8f5-77fc8c24198a] poll 3000 ms | headless: true
+[utility-worker 2a6b985f-55e4-4d7a-8f35-aa6f5bbe2310] Starting utility link worker
+[utility-worker 2a6b985f-55e4-4d7a-8f35-aa6f5bbe2310] poll 3000 ms | headless: true
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Starting utility link worker
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] poll 3000 ms | headless: false
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Processing job cmjoxm3up0005h3ocr3oqii8r provider: City of San Luis Obispo, CA
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxm3up0005h3ocr3oqii8r → RUNNING: Initializing secure session
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxm3up0005h3ocr3oqii8r → RUNNING: Starting secure browser
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxm3up0005h3ocr3oqii8r → RUNNING: Navigating to SLO Water login portal
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxm3up0005h3ocr3oqii8r → RUNNING: Submitting login credentials
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Filling username field...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Filling password field...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Fields filled, clicking Log In...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxm3up0005h3ocr3oqii8r → RUNNING: Checking authentication status
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Login successful - on home page
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxm3up0005h3ocr3oqii8r → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Clicking 'View My Bill' button...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Saved error screenshot to error-snapshot-cmjoxm3up0005h3ocr3oqii8r.png
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job failed cmjoxm3up0005h3ocr3oqii8r locator.waitFor: Error: strict mode violation: locator('a[href="/secure/MyBill"]') resolved to 3 elements:
+    1) <a href="/secure/MyBill" class="nav-group-header nav-link d-flex px-2 ↵           ">…</a> aka locator('#header-nav-bar a').filter({ hasText: 'My Bill' })
+    2) <a class="nav-link px-0" href="/secure/MyBill">…</a> aka getByRole('link', { name: ' My Bill' })
+    3) <a href="/secure/MyBill" class="cp-button cp-button-raised cp-button-outlined w-100">↵                        View My Bill↵           …</a> aka getByRole('link', { name: 'View My Bill' })
+
+Call log:
+[2m  - waiting for locator('a[href="/secure/MyBill"]') to be visible[22m
+
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Processing job cmjoxteyl0007h3ocz8whzamw provider: City of San Luis Obispo, CA
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxteyl0007h3ocz8whzamw → RUNNING: Initializing secure session
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxteyl0007h3ocz8whzamw → RUNNING: Starting secure browser
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxteyl0007h3ocz8whzamw → RUNNING: Navigating to SLO Water login portal
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxteyl0007h3ocz8whzamw → RUNNING: Submitting login credentials
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Filling username field...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Filling password field...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Fields filled, clicking Log In...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxteyl0007h3ocz8whzamw → RUNNING: Checking authentication status
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Login successful - on home page
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job cmjoxteyl0007h3ocz8whzamw → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Clicking 'View My Bill' button...
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Saved error screenshot to error-snapshot-cmjoxteyl0007h3ocz8whzamw.png
+[utility-worker 527b22a3-b82c-413e-b75c-420e03de9c40] Job failed cmjoxteyl0007h3ocz8whzamw locator.waitFor: Error: strict mode violation: locator('a[href="/secure/MyBill"]') resolved to 3 elements:
+    1) <a href="/secure/MyBill" class="nav-group-header nav-link d-flex px-2 ↵           ">…</a> aka locator('#header-nav-bar a').filter({ hasText: 'My Bill' })
+    2) <a class="nav-link px-0" href="/secure/MyBill">…</a> aka getByRole('link', { name: ' My Bill' })
+    3) <a href="/secure/MyBill" class="cp-button cp-button-raised cp-button-outlined w-100">↵                        View My Bill↵           …</a> aka getByRole('link', { name: 'View My Bill' })
+
+Call log:
+[2m  - waiting for locator('a[href="/secure/MyBill"]') to be visible[22m
+
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Starting utility link worker
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] poll 3000 ms | headless: false
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Processing job cmjoxuv920009h3ocl6pd8eou provider: City of San Luis Obispo, CA
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Initializing secure session
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Starting secure browser
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Navigating to SLO Water login portal
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Submitting login credentials
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Filling username field...
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Filling password field...
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Fields filled, clicking Log In...
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Checking authentication status
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Login successful - on home page
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Clicking 'View My Bill' button...
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Landed on My Bill page
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Extracting current bill information
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → RUNNING: Syncing bill to your account
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Bill saved and participants created successfully.
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job cmjoxuv920009h3ocl6pd8eou → SUCCESS: Bill synced successfully
+[utility-worker 982e261e-ac68-44a6-a876-431316643efa] Job SUCCESS cmjoxuv920009h3ocl6pd8eou
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Starting utility link worker
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] poll 3000 ms | headless: false
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Processing job cmjoy9w8f000dh3ocx3f3miuq provider: City of San Luis Obispo, CA
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Initializing secure session
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Starting secure browser
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Navigating to SLO Water login portal
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Submitting login credentials
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Filling username field...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Filling password field...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Fields filled, clicking Log In...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Checking authentication status
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Login successful - on home page
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Clicking 'View My Bill' button...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Landed on My Bill page
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Extracting current bill information
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → RUNNING: Syncing bill to your account
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Bill saved and participants created successfully.
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoy9w8f000dh3ocx3f3miuq → SUCCESS: Bill synced successfully
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job SUCCESS cmjoy9w8f000dh3ocx3f3miuq
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Processing job cmjoyq087000fh3octj8xg13i provider: City of San Luis Obispo, CA
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Initializing secure session
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Starting secure browser
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Navigating to SLO Water login portal
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Submitting login credentials
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Filling username field...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Filling password field...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Fields filled, clicking Log In...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Checking authentication status
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Login successful - on home page
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Clicking 'View My Bill' button...
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Landed on My Bill page
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Extracting current bill information
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → RUNNING: Syncing bill to your account
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Bill saved and participants created successfully.
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job cmjoyq087000fh3octj8xg13i → SUCCESS: Bill synced successfully
+[utility-worker eaee1f7e-46b0-425c-bf27-a3d75b645d91] Job SUCCESS cmjoyq087000fh3octj8xg13i
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Starting utility link worker
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] poll 3000 ms | headless: false
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Processing job cmjozfxyv0005h3ao2rkfwhr3 provider: Pacific Gas & Electric
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job cmjozfxyv0005h3ao2rkfwhr3 → RUNNING: Initializing secure session
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job cmjozfxyv0005h3ao2rkfwhr3 → RUNNING: Starting secure browser
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job cmjozfxyv0005h3ao2rkfwhr3 → RUNNING: Navigating to PG&E login portal
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Navigating to https://www.pge.com/myaccount/
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job cmjozfxyv0005h3ao2rkfwhr3 → RUNNING: Submitting login credentials
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Fields filled, clicking Sign In...
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job cmjozfxyv0005h3ao2rkfwhr3 → RUNNING: Checking authentication status
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Waiting for transition (MFA or Dashboard)...
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job cmjozfxyv0005h3ao2rkfwhr3 → RUNNING: Two-factor authentication required
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] SMS Button clicked. Waiting for code input field...
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Saved error screenshot to error-snapshot-cmjozfxyv0005h3ao2rkfwhr3.png
+[utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job failed cmjozfxyv0005h3ao2rkfwhr3 Timed out waiting for 2FA code from user.
