@@ -16,7 +16,7 @@ interface ScanGmailUploadButtonProps {
 export default function ScanGmailUploadButton({
   householdMemberCount,
   onBillsImported,
-  label = "Upload Bill",
+  label = "Scan Gmail",
   className,
   style,
 }: ScanGmailUploadButtonProps) {

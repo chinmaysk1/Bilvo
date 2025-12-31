@@ -29,8 +29,24 @@ enum UtilityLinkJobStatus {
   NEEDS_2FA
 }
 
+enum PaymentMethodStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+  VERIFICATION_REQUIRED
+}
+
+enum PaymentAttemptStatus {
+  SCHEDULED
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
 model User {
   id                     String            @id @default(cuid())
+  stripeCustomerId       String?           @unique
   name                   String?
   email                  String?           @unique
   emailVerified          DateTime?
@@ -51,6 +67,7 @@ model User {
   sessions               Session[]
   household              Household?        @relation(fields: [householdId], references: [id])
   utilityAccounts        UtilityAccount[]
+  paymentAttempts        PaymentAttempt[]
 }
 
 model Household {
@@ -112,8 +129,8 @@ model UtilityLinkJob {
   householdId      String
   createdByUserId  String
 
-  provider String // e.g. "Pacific Gas & Electric"
-  status   UtilityLinkJobStatus @default(PENDING)
+  provider      String // e.g. "Pacific Gas & Electric"
+  status        UtilityLinkJobStatus @default(PENDING)
   twoFactorCode String?
 
   attempts    Int @default(0)
@@ -186,6 +203,7 @@ model Bill {
   household       Household         @relation(fields: [householdId], references: [id])
   owner           User              @relation("BillOwner", fields: [ownerUserId], references: [id])
   participants    BillParticipant[]
+  paymentAttempts PaymentAttempt[]
 
   @@index([householdId, source, externalId])
   @@index([ownerUserId])
@@ -195,20 +213,21 @@ model Bill {
 }
 
 model BillParticipant {
-  id               String         @id @default(cuid())
+  id               String           @id @default(cuid())
   billId           String
   userId           String
-  shareAmount      Float          @default(0)
-  autopayEnabled   Boolean        @default(false)
+  shareAmount      Float            @default(0)
+  autopayEnabled   Boolean          @default(false)
   paymentMethodId  String?
   capAmount        Float?
   nextChargeAt     DateTime?
-  notifyBeforeDays Int?           @default(2)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  bill             Bill           @relation(fields: [billId], references: [id], onDelete: Cascade)
-  paymentMethod    PaymentMethod? @relation("ParticipantPaymentMethod", fields: [paymentMethodId], references: [id])
-  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifyBeforeDays Int?             @default(2)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  bill             Bill             @relation(fields: [billId], references: [id], onDelete: Cascade)
+  paymentMethod    PaymentMethod?   @relation("ParticipantPaymentMethod", fields: [paymentMethodId], references: [id])
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentAttempts  PaymentAttempt[]
 
   @@unique([billId, userId])
   @@index([userId])
@@ -232,16 +251,68 @@ model Activity {
 }
 
 model PaymentMethod {
-  id               String            @id @default(cuid())
-  userId           String
-  type             String
-  last4            String
-  brand            String?
-  isDefault        Boolean           @default(false)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id     String @id @default(cuid())
+  userId String
+
+  // provider mapping
+  provider                String  @default("stripe") // stripe, venmo
+  providerPaymentMethodId String @unique // pm_...
+
+  // type + display
+  type     String // "bank" | "card"
+  last4    String
+  brand    String?
+  expMonth Int?
+  expYear  Int?
+
+  // lifecycle
+  status    PaymentMethodStatus @default(ACTIVE)
+  isDefault Boolean             @default(false)
+
+  // Priority order for payment attempts (lower number = higher priority)
+  priorityOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   billParticipants BillParticipant[] @relation("ParticipantPaymentMethod")
   user             User              @relation(fields: [userId], references: [id])
 
+  @@index([userId])
+  @@index([provider, providerPaymentMethodId])
+  @@index([userId, priorityOrder])
+}
+
+model PaymentAttempt {
+  id String @id @default(cuid())
+
+  billId            String
+  billParticipantId String
+  userId            String
+
+  amountCents Int
+  currency    String @default("usd")
+
+  provider         String // "stripe" | "venmo"
+  providerIntentId String? @unique // pi_... (Stripe PaymentIntent id)
+
+  status PaymentAttemptStatus
+
+  failureCode    String?
+  failureMessage String?
+
+  scheduledFor DateTime
+  processedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bill        Bill            @relation(fields: [billId], references: [id], onDelete: Cascade)
+  participant BillParticipant @relation(fields: [billParticipantId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, scheduledFor])
+  @@index([billParticipantId, scheduledFor])
+  @@index([billId])
   @@index([userId])
 }

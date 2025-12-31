@@ -13,8 +13,9 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const { id } = req.query;
-  if (typeof id !== "string") {
+  const id = req.query.billId;
+
+  if (!id || typeof id !== "string") {
     return res.status(400).json({ error: "Invalid bill ID" });
   }
 

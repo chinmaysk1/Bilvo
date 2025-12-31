@@ -547,6 +547,7 @@ function UtilitiesContent() {
       { name: "Frontier", website: "https://www.frontier.com" },
     ],
     Waste: [
+      { name: "San Luis Garbage", website: "https://www.sanluisgarbage.com" },
       { name: "Waste Management", website: "https://www.wm.com" },
       {
         name: "Republic Services",

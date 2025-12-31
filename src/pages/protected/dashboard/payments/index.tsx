@@ -1,43 +1,63 @@
 // pages/protected/dashboard/payments/index.tsx
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import { useAutopay } from "@/hooks/useAutopay";
-import { CreditCard, Building2, Users, Plus, ChevronRight } from "lucide-react";
-import { PaymentMethod } from "@/interfaces/payments";
+import {
+  AlertCircle,
+  ArrowRight,
+  Building2,
+  Check,
+  CreditCard,
+  GripVertical,
+  Lock,
+  Plus,
+  Send,
+  UserPlus,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import AddCardStripeForm from "@/components/payments/AddCardStripeForm";
+import { PaymentMethod, PriorityItem } from "@/interfaces/payments";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface PaymentsPageProps {
   paymentMethods: PaymentMethod[];
-  autopayEnabled: boolean;
 }
 
 export default function PaymentsPage({
   paymentMethods: initialMethods,
-  autopayEnabled: initialAutopay,
 }: PaymentsPageProps) {
-  const [paymentMethods, setPaymentMethods] = useState(initialMethods);
+  const [paymentMethods, setPaymentMethods] =
+    useState<PaymentMethod[]>(initialMethods);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
 
-  const handleSetPrimary = async (id: string) => {
-    try {
-      const res = await fetch(`/api/payment-methods/${id}/set-default`, {
-        method: "POST",
-      });
-
-      if (!res.ok) throw new Error("Failed to set primary");
-
-      setPaymentMethods(
-        paymentMethods.map((pm) => ({
-          ...pm,
-          isDefault: pm.id === id,
-        }))
-      );
-    } catch (error) {
-      console.error("Error setting primary:", error);
-      alert("Failed to set primary payment method");
-    }
-  };
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleRemove = async (id: string) => {
     if (
@@ -49,268 +69,663 @@ export default function PaymentsPage({
     }
 
     try {
-      const res = await fetch(`/api/payment-methods/${id}`, {
+      const res = await fetch(`/api/payments/payment-methods/${id}`, {
         method: "DELETE",
       });
-
       if (!res.ok) throw new Error("Failed to remove");
 
-      setPaymentMethods(paymentMethods.filter((pm) => pm.id !== id));
-    } catch (error) {
-      console.error("Error removing payment method:", error);
+      setPaymentMethods((prev) => prev.filter((pm) => pm.id !== id));
+    } catch (e) {
+      console.error(e);
       alert("Failed to remove payment method");
     }
   };
 
-  const getPaymentIcon = (type: string, brand?: string) => {
-    if (type === "bank") {
-      return (
-        <div className="bg-green-100 p-3 rounded-lg">
-          <Building2 className="w-6 h-6 text-green-600" />
-        </div>
-      );
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
     }
-    return (
-      <div className="bg-gray-100 p-3 rounded-lg">
-        <CreditCard className="w-6 h-6 text-gray-600" />
-      </div>
-    );
+
+    const oldIndex = paymentMethods.findIndex((pm) => pm.id === active.id);
+    const newIndex = paymentMethods.findIndex((pm) => pm.id === over.id);
+
+    const newOrder = arrayMove(paymentMethods, oldIndex, newIndex);
+    setPaymentMethods(newOrder);
+
+    // Save order to backend
+    setIsSavingOrder(true);
+    try {
+      const res = await fetch("/api/payments/payment-methods/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderedIds: newOrder.map((pm) => pm.id),
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to save order");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to save payment method order");
+      // Revert to original order on error
+      setPaymentMethods(paymentMethods);
+    } finally {
+      setIsSavingOrder(false);
+    }
   };
 
-  // Mock data for primary payment method (in real app, get from user)
-  const primaryPaymentMethod = paymentMethods.find((pm) => pm.isDefault);
-  const backupMethods = paymentMethods.filter((pm) => !pm.isDefault);
+  // Figma banner wants "priority order" pills.
+  const priorityItems: PriorityItem[] = useMemo(() => {
+    const items = paymentMethods.map((m): PriorityItem => {
+      const isBank = m.type === "bank";
+      return {
+        id: m.id,
+        type: isBank ? "bank" : "card",
+        name: isBank
+          ? `${m.brand || "Bank"} •••• ${m.last4}`
+          : `${(m.brand || "Card").toUpperCase()} •••• ${m.last4}`,
+        icon: isBank ? Building2 : CreditCard,
+        iconBg: isBank ? "#ECFDF5" : "#F3F4F6",
+        iconColor: isBank ? "#16A34A" : "#6B7280",
+      };
+    });
+
+    if (items.length === 0) {
+      items.push({
+        id: "no-method",
+        type: "card",
+        name: "Add a payment method",
+        icon: CreditCard,
+        iconBg: "#F3F4F6",
+        iconColor: "#6B7280",
+      });
+    }
+
+    return items;
+  }, [paymentMethods]);
+
+  // Figma "Pay With" list rows
+  const payWithRows = useMemo(() => {
+    return paymentMethods.map((m) => {
+      const isBank = m.type === "bank";
+      const title = isBank
+        ? `${m.brand || "Bank"} Checking`
+        : `${(m.brand || "Card").toUpperCase()} Card`;
+      const details = isBank
+        ? `•••• ${m.last4} · Free transfers · Added ${new Date(
+            m.createdAt
+          ).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}`
+        : `•••• ${m.last4} · 2.9% + $0.30 fee per transaction`;
+
+      return {
+        id: m.id,
+        isDefault: m.isDefault,
+        type: isBank ? "bank" : "card",
+        title,
+        details,
+        icon: isBank ? Building2 : CreditCard,
+        iconBg: isBank ? "#ECFDF5" : "#F3F4F6",
+        iconColor: isBank ? "#16A34A" : "#6B7280",
+      };
+    });
+  }, [paymentMethods]);
 
   return (
     <DashboardLayout>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Payment Settings
-        </h1>
-      </div>
-
-      {/* Payment Priority Order */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-2 mb-2">
-            <svg
-              className="w-5 h-5 text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Payment Priority Order
-            </h2>
-          </div>
-          <p className="text-sm text-gray-600">
-            Bills are paid using the following fallback sequence:
-          </p>
+      <main className="mx-auto px-8 py-3 space-y-3">
+        {/* Header */}
+        <div className="pb-1 flex items-center justify-between">
+          <h1
+            className="text-[18px] text-[#111827]"
+            style={{ fontWeight: 600, lineHeight: 1.2 }}
+          >
+            Payment Settings
+          </h1>
         </div>
 
-        <div className="p-6">
-          <div className="flex items-center gap-4">
-            {/* Primary Payer */}
-            <div className="flex items-center gap-3 bg-purple-50 border border-purple-200 rounded-lg px-4 py-3">
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <Users className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">Mary Sanchez</p>
-                <span className="inline-block bg-green-500 text-white text-xs font-medium px-2 py-0.5 rounded mt-1">
-                  PRIMARY
+        {/* Payment Priority Info Banner (Figma) */}
+        <section
+          className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
+          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
+        >
+          <div className="px-6 py-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="h-4 w-4 text-[#6B7280]" />
+              <h3
+                className="text-[16px] text-[#111827]"
+                style={{ fontWeight: 600, lineHeight: 1.3 }}
+              >
+                Payment Priority Order
+              </h3>
+              {isSavingOrder && (
+                <span className="text-[12px] text-[#6B7280] ml-2">
+                  Saving...
                 </span>
-              </div>
+              )}
             </div>
 
-            <ChevronRight className="w-5 h-5 text-gray-400" />
+            <p className="text-[14px] text-[#6B7280] mb-3">
+              Drag to reorder your payment methods. Bills will be charged in the
+              following order:
+            </p>
 
-            {/* Bank Account */}
-            {primaryPaymentMethod && (
-              <>
-                <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <Building2 className="w-5 h-5 text-green-600" />
+            {/* Priority Flow */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {priorityItems.map((method, index) => (
+                <div
+                  key={method.id}
+                  className="flex items-center gap-2 flex-shrink-0"
+                >
+                  <div
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${
+                      index === 0
+                        ? "bg-[#ECFDF5] border-[#BBF7D0]"
+                        : "bg-[#F9FAFB] border-[#E5E7EB]"
+                    }`}
+                  >
+                    <div
+                      className="flex items-center justify-center h-5 w-5 rounded-full flex-shrink-0"
+                      style={{
+                        backgroundColor: index === 0 ? "#00B948" : "#E5E7EB",
+                        color: index === 0 ? "#FFFFFF" : "#6B7280",
+                        fontWeight: 600,
+                        fontSize: "11px",
+                      }}
+                    >
+                      {index + 1}
+                    </div>
+
+                    <div
+                      className="flex h-5 w-5 items-center justify-center rounded"
+                      style={{ backgroundColor: method.iconBg }}
+                    >
+                      <method.icon
+                        className="h-3 w-3"
+                        style={{ color: method.iconColor }}
+                      />
+                    </div>
+
+                    <span
+                      className={`text-[13px] ${
+                        index === 0 ? "text-[#111827]" : "text-[#6B7280]"
+                      }`}
+                      style={{ fontWeight: index === 0 ? 600 : 500 }}
+                    >
+                      {method.name}
+                    </span>
                   </div>
-                  <p className="font-medium text-gray-700">
-                    {primaryPaymentMethod.brand || "Bank"} ••••{" "}
-                    {primaryPaymentMethod.last4}
+
+                  {index < priorityItems.length - 1 && (
+                    <ArrowRight className="h-4 w-4 text-[#9CA3AF] flex-shrink-0" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pay With (Figma list with drag-and-drop) */}
+        <section
+          className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
+          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
+        >
+          <div className="px-6 py-4">
+            <h2
+              className="text-[16px] text-[#111827] mb-4"
+              style={{ fontWeight: 600, lineHeight: 1.3 }}
+            >
+              Pay With
+            </h2>
+
+            <div className="space-y-3">
+              {payWithRows.length === 0 ? (
+                <div className="py-8 text-center">
+                  <p className="text-[13px] text-[#6B7280]">
+                    Add a payment method to enable payments.
                   </p>
                 </div>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={paymentMethods.map((pm) => pm.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {payWithRows.map((row, index) => (
+                      <SortablePaymentMethodRow
+                        key={row.id}
+                        row={row}
+                        index={index}
+                        onRemove={handleRemove}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              )}
 
-                <ChevronRight className="w-5 h-5 text-gray-400" />
-              </>
-            )}
-
-            {/* Backup Card */}
-            {backupMethods.length > 0 && (
-              <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-                <div className="bg-gray-100 p-2 rounded-lg">
-                  <CreditCard className="w-5 h-5 text-gray-600" />
-                </div>
-                <p className="font-medium text-gray-700">
-                  {backupMethods[0].brand} Card
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Your Payment Methods */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Your Payment Methods
-          </h2>
-        </div>
-
-        <div className="divide-y divide-gray-200">
-          {paymentMethods.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
-              <CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <p className="font-medium">No payment methods added yet</p>
-              <p className="text-sm mt-1">
-                Add a payment method to enable autopay
-              </p>
-            </div>
-          ) : (
-            paymentMethods.map((method) => (
-              <div
-                key={method.id}
-                className="p-6 flex items-center justify-between hover:bg-gray-50"
+              {/* Add Payment Method (Figma style) */}
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="w-full flex items-center justify-between p-4 rounded-lg border-2 border-dashed border-[#E5E7EB] bg-white hover:border-[#16A34A] hover:bg-[#ECFDF5]/30 transition-all group"
               >
-                <div className="flex items-center gap-4">
-                  {getPaymentIcon(method.type, method.brand)}
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold text-gray-900">
-                        {method.type === "bank"
-                          ? `${method.brand || "Bank"} Checking`
-                          : `${method.brand || "Visa"} Card`}
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F9FAFB] group-hover:bg-[#ECFDF5] transition-colors">
+                    <Plus className="h-4 w-4 text-[#9CA3AF] group-hover:text-[#16A34A] transition-colors" />
+                  </div>
+                  <div className="text-left">
+                    <h3
+                      className="text-[14px] text-[#111827] group-hover:text-[#16A34A] transition-colors mb-0.5"
+                      style={{ fontWeight: 600 }}
+                    >
+                      Add Payment Method
+                    </h3>
+                    <p className="text-[12px] text-[#6B7280]">
+                      Link bank account or credit card
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Receiving Money (My Wallet) — Figma section (UI only for now) */}
+        <section
+          className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
+          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
+        >
+          <div className="px-6 py-4">
+            <h2
+              className="text-[16px] text-[#111827] mb-2"
+              style={{ fontWeight: 600, lineHeight: 1.3 }}
+            >
+              Receiving Money (My Wallet)
+            </h2>
+            <p className="text-[13px] text-[#6B7280] mb-4">
+              Set up how you want to receive payments from roommates
+            </p>
+
+            <div className="space-y-3">
+              {/* Venmo Row (UI only) */}
+              <div
+                className="flex items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white"
+                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
+              >
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+                  style={{ backgroundColor: "#E5F3FF" }}
+                >
+                  {/* simple venmo mark */}
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-4 w-4"
+                    style={{ color: "#008CFF" }}
+                  >
+                    <path d="M20.48 2.73c.72 1.24 1.04 2.42 1.04 4.02 0 4.95-4.2 11.36-7.62 16.25H8.35L5.25 4.21l5.56-.51L12.42 16c1.72-2.61 3.64-6.28 3.64-9.09 0-1.49-.29-2.42-.76-3.18l4.18-.99z" />
+                  </svg>
+                </div>
+
+                <div className="flex-1 flex items-center gap-3">
+                  <div className="flex-shrink-0" style={{ width: "100px" }}>
+                    <h3
+                      className="text-[14px] text-[#111827]"
+                      style={{ fontWeight: 600 }}
+                    >
+                      Venmo
+                    </h3>
+                  </div>
+
+                  <div className="flex-1 flex items-center gap-2">
+                    <input
+                      placeholder="@username"
+                      className="flex-1 h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#00B948] focus:border-transparent"
+                      defaultValue=""
+                    />
+                    <button
+                      type="button"
+                      className="h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] hover:bg-[#F9FAFB]"
+                      style={{ fontWeight: 600 }}
+                      onClick={() => alert("Verify Venmo (later)")}
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Zelle Row (UI only) */}
+              <div
+                className="flex items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white"
+                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
+              >
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+                  style={{ backgroundColor: "#F5F3FF" }}
+                >
+                  <Check className="h-4 w-4" style={{ color: "#7C3AED" }} />
+                </div>
+
+                <div className="flex-1 flex items-center gap-3">
+                  <div className="flex-shrink-0" style={{ width: "100px" }}>
+                    <h3
+                      className="text-[14px] text-[#111827]"
+                      style={{ fontWeight: 600 }}
+                    >
+                      Zelle
+                    </h3>
+                  </div>
+
+                  <div className="flex-1">
+                    <select
+                      className="w-full h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#00B948] focus:border-transparent"
+                      defaultValue="email"
+                    >
+                      <option value="email">Email: john.smith@email.com</option>
+                      <option value="phone">Phone: +1 (555) 123-4567</option>
+                    </select>
+                  </div>
+
+                  <div
+                    className="flex items-center gap-1 px-2 py-1 rounded-md"
+                    style={{ backgroundColor: "#ECFDF5" }}
+                  >
+                    <Check className="h-3 w-3" style={{ color: "#00B948" }} />
+                    <span
+                      className="text-[11px]"
+                      style={{ fontWeight: 600, color: "#00B948" }}
+                    >
+                      Verified
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bank Deposit (Autopay) row — UI-only placeholder */}
+              <div
+                className="flex items-center gap-3 p-4 rounded-lg border border-[#FEF3C7] bg-[#FFFBEB]"
+                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
+              >
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+                  style={{ backgroundColor: "#EFF6FF" }}
+                >
+                  <Building2 className="h-4 w-4" style={{ color: "#3B82F6" }} />
+                </div>
+
+                <div className="flex-1 flex items-center gap-3">
+                  <div className="flex-shrink-0" style={{ width: "100px" }}>
+                    <h3
+                      className="text-[14px] text-[#111827]"
+                      style={{ fontWeight: 600 }}
+                    >
+                      Bank Deposit
+                    </h3>
+                    <p className="text-[11px] text-[#6B7280]">(Autopay)</p>
+                  </div>
+
+                  <div className="flex-1 flex items-center gap-3">
+                    <div className="flex-1">
+                      <p
+                        className="text-[13px] text-[#92400E]"
+                        style={{ fontWeight: 500 }}
+                      >
+                        Verify identity to enable payouts
                       </p>
-                      {method.isDefault && (
-                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded">
-                          Backup
-                        </span>
-                      )}
                     </div>
-                    <p className="text-sm text-gray-500">
-                      •••• {method.last4}
-                      {method.type === "bank" ? (
-                        <>
-                          {" "}
-                          · Free transfers · Added{" "}
-                          {new Date(method.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
-                        </>
-                      ) : (
-                        <> · 2.9% + $0.30 fee per transaction</>
-                      )}
+
+                    <button
+                      type="button"
+                      className="h-9 px-4 text-[13px] bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg"
+                      style={{ fontWeight: 600 }}
+                      onClick={() =>
+                        alert("Stripe identity verification (later)")
+                      }
+                    >
+                      Verify Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Parent or External Payers (UI-only placeholder to match Figma) */}
+        <section
+          className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
+          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
+        >
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2
+                className="text-[16px] text-[#111827]"
+                style={{ fontWeight: 600, lineHeight: 1.3 }}
+              >
+                Parent or External Payers
+              </h2>
+
+              <button
+                type="button"
+                className="rounded-lg bg-[#00B948] hover:bg-[#00A03C] text-white h-9 px-3 text-[13px]"
+                style={{ fontWeight: 600 }}
+                onClick={() => alert("Invite payer (later)")}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1.5 inline-block" />
+                Invite Payer
+              </button>
+            </div>
+
+            <p className="text-[13px] text-[#6B7280] mb-4">
+              Invite someone else to pay. (Wiring + permissions later — UI only
+              for now.)
+            </p>
+
+            {/* Example active payer card (static for now) */}
+            <div className="border border-[#E5E7EB] rounded-lg p-4 bg-gradient-to-r from-purple-50 to-white">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3E8FF] flex-shrink-0">
+                    <UserPlus className="h-5 w-5 text-[#9333EA]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3
+                        className="text-[15px] text-[#111827]"
+                        style={{ fontWeight: 600 }}
+                      >
+                        Mary Sanchez
+                      </h3>
+                      <span
+                        className="bg-[#F3E8FF] text-[#9333EA] border-[#E9D5FF] text-[10px] px-2 py-0 rounded border"
+                        style={{ fontWeight: 600 }}
+                      >
+                        Mom
+                      </span>
+                      <span
+                        className="bg-[#ECFDF5] text-[#16A34A] border-[#BBF7D0] text-[10px] px-2 py-0 rounded border"
+                        style={{ fontWeight: 600 }}
+                      >
+                        Active
+                      </span>
+                    </div>
+
+                    <p className="text-[12px] text-[#6B7280]">
+                      Checking ending in ••1234 · Can pay bills on your behalf
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  {!method.isDefault && (
-                    <button
-                      onClick={() => handleSetPrimary(method.id)}
-                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium"
-                    >
-                      Set as Primary
-                    </button>
-                  )}
+                <div className="flex flex-col gap-2">
                   <button
-                    onClick={() => handleRemove(method.id)}
-                    className="text-red-600 hover:text-red-700 text-sm font-medium"
+                    type="button"
+                    className="rounded-lg h-8 px-3 border border-[#D1D5DB] bg-white hover:bg-[#F9FAFB] text-[12px]"
+                    style={{ fontWeight: 600 }}
+                    onClick={() => alert("Edit payer (later)")}
                   >
-                    Remove
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-lg h-8 px-3 border border-[#00B948] text-[#00B948] hover:bg-[#ECFDF5] text-[12px]"
+                    style={{ fontWeight: 600 }}
+                    onClick={() => alert("Resend invite (later)")}
+                  >
+                    <Send className="h-3.5 w-3.5 mr-1 inline-block" />
+                    Resend
                   </button>
                 </div>
               </div>
-            ))
-          )}
-
-          {/* Add Payment Method Button */}
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="w-full p-6 flex items-start gap-3 hover:bg-gray-50 border-2 border-dashed border-gray-200 text-left"
-          >
-            <Plus className="w-5 h-5 text-gray-400 mt-0.5" />
-            <div>
-              <p className="font-medium text-gray-900">Add Payment Method</p>
-              <p className="text-sm text-gray-500">
-                Link bank account or credit card
-              </p>
             </div>
-          </button>
-        </div>
-      </div>
+          </div>
+        </section>
 
-      {/* Parent or External Payers */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Parent or External Payers
-          </h2>
-        </div>
-
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-purple-100 p-3 rounded-lg">
-                <Users className="w-6 h-6 text-purple-600" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="font-semibold text-gray-900">Mary Sanchez</p>
-                  <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-0.5 rounded">
-                    Mom
-                  </span>
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">
-                    Connected
-                  </span>
-                  <span className="bg-green-500 text-white text-xs font-medium px-2 py-0.5 rounded">
-                    Primary
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500">
-                  Checking ending in ••1234 · Can pay bills on your behalf
-                </p>
-              </div>
-            </div>
-
-            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium">
-              Manage
-            </button>
+        {/* Security Note */}
+        <div className="pt-3 pb-2">
+          <div className="flex items-center justify-center gap-2">
+            <Lock className="h-3.5 w-3.5 text-[#9CA3AF]" />
+            <p className="text-[12px] text-[#6B7280]">
+              All payments are processed through Stripe. Bilvo never stores your
+              banking credentials.
+            </p>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Add Payment Method Modal */}
+      {/* Keep your existing Add Payment Method flow (modal) */}
       {showAddModal && (
         <AddPaymentMethodModal
           onClose={() => setShowAddModal(false)}
           onSuccess={(newMethod) => {
-            setPaymentMethods([...paymentMethods, newMethod]);
+            setPaymentMethods((prev) => [newMethod, ...prev]);
             setShowAddModal(false);
           }}
         />
       )}
     </DashboardLayout>
+  );
+}
+
+interface SortablePaymentMethodRowProps {
+  row: {
+    id: string;
+    isDefault: boolean;
+    type: string;
+    title: string;
+    details: string;
+    icon: LucideIcon;
+    iconBg: string;
+    iconColor: string;
+  };
+  index: number;
+  onRemove: (id: string) => void;
+}
+
+function SortablePaymentMethodRow({
+  row,
+  index,
+  onRemove,
+}: SortablePaymentMethodRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: row.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white hover:border-[#D1D5DB] transition-colors"
+    >
+      {/* Priority Number */}
+      <div
+        className="flex items-center justify-center h-7 w-7 rounded-full flex-shrink-0"
+        style={{
+          backgroundColor: index === 0 ? "#00B948" : "#E5E7EB",
+          color: index === 0 ? "#FFFFFF" : "#6B7280",
+          fontWeight: 600,
+          fontSize: "13px",
+        }}
+      >
+        {index + 1}
+      </div>
+
+      {/* Grip (draggable handle) */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+      </div>
+
+      {/* Icon */}
+      <div
+        className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+        style={{ backgroundColor: row.iconBg }}
+      >
+        <row.icon className="h-4 w-4" style={{ color: row.iconColor }} />
+      </div>
+
+      {/* Details */}
+      <div className="flex-1">
+        <div className="flex items-center gap-2 mb-0.5">
+          <h3
+            className="text-[14px] text-[#111827]"
+            style={{ fontWeight: 600 }}
+          >
+            {row.title}
+          </h3>
+
+          {/* "Primary" tag for your default */}
+          {row.isDefault && (
+            <span
+              className="text-[10px] px-2 py-0 rounded border"
+              style={{
+                fontWeight: 600,
+                backgroundColor: "#ECFDF5",
+                color: "#16A34A",
+                borderColor: "#BBF7D0",
+              }}
+            >
+              Primary
+            </span>
+          )}
+        </div>
+        <p className="text-[12px] text-[#6B7280]">{row.details}</p>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onRemove(row.id)}
+          className="text-[#DC2626] hover:text-[#B91C1C] hover:bg-red-50 text-[12px] h-8 px-3 rounded-lg"
+          style={{ fontWeight: 600 }}
+        >
+          Remove
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -340,7 +755,7 @@ function AddPaymentMethodModal({
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/payment-methods", {
+      const res = await fetch("/api/payments/payment-methods", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, type: paymentType }),
@@ -359,115 +774,183 @@ function AddPaymentMethodModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Add Payment Method</h2>
-
-        {/* Payment Type Selection */}
-        <div className="flex gap-3 mb-4">
-          <button
-            onClick={() => {
-              setPaymentType("bank");
-              setFormData({
-                ...formData,
-                type: "bank",
-                brand: "Bank of America",
-              });
-            }}
-            className={`flex-1 p-4 border-2 rounded-lg text-left ${
-              paymentType === "bank"
-                ? "border-green-600 bg-green-50"
-                : "border-gray-200 hover:border-gray-300"
-            }`}
-          >
-            <Building2 className="w-6 h-6 mb-2 text-green-600" />
-            <p className="font-medium text-gray-900">Bank Account</p>
-            <p className="text-xs text-gray-500">Free transfers</p>
-          </button>
-
-          <button
-            onClick={() => {
-              setPaymentType("card");
-              setFormData({ ...formData, type: "card", brand: "Visa" });
-            }}
-            className={`flex-1 p-4 border-2 rounded-lg text-left ${
-              paymentType === "card"
-                ? "border-green-600 bg-green-50"
-                : "border-gray-200 hover:border-gray-300"
-            }`}
-          >
-            <CreditCard className="w-6 h-6 mb-2 text-gray-600" />
-            <p className="font-medium text-gray-900">Credit/Debit Card</p>
-            <p className="text-xs text-gray-500">2.9% + $0.30 fee</p>
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {paymentType === "bank" ? "Bank Name" : "Card Brand"}
-            </label>
-            <select
-              value={formData.brand}
-              onChange={(e) =>
-                setFormData({ ...formData, brand: e.target.value })
-              }
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            >
-              {paymentType === "bank" ? (
-                <>
-                  <option value="Bank of America">Bank of America</option>
-                  <option value="Chase">Chase</option>
-                  <option value="Wells Fargo">Wells Fargo</option>
-                  <option value="Citibank">Citibank</option>
-                </>
-              ) : (
-                <>
-                  <option value="Visa">Visa</option>
-                  <option value="Mastercard">Mastercard</option>
-                  <option value="American Express">American Express</option>
-                  <option value="Discover">Discover</option>
-                </>
-              )}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Last 4 Digits
-            </label>
-            <input
-              type="text"
-              required
-              maxLength={4}
-              pattern="\d{4}"
-              value={formData.last4}
-              onChange={(e) =>
-                setFormData({ ...formData, last4: e.target.value })
-              }
-              placeholder="1234"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              For demo purposes, just enter any 4 digits
+    <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto">
+      <div className="relative mx-auto my-10 w-full max-w-lg px-4">
+        <div className="bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
+          {/* Header */}
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Add Payment Method
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Choose how you'd like to pay your bills.
             </p>
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentType("bank");
+                  setFormData({
+                    ...formData,
+                    type: "bank",
+                    brand: "Bank of America",
+                  });
+                }}
+                className={`rounded-xl border p-3 text-left transition ${
+                  paymentType === "bank"
+                    ? "border-green-600 bg-green-50"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-green-100 p-2 rounded-lg">
+                    <Building2 className="w-5 h-5 text-green-700" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Bank account</p>
+                    <p className="text-xs text-gray-500">ACH (coming soon)</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentType("card");
+                  setFormData({ ...formData, type: "card", brand: "Visa" });
+                }}
+                className={`rounded-xl border p-3 text-left transition ${
+                  paymentType === "card"
+                    ? "border-green-600 bg-green-50"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-gray-100 p-2 rounded-lg">
+                    <CreditCard className="w-5 h-5 text-gray-700" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Card</p>
+                    <p className="text-xs text-gray-500">Instant, via Stripe</p>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50"
-            >
-              {isLoading ? "Adding..." : "Add Payment Method"}
-            </button>
+
+          {/* Body */}
+          <div className="flex-1 overflow-y-auto px-6 py-5">
+            {paymentType === "card" ? (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p className="text-sm text-gray-700">
+                    Add a card securely. Bilvo never sees your card number.
+                  </p>
+                </div>
+
+                <AddCardStripeForm
+                  onSaved={async () => {
+                    const syncRes = await fetch(
+                      "/api/payments/payment-methods/sync",
+                      { method: "POST" }
+                    );
+                    if (!syncRes.ok) {
+                      alert(
+                        "Card saved in Stripe, but failed to sync to your database."
+                      );
+                      return;
+                    }
+
+                    const res = await fetch("/api/payments/payment-methods");
+                    const data = await res.json();
+                    const newest = data.paymentMethods?.[0];
+                    if (newest) onSuccess(newest);
+                    else onClose();
+                  }}
+                />
+              </div>
+            ) : (
+              <form
+                id="bank-form"
+                onSubmit={handleSubmit}
+                className="space-y-4"
+              >
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <p className="text-sm text-amber-800">
+                    Bank linking is coming soon. This is demo-only for now.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bank name
+                  </label>
+                  <select
+                    value={formData.brand}
+                    onChange={(e) =>
+                      setFormData({ ...formData, brand: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  >
+                    <option value="Bank of America">Bank of America</option>
+                    <option value="Chase">Chase</option>
+                    <option value="Wells Fargo">Wells Fargo</option>
+                    <option value="Citibank">Citibank</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Last 4 digits
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={4}
+                    pattern="\d{4}"
+                    value={formData.last4}
+                    onChange={(e) =>
+                      setFormData({ ...formData, last4: e.target.value })
+                    }
+                    placeholder="1234"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Demo only.</p>
+                </div>
+              </form>
+            )}
           </div>
-        </form>
+
+          {/* Footer */}
+          <div className="px-6 py-4 border-t border-gray-200 bg-white">
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+
+              {paymentType === "bank" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const form = document.getElementById(
+                      "bank-form"
+                    ) as HTMLFormElement | null;
+                    form?.requestSubmit();
+                  }}
+                  disabled={isLoading}
+                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50"
+                >
+                  {isLoading ? "Adding..." : "Add Bank (Demo)"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -475,52 +958,27 @@ function AddPaymentMethodModal({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-
   if (!session?.user?.email) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
+    return { redirect: { destination: "/login", permanent: false } };
   }
 
   try {
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-    const pmResponse = await fetch(`${baseUrl}/api/payment-methods`, {
-      headers: {
-        Cookie: context.req.headers.cookie || "",
-      },
+    const pmResponse = await fetch(`${baseUrl}/api/payments/payment-methods`, {
+      headers: { Cookie: context.req.headers.cookie || "" },
     });
-
-    if (!pmResponse.ok) {
-      throw new Error("Failed to fetch payment methods");
-    }
+    if (!pmResponse.ok) throw new Error("Failed to fetch payment methods");
 
     const pmData = await pmResponse.json();
-
-    const autopayResponse = await fetch(`${baseUrl}/api/user/autopay`, {
-      headers: {
-        Cookie: context.req.headers.cookie || "",
-      },
-    });
-
-    const autopayData = await autopayResponse.json();
 
     return {
       props: {
         paymentMethods: pmData.paymentMethods,
-        autopayEnabled: autopayData.autopayEnabled || false,
       },
     };
   } catch (error) {
     console.error("Error loading payments:", error);
-    return {
-      redirect: {
-        destination: "/dashboard",
-        permanent: false,
-      },
-    };
+    return { redirect: { destination: "/dashboard", permanent: false } };
   }
 };

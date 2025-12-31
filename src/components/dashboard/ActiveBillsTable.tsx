@@ -32,6 +32,8 @@ import { useAutopay } from "@/hooks/useAutopay";
 import ScanGmailUploadButton from "@/components/bills/ScanGmailUploadButton";
 import { Bill } from "@/interfaces/bills";
 import { Household } from "@/interfaces/household";
+import { StatusBadge } from "../bills/BillStatusConfig";
+import { BillStatus } from "@prisma/client";
 
 interface ActiveBillsTableProps {
   bills: Bill[];
@@ -62,122 +64,6 @@ const getBillerIcon = (biller: string) => {
 
 // Roommate data for split visualization
 const avatarColors = ["#F2C94C", "#00B948", "#BB6BD9", "#3B82F6", "#EF4444"];
-
-// Gmail sync status component
-type SyncStatus = "active" | "delayed" | "error";
-
-const GmailSyncBanner = ({ status }: { status: SyncStatus }) => {
-  if (status === "active") {
-    return (
-      <div
-        className="mx-6 mt-2 mb-3 px-2.5 py-2 rounded-md flex items-center gap-2"
-        style={{
-          backgroundColor: "#ECFDF5",
-        }}
-      >
-        <RefreshCw
-          className="h-3.5 w-3.5 flex-shrink-0 animate-spin"
-          style={{ color: "#047857" }}
-        />
-        <span
-          style={{
-            fontSize: "13px",
-            fontWeight: 500,
-            color: "#00B948",
-            fontFamily: "Inter, sans-serif",
-            lineHeight: 1.3,
-          }}
-        >
-          Gmail Autoparsing active — syncing live
-        </span>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info
-                className="h-3.5 w-3.5 flex-shrink-0 cursor-help"
-                style={{ color: "#047857" }}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="max-w-xs">
-                Bills are automatically detected from your Gmail inbox and added
-                here.
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    );
-  }
-
-  if (status === "delayed") {
-    return (
-      <div
-        className="mx-6 mt-2 mb-3 px-2.5 py-2 rounded-md flex items-center gap-2"
-        style={{
-          backgroundColor: "#FEF3C7",
-        }}
-      >
-        <AlertCircle
-          className="h-3.5 w-3.5 flex-shrink-0"
-          style={{ color: "#B45309" }}
-        />
-        <span
-          style={{
-            fontSize: "13px",
-            fontWeight: 500,
-            color: "#B45309",
-            fontFamily: "Inter, sans-serif",
-            lineHeight: 1.3,
-          }}
-        >
-          Gmail sync delayed — last update 2 days ago
-        </span>
-      </div>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <div
-        className="mx-6 mt-2 mb-3 px-2.5 py-2 rounded-md flex items-center gap-2"
-        style={{
-          backgroundColor: "#FEE2E2",
-        }}
-      >
-        <AlertCircle
-          className="h-3.5 w-3.5 flex-shrink-0"
-          style={{ color: "#DC2626" }}
-        />
-        <span
-          style={{
-            fontSize: "13px",
-            fontWeight: 500,
-            color: "#DC2626",
-            fontFamily: "Inter, sans-serif",
-            lineHeight: 1.3,
-          }}
-        >
-          Gmail sync error — reconnect in settings
-        </span>
-        <Button
-          variant="ghost"
-          className="ml-auto h-6 px-2 rounded-md"
-          style={{
-            fontSize: "11px",
-            fontWeight: 500,
-            color: "#DC2626",
-            backgroundColor: "transparent",
-          }}
-        >
-          Reconnect
-        </Button>
-      </div>
-    );
-  }
-
-  return null;
-};
 
 function AutopayToggleCell({
   billId,
@@ -232,10 +118,15 @@ export default function ActiveBillsTable({
   household,
   onBillsImported,
 }: ActiveBillsTableProps) {
-  const [syncStatus] = useState<SyncStatus>("active");
-
   const totalHousehold = bills.reduce((sum, bill) => sum + bill.amount, 0);
   const totalYourShare = bills.reduce((sum, bill) => sum + bill.yourShare, 0);
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <Card
@@ -251,11 +142,6 @@ export default function ActiveBillsTable({
         className="absolute inset-0 rounded-xl pointer-events-none"
         style={{ border: "1px solid #F3F4F6" }}
       />
-
-      {/* Gmail Sync Banner */}
-      <div className="mt-5">
-        <GmailSyncBanner status={syncStatus} />
-      </div>
 
       {/* Gray Header Bar */}
       <div
@@ -580,15 +466,12 @@ export default function ActiveBillsTable({
                   <TableCell
                     style={{ paddingTop: "12px", paddingBottom: "12px" }}
                   >
-                    <span
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-                      style={{
-                        backgroundColor: "#DBEAFE",
-                        color: "#1E40AF",
+                    <StatusBadge
+                      status={bill.status as BillStatus}
+                      contextData={{
+                        dueDate: formatDate(bill.dueDate),
                       }}
-                    >
-                      {bill.status}
-                    </span>
+                    />
                   </TableCell>
                   {/* Autopay Toggle */}
                   <TableCell

@@ -610,34 +610,36 @@ async function runSloWaterLink(job) {
 
     if (DEBUG) log("Fields filled, clicking Log In...");
 
-    await Promise.all([
-      page.click(loginBtnSelector),
-      page.waitForLoadState("networkidle"),
-    ]);
+    // Click login
+    await page.click(loginBtnSelector);
 
-    // Step 5: Check for login success or error
-    await updateJobProgress(
-      job.id,
-      "RUNNING",
-      "Checking authentication status"
-    );
+    // Wait for either an error banner OR a successful URL
+    const result = await Promise.race([
+      page
+        .waitForSelector('.alert.alert-danger[data-cy="error-message"]', {
+          state: "visible",
+          timeout: 12000,
+        })
+        .then(() => "ERROR"),
+      page
+        .waitForURL((url) => url.href.includes("/secure/home"), {
+          timeout: 12000,
+        })
+        .then(() => "HOME"),
+    ]).catch(() => "UNKNOWN");
 
-    // Check for error message
-    const errorMessage = await page
-      .locator('.alert.alert-danger[data-cy="error-message"]')
-      .textContent()
-      .catch(() => null);
-
-    if (errorMessage) {
+    if (result === "ERROR") {
       throw new Error("Login failed: Invalid email or password");
     }
 
-    // Check if we landed on the home page
-    const currentUrl = page.url();
-    if (!currentUrl.includes("/secure/home")) {
-      throw new Error(
-        `Login failed. Expected to be on home page but got: ${currentUrl}`
-      );
+    if (result !== "HOME") {
+      // fallback: check current URL quickly
+      const currentUrl = page.url();
+      if (!currentUrl.includes("/secure/home")) {
+        throw new Error(
+          `Login failed or timed out. Current URL: ${currentUrl}`
+        );
+      }
     }
 
     if (DEBUG) log("Login successful - on home page");
@@ -826,6 +828,250 @@ async function runSloWaterLink(job) {
   }
 }
 
+// =====================================================
+// SOCALGAS RUNNER (NO 2FA)
+// =====================================================
+
+async function runSoCalGasLink(job) {
+  const SCG_LOGIN_URL = "https://myaccount.socalgas.com/ui/login";
+  const SCG_HOME_URL_PART = "/ui/home";
+
+  // Step 1: Fetch utility account
+  await updateJobProgress(job.id, "RUNNING", "Initializing secure session");
+
+  const utility = await prisma.utilityAccount.findUnique({
+    where: { id: job.utilityAccountId },
+    select: {
+      id: true,
+      loginEmail: true,
+      encryptedPassword: true,
+      passwordIv: true,
+      householdId: true,
+      ownerUserId: true,
+    },
+  });
+
+  if (!utility) throw new Error("Utility account not found");
+
+  const password = decryptPassword(
+    utility.encryptedPassword,
+    utility.passwordIv
+  );
+
+  // Step 2: Launch browser
+  await updateJobProgress(job.id, "RUNNING", "Starting secure browser");
+
+  const browser = await chromium.launch({ headless: HEADLESS });
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  });
+  const page = await context.newPage();
+
+  try {
+    page.setDefaultTimeout(45_000);
+
+    // Step 3: Navigate to login
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Navigating to SoCalGas login portal"
+    );
+    if (DEBUG) log("Navigating to", SCG_LOGIN_URL);
+
+    // For SPA-ish apps, domcontentloaded is typically faster/more reliable than networkidle
+    await page.goto(SCG_LOGIN_URL, { waitUntil: "domcontentloaded" });
+
+    // Step 4: Fill login form
+    await updateJobProgress(job.id, "RUNNING", "Submitting login credentials");
+
+    // These are web components; Playwright can usually pierce open shadow DOM.
+    const emailInput = page.locator('scg-text-field[input-id="email"] input');
+    const passInput = page.locator('scg-text-field[input-id="password"] input');
+    const loginBtn = page.locator('scg-button[data-testid="login-button"]');
+
+    await emailInput.waitFor({ state: "visible", timeout: 15000 });
+    await emailInput.fill(utility.loginEmail);
+
+    await passInput.waitFor({ state: "visible", timeout: 15000 });
+    await passInput.fill(password);
+
+    if (DEBUG) log("Fields filled, clicking Log In...");
+
+    // Click login and wait for success signal (URL or a stable element on home)
+    await page.click('scg-button[data-testid="login-button"]');
+
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Checking authentication status"
+    );
+
+    const homeHeader = page.locator('h2.page-description[aria-label*="Acct#"]');
+
+    const outcome = await Promise.race([
+      page
+        .waitForURL((url) => url.href.includes(SCG_HOME_URL_PART), {
+          timeout: 20000,
+        })
+        .then(() => "HOME"),
+      homeHeader
+        .waitFor({ state: "visible", timeout: 20000 })
+        .then(() => "HOME"),
+    ]).catch(() => "UNKNOWN");
+
+    if (outcome !== "HOME") {
+      const currentUrl = page.url();
+      throw new Error(`Login failed or timed out. Current URL: ${currentUrl}`);
+    }
+
+    if (DEBUG) log("Login successful - on home page");
+
+    // Step 5: Access granted
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Successfully authenticated - accessing bill details"
+    );
+
+    // Step 6: Extract bill data
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Extracting current bill information"
+    );
+
+    // Account number: aria-label="Residential Acct# 03871620021"
+    await homeHeader.waitFor({ state: "visible", timeout: 15000 });
+    const aria = await homeHeader.getAttribute("aria-label");
+    const acctMatch = aria?.match(/Acct#\s*([0-9]+)/i);
+    const accountClean = acctMatch?.[1]?.trim();
+
+    // Balance + due date
+    const balanceWrap = page.locator('[data-testid="balance-with-due-date"]');
+    await balanceWrap.waitFor({ state: "visible", timeout: 20000 });
+
+    const rawAmount = await balanceWrap
+      .locator("span.text-4xl")
+      .first()
+      .textContent();
+    const rawDue = await page
+      .locator('[data-testid="balance-due-date"] span.font-extrabold')
+      .first()
+      .textContent();
+
+    const amountClean = parseFloat((rawAmount || "").replace(/[$,\s]/g, ""));
+    const dueStr = (rawDue || "").trim(); // "01/12/2026"
+
+    // Safer date parsing than new Date("01/12/2026") (locale ambiguity):
+    const [mm, dd, yyyy] = dueStr.split("/").map((v) => parseInt(v, 10));
+    const dateClean = new Date(yyyy, (mm || 1) - 1, dd || 1);
+
+    if (!accountClean || !Number.isFinite(amountClean) || !dueStr) {
+      throw new Error(
+        `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}", Due: "${rawDue}", aria: "${aria}"`
+      );
+    }
+
+    if (DEBUG) {
+      log(
+        `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`
+      );
+    }
+
+    if (amountClean <= 0) {
+      await updateJobProgress(
+        job.id,
+        "SUCCESS",
+        "No balance due - account linked successfully"
+      );
+      await markJobSuccess(job);
+      return { status: "SUCCESS", note: "No balance due" };
+    }
+
+    // Step 7: Save to database
+    await updateJobProgress(job.id, "RUNNING", "Syncing bill to your account");
+
+    // Use SoCalGas-specific external ID and biller
+    await prisma.$transaction(async (tx) => {
+      const externalId = `socalgas-${accountClean}-${dateClean.getTime()}`;
+
+      const existing = await tx.bill.findFirst({
+        where: { householdId: utility.householdId, externalId },
+      });
+      if (existing) return existing;
+
+      const scheduledChargeDate = new Date(dateClean);
+      scheduledChargeDate.setDate(scheduledChargeDate.getDate() - 3);
+
+      const ownerUserId = utility.ownerUserId || job.createdByUserId;
+
+      const bill = await tx.bill.create({
+        data: {
+          householdId: utility.householdId,
+          ownerUserId,
+          createdByUserId: ownerUserId,
+          source: "UTILITY",
+          externalId,
+          utilityAccountId: utility.id,
+          biller: "SoCalGas",
+          billerType: "Gas",
+          amount: amountClean,
+          dueDate: dateClean,
+          scheduledCharge: scheduledChargeDate,
+          status: "SCHEDULED",
+        },
+      });
+
+      const members = await tx.user.findMany({
+        where: { householdId: utility.householdId },
+      });
+      const divisor = Math.max(members.length, 1);
+      const split = amountClean / divisor;
+
+      await tx.billParticipant.createMany({
+        data: members.map((m) => ({
+          billId: bill.id,
+          userId: m.id,
+          shareAmount: split,
+          autopayEnabled: false,
+        })),
+      });
+
+      await tx.activity.create({
+        data: {
+          householdId: utility.householdId,
+          userId: ownerUserId,
+          type: "bill_uploaded",
+          description: "Latest bill automatically synced from SoCalGas",
+          detail: `SoCalGas - $${amountClean.toFixed(2)}`,
+          amount: amountClean,
+          source: "UTILITY",
+        },
+      });
+
+      return bill;
+    });
+
+    if (DEBUG) log("Bill saved and participants created successfully.");
+
+    // Step 8: Complete
+    await updateJobProgress(job.id, "SUCCESS", "Bill synced successfully");
+    return { status: "SUCCESS" };
+  } catch (e) {
+    if (DEBUG) {
+      const path = `error-snapshot-${job.id}.png`;
+      await page.screenshot({ path, fullPage: true });
+      log(`Saved error screenshot to ${path}`);
+    }
+    throw e;
+  } finally {
+    await context.close().catch(() => {});
+    await browser.close().catch(() => {});
+  }
+}
+
 async function processJob(job) {
   try {
     if (DEBUG) log("Processing job", job.id, "provider:", job.provider);
@@ -850,6 +1096,13 @@ async function processJob(job) {
     ) {
       const result = await runSloWaterLink(job);
 
+      await markJobSuccess(job);
+      log("Job SUCCESS", job.id);
+      return;
+    }
+
+    if (job.provider?.toLowerCase().includes("socalgas")) {
+      const result = await runSoCalGasLink(job);
       await markJobSuccess(job);
       log("Job SUCCESS", job.id);
       return;

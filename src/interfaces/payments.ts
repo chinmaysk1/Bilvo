@@ -6,3 +6,12 @@ export interface PaymentMethod {
   isDefault: boolean;
   createdAt: string;
 }
+
+export type PriorityItem = {
+  id: string;
+  type: "bank" | "card";
+  name: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  iconBg: string;
+  iconColor: string;
+};

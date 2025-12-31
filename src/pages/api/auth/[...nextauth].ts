@@ -23,14 +23,12 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          // Add Gmail API scopes
           scope: [
             "openid",
             "email",
             "profile",
             "https://www.googleapis.com/auth/gmail.readonly",
           ].join(" "),
-          // Request offline access to get refresh token
           access_type: "offline",
           prompt: "consent",
         },
@@ -39,53 +37,52 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, account }) {
-      if (user?.id) {
-        token.userId = user.id;
-      }
+      if (user?.id) token.userId = user.id;
 
-      // Store tokens on initial sign-in
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
 
-        // Save tokens to database for later refresh
-        if (token.userId && account.access_token) {
-          await prisma.account.update({
-            where: {
-              provider_providerAccountId: {
-                provider: account.provider,
-                providerAccountId: account.providerAccountId,
-              },
-            },
-            data: {
-              access_token: account.access_token,
-              refresh_token: account.refresh_token,
-              expires_at: account.expires_at,
-            },
-          });
-        }
-      }
-
-      if (token.userId) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.userId },
-          select: { hasCompletedOnboarding: true },
+        // Safer than update() (avoids "record not found" race)
+        await prisma.account.updateMany({
+          where: {
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+          },
+          data: {
+            access_token: account.access_token,
+            refresh_token: account.refresh_token,
+            expires_at: account.expires_at,
+          },
         });
-        if (dbUser) {
-          token.hasCompletedOnboarding = dbUser.hasCompletedOnboarding;
-        }
       }
 
       return token;
     },
+
     async session({ session, token }) {
-      if (token?.userId) (session as any).userId = token.userId;
-      if (typeof token.hasCompletedOnboarding === "boolean") {
-        (session as any).hasCompletedOnboarding = token.hasCompletedOnboarding;
+      if (session.user && token?.userId) {
+        (session.user as any).id = token.userId;
       }
+
       if (token.accessToken) {
         (session as any).accessToken = token.accessToken;
       }
+
+      // Single DB lookup for both name + onboarding (and by userId)
+      if (token?.userId) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.userId },
+          select: { name: true, hasCompletedOnboarding: true },
+        });
+
+        if (dbUser) {
+          session.user.name = dbUser.name ?? session.user.name ?? null;
+          (session as any).hasCompletedOnboarding =
+            dbUser.hasCompletedOnboarding;
+        }
+      }
+
       return session;
     },
   },

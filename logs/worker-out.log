@@ -176,3 +176,84 @@ Call log:
 [utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] SMS Button clicked. Waiting for code input field...
 [utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Saved error screenshot to error-snapshot-cmjozfxyv0005h3ao2rkfwhr3.png
 [utility-worker 40c595cd-ab23-4996-b4db-3723dfa8c036] Job failed cmjozfxyv0005h3ao2rkfwhr3 Timed out waiting for 2FA code from user.
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Starting utility link worker
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] poll 3000 ms | headless: false
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Processing job cmjp0cw3h0007l7049dklzutq provider: City of San Luis Obispo, CA
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → RUNNING: Initializing secure session
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → RUNNING: Starting secure browser
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → RUNNING: Navigating to SLO Water login portal
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → RUNNING: Submitting login credentials
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Filling username field...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Filling password field...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Fields filled, clicking Log In...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Login successful - on home page
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Clicking 'View My Bill' button...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Landed on My Bill page
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → RUNNING: Extracting current bill information
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → RUNNING: Syncing bill to your account
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Bill saved and participants created successfully.
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0cw3h0007l7049dklzutq → SUCCESS: Bill synced successfully
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job SUCCESS cmjp0cw3h0007l7049dklzutq
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Processing job cmjp0ep44000bl7049yjet2kr provider: City of San Luis Obispo, CA
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → RUNNING: Initializing secure session
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → RUNNING: Starting secure browser
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → RUNNING: Navigating to SLO Water login portal
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → RUNNING: Submitting login credentials
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Filling username field...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Filling password field...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Fields filled, clicking Log In...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Login successful - on home page
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Clicking 'View My Bill' button...
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Landed on My Bill page
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → RUNNING: Extracting current bill information
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → RUNNING: Syncing bill to your account
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Bill saved and participants created successfully.
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job cmjp0ep44000bl7049yjet2kr → SUCCESS: Bill synced successfully
+[utility-worker 698d041b-9fb7-4474-aa2f-58f07e9936b7] Job SUCCESS cmjp0ep44000bl7049yjet2kr
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Starting utility link worker
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] poll 3000 ms | headless: false
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Processing job cmjp27sap0001l104jh6hrfl0 provider: SoCalGas
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Initializing secure session
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Starting secure browser
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Submitting login credentials
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Fields filled, clicking Log In...
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Checking authentication status
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Login successful - on home page
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Extracting current bill information
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Scraped: $41.03 | Due: 1/12/2026 | Acct: 03871620021
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → RUNNING: Syncing bill to your account
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Bill saved and participants created successfully.
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp27sap0001l104jh6hrfl0 → SUCCESS: Bill synced successfully
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job SUCCESS cmjp27sap0001l104jh6hrfl0
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Processing job cmjp2b9iw0001jo04p61jzs3g provider: SoCalGas
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Initializing secure session
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Starting secure browser
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Submitting login credentials
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Fields filled, clicking Log In...
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Checking authentication status
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Login successful - on home page
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Extracting current bill information
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Scraped: $41.03 | Due: 1/12/2026 | Acct: 03871620021
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → RUNNING: Syncing bill to your account
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Bill saved and participants created successfully.
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job cmjp2b9iw0001jo04p61jzs3g → SUCCESS: Bill synced successfully
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] Job SUCCESS cmjp2b9iw0001jo04p61jzs3g
+[utility-worker 6e088321-0e88-472e-8907-7f1900023e90] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
