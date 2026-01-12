@@ -6,6 +6,9 @@ import { prisma } from "@/lib/prisma";
 import { BillSource, BillStatus } from "@prisma/client";
 import { Bill, BillToImport } from "@/interfaces/bills";
 
+// Shared myStatus logic
+import { determineMyStatus } from "@/components/bills/BillStatusConfig";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -93,16 +96,22 @@ export default async function handler(
               userId: m.id,
               shareAmount: split,
               autopayEnabled: false,
+              paymentMethodId: null,
             })),
           });
 
-          // 3) Get my share for response
+          // 3) Get my participant row for response
           const myPart = await tx.billParticipant.findUnique({
             where: { billId_userId: { billId: bill.id, userId: myUserId } },
-            select: { shareAmount: true },
+            select: {
+              id: true,
+              shareAmount: true,
+              autopayEnabled: true,
+              paymentMethodId: true,
+            },
           });
 
-          return { bill, yourShare: myPart?.shareAmount ?? 0 };
+          return { bill, myPart };
         });
 
         // participants for frontend response (mirror Bill interface)
@@ -113,24 +122,44 @@ export default async function handler(
           paymentMethodId: null,
         }));
 
+        // New bills will not have attempts yet.
+        const myStatus = determineMyStatus({
+          myPart: created.myPart
+            ? {
+                id: created.myPart.id,
+                autopayEnabled: created.myPart.autopayEnabled,
+              }
+            : null,
+          hasSucceededAttempt: false,
+          hasFailedAttempt: false,
+        });
+
         importedBills.push({
           id: created.bill.id,
           source: created.bill.source,
           biller: created.bill.biller,
           billerType: created.bill.billerType,
           amount: created.bill.amount ?? 0,
-          yourShare: created.yourShare,
+
+          yourShare: created.myPart?.shareAmount ?? 0,
+          myBillParticipantId: created.myPart?.id ?? null,
+
           dueDate: created.bill.dueDate.toISOString(),
           scheduledCharge: created.bill.scheduledCharge
             ? created.bill.scheduledCharge.toISOString()
             : null,
+
           status: created.bill.status,
           ownerUserId: created.bill.ownerUserId,
           createdByUserId: created.bill.createdByUserId,
-          myAutopayEnabled: false,
-          myPaymentMethodId: null,
-          participants: participantsForResponse,
+
+          myAutopayEnabled: !!created.myPart?.autopayEnabled,
+          myPaymentMethodId: created.myPart?.paymentMethodId ?? null,
+
           myHasPaid: false,
+          myStatus,
+
+          participants: participantsForResponse,
         });
       } catch (error) {
         console.error(`Error importing bill ${billData.id}:`, error);
