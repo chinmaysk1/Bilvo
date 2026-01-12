@@ -9,9 +9,11 @@ export interface Bill {
   yourShare: number;
   myAutopayEnabled: boolean;
   myPaymentMethodId: string | null;
+  myBillParticipantId?: string | null;
   dueDate: string;
   scheduledCharge: string | null;
   status: BillStatus;
+  myStatus: BillStatus;
   ownerUserId: string;
   createdByUserId: string;
   participants: Array<{
@@ -20,6 +22,7 @@ export interface Bill {
     autopayEnabled: boolean;
     paymentMethodId: string | null;
   }>;
+  myHasPaid: boolean;
 }
 
 // Bill from Gmail

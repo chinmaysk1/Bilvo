@@ -55,6 +55,7 @@ import {
 } from "@/components/ui/tooltip";
 import { UtilityLink, UtilityAccountResponse } from "@/interfaces/utilities";
 import { getUtilityIconMeta, mapApiToUtilityLink } from "@/utils/utilities";
+import { ActionBanner } from "@/components/common/ActionBanner";
 
 // ------------------------------------------------------
 // Enhanced Status Types
@@ -441,6 +442,40 @@ function LinkingSession({
   );
 }
 
+export async function ensureOwnerConnectOnboarding() {
+  // 1) DB-only readiness (cheap)
+  const stRes = await fetch("/api/payments/stripe/connect/status-from-db");
+  if (!stRes.ok) {
+    const body = await stRes.json().catch(() => ({}));
+    throw new Error(body?.error || "Failed to check Stripe Connect status");
+  }
+  const st = await stRes.json();
+
+  if (st?.isReadyToReceive) return; // already good
+
+  // 2) Ensure connected account exists
+  const ensureRes = await fetch("/api/payments/stripe/connect/ensure-account", {
+    method: "POST",
+  });
+  if (!ensureRes.ok) {
+    const body = await ensureRes.json().catch(() => ({}));
+    throw new Error(body?.error || "Failed to create Stripe connected account");
+  }
+
+  // 3) Create account link and redirect to Stripe-hosted onboarding
+  const linkRes = await fetch("/api/payments/stripe/connect/account-link", {
+    method: "POST",
+  });
+  if (!linkRes.ok) {
+    const body = await linkRes.json().catch(() => ({}));
+    throw new Error(body?.error || "Failed to start Stripe onboarding");
+  }
+  const link = await linkRes.json();
+  if (!link?.url) throw new Error("Stripe onboarding link missing url");
+
+  window.location.href = link.url;
+}
+
 // ------------------------------------------------------
 // Page wrapper
 // ------------------------------------------------------
@@ -465,6 +500,10 @@ function UtilitiesContent() {
   const [loading, setLoading] = useState(true);
   const [expandedUtility, setExpandedUtility] = useState<string | null>(null);
   const [editingUtility, setEditingUtility] = useState<string | null>(null);
+  const [stripeReadyToReceive, setStripeReadyToReceive] = useState<
+    boolean | null
+  >(null);
+  const [stripeCtaLoading, setStripeCtaLoading] = useState(false);
 
   // Enhanced state tracking
   const [jobStatus, setJobStatus] = useState("IDLE");
@@ -558,6 +597,9 @@ function UtilitiesContent() {
     ],
   };
 
+  const userOwnsAnyUtility =
+    !!currentUserId && utilities.some((u) => u.ownerUserId === currentUserId);
+
   const fetchData = useCallback(async () => {
     try {
       const userRes = await fetch("/api/user/me");
@@ -578,6 +620,17 @@ function UtilitiesContent() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    refreshStripeConnectStatus(); // initial load
+
+    const onFocus = () => refreshStripeConnectStatus();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   useEffect(() => {
@@ -629,6 +682,10 @@ function UtilitiesContent() {
             setIsPolling(false);
             toast.success("Account Linked!");
             await fetchData();
+
+            // After successful link, refresh Stripe status to decide whether banner should show
+            await refreshStripeConnectStatus();
+
             return;
           }
 
@@ -662,6 +719,16 @@ function UtilitiesContent() {
   // ------------------------------------------------------
   // Handlers
   // ------------------------------------------------------
+
+  async function refreshStripeConnectStatus() {
+    const res = await fetch("/api/payments/stripe/connect/status-from-db");
+    if (!res.ok) {
+      setStripeReadyToReceive(null);
+      return;
+    }
+    const st = await res.json().catch(() => ({}));
+    setStripeReadyToReceive(!!st?.isReadyToReceive);
+  }
 
   const handleToggleExpand = (utilityId: string) => {
     if (expandedUtility === utilityId) {
@@ -984,6 +1051,30 @@ function UtilitiesContent() {
   return (
     <TooltipProvider>
       <div className="space-y-8">
+        <ActionBanner
+          show={stripeReadyToReceive === false && userOwnsAnyUtility}
+          variant="danger"
+          Icon={AlertCircle}
+          title="Action needed"
+          actionLabel={
+            stripeCtaLoading ? "Redirecting to Stripe" : "Enable payouts"
+          }
+          actionDisabled={stripeCtaLoading}
+          onActionClick={async () => {
+            if (stripeCtaLoading) return;
+
+            try {
+              setStripeCtaLoading(true);
+              await ensureOwnerConnectOnboarding(); // redirects
+            } catch (e) {
+              // If redirect fails, re-enable button
+              setStripeCtaLoading(false);
+            }
+          }}
+        >
+          connect your Stripe account to receive payments.
+        </ActionBanner>
+
         {/* Page header */}
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -1382,8 +1473,8 @@ function UtilitiesContent() {
                                     </div>
                                   ) : (
                                     <div className="space-y-2 text-center italic text-xs text-gray-400">
-                                      Only {utility.accountHolderName} can
-                                      modify this link.
+                                      Only {utility.owner?.name} can modify this
+                                      link.
                                     </div>
                                   )
                                 ) : editingUtility === utility.id ? (

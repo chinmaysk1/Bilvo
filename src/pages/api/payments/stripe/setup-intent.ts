@@ -12,11 +12,13 @@ export default async function handler(
 
   const session = await getSession({ req });
   const userId = (session as any)?.user?.id;
+  const email = (session as any)?.user?.email;
+  const name = (session as any)?.user?.name;
 
   if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    const customerId = await ensureStripeCustomerId(userId);
+    const customerId = await ensureStripeCustomerId({ userId, email, name });
 
     const setupIntent = await stripe.setupIntents.create({
       customer: customerId,

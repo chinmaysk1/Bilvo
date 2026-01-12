@@ -1,22 +1,22 @@
-import { useState } from "react";
 import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
 import {
   CreditCard,
   Building2,
@@ -24,22 +24,24 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
+
+export interface PayBillModalBill {
+  id: string;
+  biller: string;
+  category?: string;
+  yourShare: number;
+  dueDate: string;
+  icon?: any;
+  iconColor?: string;
+  iconBg?: string;
+}
 
 interface PayBillModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  bill: {
-    id: string;
-    biller: string;
-    category?: string;
-    yourShare: number;
-    dueDate: string;
-    icon?: any;
-    iconColor?: string;
-    iconBg?: string;
-  } | null;
+  bill: PayBillModalBill | null;
   onPaymentSubmit: (
     billId: string,
     amount: number,
@@ -75,20 +77,24 @@ export function PayBillModal({
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (bill && open) {
-      setAmount(bill.yourShare.toFixed(2));
+      setAmount((bill.yourShare ?? 0).toFixed(2));
       setSelectedMethod("bank-4532");
       setIsProcessing(false);
       setPaymentSuccess(false);
     }
   }, [bill, open]);
 
+  const paymentAmount = useMemo(() => {
+    const n = parseFloat(amount);
+    return Number.isFinite(n) ? n : NaN;
+  }, [amount]);
+
   const handlePayNow = async () => {
     if (!bill) return;
 
-    const paymentAmount = parseFloat(amount);
-    if (isNaN(paymentAmount) || paymentAmount <= 0) {
+    if (!Number.isFinite(paymentAmount) || paymentAmount <= 0) {
       toast.error("Invalid amount", {
         description: "Please enter a valid payment amount.",
       });
@@ -97,6 +103,7 @@ export function PayBillModal({
 
     setIsProcessing(true);
 
+    // Simulate payment processing
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setIsProcessing(false);
@@ -122,7 +129,6 @@ export function PayBillModal({
   const PaymentIcon = selectedPaymentMethod?.icon || CreditCard;
 
   if (!bill) return null;
-
   const BillIcon = bill.icon;
 
   return (
@@ -397,7 +403,7 @@ export function PayBillModal({
               {/* Pay Now Button */}
               <Button
                 onClick={handlePayNow}
-                disabled={isProcessing || !amount || parseFloat(amount) <= 0}
+                disabled={isProcessing || !amount || !(paymentAmount > 0)}
                 className="w-full h-12 gap-2"
                 style={{
                   backgroundColor: "#00B948",
@@ -415,7 +421,10 @@ export function PayBillModal({
                 ) : (
                   <>
                     <PaymentIcon className="h-5 w-5" />
-                    Pay ${amount ? parseFloat(amount).toFixed(2) : "0.00"}
+                    Pay $
+                    {Number.isFinite(paymentAmount)
+                      ? paymentAmount.toFixed(2)
+                      : "0.00"}
                   </>
                 )}
               </Button>

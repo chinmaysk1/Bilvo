@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Bill } from "@/interfaces/bills";
 import { Activity } from "@/interfaces/activity";
 import { Household } from "@/interfaces/household";
+import { ActionBanner } from "@/components/common/ActionBanner";
 
 interface DashboardProps {
   household: Household;
@@ -44,23 +45,15 @@ export default function DashboardPage({
   return (
     <DashboardLayout>
       {/* Action Banner */}
-      {!hasPaymentMethod && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 flex items-start justify-between rounded-lg">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
-            <p className="text-red-800">
-              <span className="font-semibold">Action needed</span> — add a
-              payment method to enable autopay.
-            </p>
-          </div>
-          <a
-            href="/protected/dashboard/payments"
-            className="text-green-600 hover:text-green-700 font-medium whitespace-nowrap"
-          >
-            Add Payment Method →
-          </a>
-        </div>
-      )}
+      <ActionBanner
+        show={!hasPaymentMethod}
+        variant="danger"
+        Icon={AlertCircle}
+        actionLabel="Add Payment Method"
+        href="/protected/dashboard/payments"
+      >
+        add a payment method to enable autopay.
+      </ActionBanner>
 
       {/* Summary Cards */}
       <div className="mb-6">

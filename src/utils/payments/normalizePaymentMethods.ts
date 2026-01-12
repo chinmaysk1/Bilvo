@@ -28,7 +28,7 @@ export async function normalizeUserPaymentMethods(
         where: { id: m.id },
         data: {
           priorityOrder: idx,
-          isDefault: idx === 0, // ✅ primary = priorityOrder 0
+          isDefault: idx === 0, // primary = priorityOrder 0
         },
       })
     )

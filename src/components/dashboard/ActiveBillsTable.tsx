@@ -467,7 +467,7 @@ export default function ActiveBillsTable({
                     style={{ paddingTop: "12px", paddingBottom: "12px" }}
                   >
                     <StatusBadge
-                      status={bill.status as BillStatus}
+                      status={bill.myStatus as BillStatus}
                       contextData={{
                         dueDate: formatDate(bill.dueDate),
                       }}

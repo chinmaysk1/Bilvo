@@ -1,6 +1,5 @@
 // pages/api/payments/payment-methods/index.ts
 import { NextApiRequest, NextApiResponse } from "next";
-import { getSession } from "next-auth/react";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]";
 import { getServerSession } from "next-auth";
@@ -28,9 +27,30 @@ export default async function handler(
       const paymentMethods = await prisma.paymentMethod.findMany({
         where: { userId: user.id },
         orderBy: [{ priorityOrder: "asc" }, { createdAt: "desc" }],
+        select: {
+          id: true,
+          provider: true,
+          providerPaymentMethodId: true,
+          type: true,
+          brand: true,
+          last4: true,
+          expMonth: true,
+          expYear: true,
+          status: true,
+          isDefault: true,
+          priorityOrder: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
 
-      return res.status(200).json({ paymentMethods });
+      return res.status(200).json({
+        paymentMethods: paymentMethods.map((pm) => ({
+          ...pm,
+          createdAt: pm.createdAt.toISOString(),
+          updatedAt: pm.updatedAt.toISOString(),
+        })),
+      });
     }
 
     return res.status(405).json({ error: "Method not allowed" });

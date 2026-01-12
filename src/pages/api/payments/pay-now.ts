@@ -38,7 +38,21 @@ export default async function handler(
         userId: true,
         shareAmount: true,
         bill: {
-          select: { id: true, householdId: true, dueDate: true, biller: true },
+          select: {
+            id: true,
+            householdId: true,
+            dueDate: true,
+            biller: true,
+            ownerUserId: true,
+            owner: {
+              select: {
+                id: true,
+                stripeConnectedAccountId: true,
+                stripeConnectChargesEnabled: true,
+                stripeConnectPayoutsEnabled: true,
+              },
+            },
+          },
         },
       },
     });
@@ -50,6 +64,23 @@ export default async function handler(
     const amountCents = dollarsToCents(participant.shareAmount);
     if (amountCents <= 0) {
       return res.status(400).json({ error: "Invalid amount to charge" });
+    }
+
+    const owner = participant.bill.owner;
+
+    // prevents weird edge cases
+    if (!owner?.stripeConnectedAccountId) {
+      return res
+        .status(409)
+        .json({ error: "Bill owner is not ready to receive payments yet." });
+    }
+    if (
+      owner.stripeConnectChargesEnabled !== true ||
+      owner.stripeConnectPayoutsEnabled !== true
+    ) {
+      return res
+        .status(409)
+        .json({ error: "Bill owner has not completed Stripe onboarding yet." });
     }
 
     // Optional safety: block duplicate processing attempts for same participant+bill "now"
@@ -91,18 +122,37 @@ export default async function handler(
 
     // 2) Create Stripe PaymentIntent (on-session)
     // Using Payment Element: don't set payment_method; confirm client-side.
-    const pi = await stripe.paymentIntents.create({
-      amount: amountCents,
-      currency: "usd",
-      customer: customerId,
-      automatic_payment_methods: { enabled: true },
-      metadata: {
-        paymentAttemptId: attempt.id,
-        billId: participant.bill.id,
-        billParticipantId: participant.id,
-        userId: user.id,
-      },
-    });
+    let pi;
+    try {
+      pi = await stripe.paymentIntents.create({
+        amount: amountCents,
+        currency: "usd",
+        customer: customerId,
+        automatic_payment_methods: { enabled: true },
+
+        transfer_group: `attempt_${attempt.id}`,
+
+        metadata: {
+          paymentAttemptId: attempt.id,
+          billId: participant.bill.id,
+          billParticipantId: participant.id,
+          userId: user.id,
+          ownerUserId: owner.id,
+          destinationAccountId: owner.stripeConnectedAccountId,
+        },
+      });
+    } catch (e: any) {
+      await prisma.paymentAttempt.update({
+        where: { id: attempt.id },
+        data: {
+          status: "FAILED",
+          processedAt: new Date(),
+          failureCode: e?.code ?? "stripe_create_failed",
+          failureMessage: e?.message ?? "Failed to create PaymentIntent",
+        },
+      });
+      throw e;
+    }
 
     // 3) Attach providerIntentId
     await prisma.paymentAttempt.update({

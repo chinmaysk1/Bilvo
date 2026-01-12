@@ -1,7 +1,7 @@
 // pages/protected/dashboard/payments/index.tsx
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import {
   AlertCircle,
@@ -35,6 +35,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { ensureOwnerConnectOnboarding } from "../utilities";
+import VerifiedBadge from "@/components/payments/VerifiedBadge";
 
 interface PaymentsPageProps {
   paymentMethods: PaymentMethod[];
@@ -47,6 +49,69 @@ export default function PaymentsPage({
     useState<PaymentMethod[]>(initialMethods);
   const [showAddModal, setShowAddModal] = useState(false);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [userOwnsAnyUtility, setUserOwnsAnyUtility] = useState(false);
+  const [utilityOwnershipLoading, setUtilityOwnershipLoading] = useState(true);
+  const [stripeReadyToReceive, setStripeReadyToReceive] = useState<
+    boolean | null
+  >(null);
+  const [stripeStatusLoading, setStripeStatusLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setUtilityOwnershipLoading(true);
+        setStripeStatusLoading(true);
+
+        const meRes = await fetch("/api/user/me");
+        if (!meRes.ok) throw new Error("Failed to fetch current user");
+        const me = await meRes.json();
+        if (cancelled) return;
+
+        setCurrentUserId(me.id);
+
+        const [utilRes, stripeRes] = await Promise.all([
+          fetch("/api/utilities"),
+          fetch("/api/payments/stripe/connect/status-from-db"),
+        ]);
+
+        if (!utilRes.ok) throw new Error("Failed to fetch utilities");
+        const utilData = await utilRes.json();
+        if (cancelled) return;
+
+        const utilities = utilData.utilityAccounts ?? [];
+        const owns = utilities.some(
+          (u: { ownerUserId: string | null }) => u.ownerUserId === me.id
+        );
+        setUserOwnsAnyUtility(owns);
+
+        // Stripe status (DB-only endpoint)
+        if (stripeRes.ok) {
+          const st = await stripeRes.json().catch(() => ({}));
+          if (!cancelled) setStripeReadyToReceive(!!st?.isReadyToReceive);
+        } else {
+          if (!cancelled) setStripeReadyToReceive(null);
+        }
+      } catch (e) {
+        console.error("Failed to load ownership/stripe status:", e);
+        if (!cancelled) {
+          setUserOwnsAnyUtility(false);
+          setStripeReadyToReceive(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setUtilityOwnershipLoading(false);
+          setStripeStatusLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -355,6 +420,82 @@ export default function PaymentsPage({
             </p>
 
             <div className="space-y-3">
+              {/* Bank Deposit row — UI-only placeholder */}
+              <div
+                className="flex items-center gap-3 p-4 rounded-lg border border-[#FEF3C7] bg-[#FFFBEB]"
+                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
+              >
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+                  style={{ backgroundColor: "#EFF6FF" }}
+                >
+                  <Building2 className="h-4 w-4" style={{ color: "#3B82F6" }} />
+                </div>
+
+                <div className="flex-1 flex items-center gap-3">
+                  <div className="flex-shrink-0" style={{ width: "100px" }}>
+                    <h3
+                      className="text-[14px] text-[#111827]"
+                      style={{ fontWeight: 600 }}
+                    >
+                      Bank Deposit
+                    </h3>
+                    <p className="text-[11px] text-[#6B7280]">(Stripe)</p>
+                  </div>
+
+                  <div className="flex-1 flex items-center gap-3">
+                    <div className="flex-1">
+                      <p
+                        className="text-[13px] text-[#92400E]"
+                        style={{ fontWeight: 500 }}
+                      >
+                        Verify identity to enable payouts
+                      </p>
+                    </div>
+
+                    {stripeReadyToReceive === true ? (
+                      <VerifiedBadge />
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={
+                          utilityOwnershipLoading ||
+                          stripeStatusLoading ||
+                          !userOwnsAnyUtility
+                        }
+                        className={[
+                          "h-9 px-4 text-[13px] rounded-lg",
+                          utilityOwnershipLoading ||
+                          stripeStatusLoading ||
+                          !userOwnsAnyUtility
+                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            : "bg-[#3B82F6] hover:bg-[#2563EB] text-white",
+                        ].join(" ")}
+                        style={{ fontWeight: 600 }}
+                        onClick={async () => {
+                          if (
+                            utilityOwnershipLoading ||
+                            stripeStatusLoading ||
+                            !userOwnsAnyUtility
+                          )
+                            return;
+                          await ensureOwnerConnectOnboarding(); // redirect
+                        }}
+                        title={
+                          !userOwnsAnyUtility
+                            ? "Only utility owners can enable payouts."
+                            : "Verify your identity to enable payouts."
+                        }
+                      >
+                        {utilityOwnershipLoading || stripeStatusLoading
+                          ? "Checking..."
+                          : "Verify Now"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* Venmo Row (UI only) */}
               <div
                 className="flex items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white"
@@ -439,60 +580,7 @@ export default function PaymentsPage({
                     className="flex items-center gap-1 px-2 py-1 rounded-md"
                     style={{ backgroundColor: "#ECFDF5" }}
                   >
-                    <Check className="h-3 w-3" style={{ color: "#00B948" }} />
-                    <span
-                      className="text-[11px]"
-                      style={{ fontWeight: 600, color: "#00B948" }}
-                    >
-                      Verified
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bank Deposit (Autopay) row — UI-only placeholder */}
-              <div
-                className="flex items-center gap-3 p-4 rounded-lg border border-[#FEF3C7] bg-[#FFFBEB]"
-                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
-              >
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
-                  style={{ backgroundColor: "#EFF6FF" }}
-                >
-                  <Building2 className="h-4 w-4" style={{ color: "#3B82F6" }} />
-                </div>
-
-                <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-shrink-0" style={{ width: "100px" }}>
-                    <h3
-                      className="text-[14px] text-[#111827]"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Bank Deposit
-                    </h3>
-                    <p className="text-[11px] text-[#6B7280]">(Autopay)</p>
-                  </div>
-
-                  <div className="flex-1 flex items-center gap-3">
-                    <div className="flex-1">
-                      <p
-                        className="text-[13px] text-[#92400E]"
-                        style={{ fontWeight: 500 }}
-                      >
-                        Verify identity to enable payouts
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="h-9 px-4 text-[13px] bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg"
-                      style={{ fontWeight: 600 }}
-                      onClick={() =>
-                        alert("Stripe identity verification (later)")
-                      }
-                    >
-                      Verify Now
-                    </button>
+                    <VerifiedBadge />
                   </div>
                 </div>
               </div>

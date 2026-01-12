@@ -19,6 +19,7 @@ enum BillStatus {
   PAID
   FAILED
   CANCELED
+  PENDING_APPROVAL
 }
 
 enum UtilityLinkJobStatus {
@@ -45,29 +46,34 @@ enum PaymentAttemptStatus {
 }
 
 model User {
-  id                     String            @id @default(cuid())
-  stripeCustomerId       String?           @unique
-  name                   String?
-  email                  String?           @unique
-  emailVerified          DateTime?
-  image                  String?
-  householdId            String?
-  hasCompletedOnboarding Boolean           @default(false)
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
-  autopayEnabled         Boolean?          @default(false)
-  accounts               Account[]
-  activities             Activity[]
-  createdBills           Bill[]            @relation("BillCreator")
-  ownedBills             Bill[]            @relation("BillOwner")
-  billParticipants       BillParticipant[]
-  adminHouseholds        Household[]       @relation("HouseholdAdmin")
-  createdHouseholds      Household[]       @relation("HouseholdCreator")
-  paymentMethods         PaymentMethod[]
-  sessions               Session[]
-  household              Household?        @relation(fields: [householdId], references: [id])
-  utilityAccounts        UtilityAccount[]
-  paymentAttempts        PaymentAttempt[]
+  id                                 String            @id @default(cuid())
+  stripeCustomerId                   String?           @unique
+  name                               String?
+  email                              String?           @unique
+  emailVerified                      DateTime?
+  image                              String?
+  householdId                        String?
+  hasCompletedOnboarding             Boolean           @default(false)
+  createdAt                          DateTime          @default(now())
+  updatedAt                          DateTime          @updatedAt
+  autopayEnabled                     Boolean?          @default(false)
+  accounts                           Account[]
+  activities                         Activity[]
+  createdBills                       Bill[]            @relation("BillCreator")
+  ownedBills                         Bill[]            @relation("BillOwner")
+  billParticipants                   BillParticipant[]
+  adminHouseholds                    Household[]       @relation("HouseholdAdmin")
+  createdHouseholds                  Household[]       @relation("HouseholdCreator")
+  paymentMethods                     PaymentMethod[]
+  sessions                           Session[]
+  household                          Household?        @relation(fields: [householdId], references: [id])
+  utilityAccounts                    UtilityAccount[]
+  paymentAttempts                    PaymentAttempt[]
+  stripeConnectedAccountId           String?           @unique
+  stripeConnectChargesEnabled        Boolean?
+  stripeConnectPayoutsEnabled        Boolean?
+  stripeConnectDetailsSubmitted      Boolean?
+  stripeConnectOnboardingCompletedAt DateTime?
 }
 
 model Household {
@@ -255,7 +261,7 @@ model PaymentMethod {
   userId String
 
   // provider mapping
-  provider                String  @default("stripe") // stripe, venmo
+  provider                String @default("stripe") // stripe, venmo
   providerPaymentMethodId String @unique // pm_...
 
   // type + display
@@ -293,8 +299,9 @@ model PaymentAttempt {
   amountCents Int
   currency    String @default("usd")
 
-  provider         String // "stripe" | "venmo"
-  providerIntentId String? @unique // pi_... (Stripe PaymentIntent id)
+  provider           String // "stripe" | "venmo"
+  providerIntentId   String? @unique // pi_... (Stripe PaymentIntent id)
+  providerTransferId String? @unique // tr_... Stripe Transfer id
 
   status PaymentAttemptStatus
 

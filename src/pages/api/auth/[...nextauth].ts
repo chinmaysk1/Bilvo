@@ -13,6 +13,13 @@ declare module "next-auth/jwt" {
   }
 }
 
+declare module "next-auth" {
+  interface Session {
+    hasCompletedOnboarding?: boolean;
+    accessToken?: string;
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -36,14 +43,35 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+      // Always keep userId on token
       if (user?.id) token.userId = user.id;
+
+      // If client calls `update({ hasCompletedOnboarding: true })`
+      if (
+        trigger === "update" &&
+        session?.hasCompletedOnboarding !== undefined
+      ) {
+        token.hasCompletedOnboarding = session.hasCompletedOnboarding;
+      }
+
+      // On sign-in (user exists) OR if token is missing the field, hydrate from DB
+      // This is the part your middleware needs.
+      if (
+        (user?.id && token.hasCompletedOnboarding === undefined) ||
+        (token.userId && token.hasCompletedOnboarding === undefined)
+      ) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: (user?.id ?? token.userId)! },
+          select: { hasCompletedOnboarding: true },
+        });
+        token.hasCompletedOnboarding = dbUser?.hasCompletedOnboarding ?? false;
+      }
 
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
 
-        // Safer than update() (avoids "record not found" race)
         await prisma.account.updateMany({
           where: {
             provider: account.provider,
@@ -65,22 +93,18 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.userId;
       }
 
-      if (token.accessToken) {
-        (session as any).accessToken = token.accessToken;
-      }
+      // expose these to client if you want
+      if (token.accessToken) (session as any).accessToken = token.accessToken;
+      (session as any).hasCompletedOnboarding =
+        token.hasCompletedOnboarding ?? false;
 
-      // Single DB lookup for both name + onboarding (and by userId)
+      // Optional: keep your name lookup if you want, but it's not required for onboarding gating
       if (token?.userId) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.userId },
-          select: { name: true, hasCompletedOnboarding: true },
+          select: { name: true },
         });
-
-        if (dbUser) {
-          session.user.name = dbUser.name ?? session.user.name ?? null;
-          (session as any).hasCompletedOnboarding =
-            dbUser.hasCompletedOnboarding;
-        }
+        if (dbUser?.name) session.user.name = dbUser.name;
       }
 
       return session;

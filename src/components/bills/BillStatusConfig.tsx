@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { BillStatus } from "@prisma/client";
+import { Bill } from "@/interfaces/bills";
 
 export type BillStatusType =
   | "SCHEDULED"
@@ -21,7 +22,16 @@ export type BillStatusType =
   | "PAID"
   | "FAILED"
   | "CANCELED"
-  | "PROCESSING";
+  | "PROCESSING"
+  | "PENDING_APPROVAL";
+
+interface statusBadgeContextData {
+  dueDate?: string;
+  autopayDate?: string;
+  failureReason?: string;
+  isOverdue?: boolean;
+  billOwnerName?: string | null;
+}
 
 export interface StatusConfig {
   label: string;
@@ -34,12 +44,7 @@ export interface StatusConfig {
 
 export const getStatusConfig = (
   status: BillStatusType,
-  contextData?: {
-    dueDate?: string;
-    autopayDate?: string;
-    failureReason?: string;
-    isOverdue?: boolean;
-  }
+  contextData?: statusBadgeContextData
 ): StatusConfig => {
   switch (status) {
     case BillStatus.SCHEDULED:
@@ -61,6 +66,17 @@ export const getStatusConfig = (
         icon: Clock,
         tooltip:
           "Payment in progress — estimated clear date in 2–3 business days",
+      };
+
+    case BillStatus.PENDING_APPROVAL:
+      return {
+        label: "Pending Approval",
+        bg: "#FEF6E6",
+        color: "#F2C94C",
+        icon: Calendar,
+        tooltip: contextData?.billOwnerName
+          ? `Pending approval from ${contextData.billOwnerName}`
+          : "Pending approval from bill owner",
       };
 
     case BillStatus.PAID:
@@ -105,12 +121,7 @@ export const getStatusConfig = (
 
 interface StatusBadgeProps {
   status: BillStatusType;
-  contextData?: {
-    dueDate?: string;
-    autopayDate?: string;
-    failureReason?: string;
-    isOverdue?: boolean;
-  };
+  contextData?: statusBadgeContextData;
   showTooltip?: boolean;
   size?: "sm" | "md";
   onClick?: () => void;
@@ -206,17 +217,28 @@ export function StatusBadge({
   return badge;
 }
 
-export function determineBillStatus(bill: {
-  isPaid?: boolean;
-  isProcessing?: boolean;
-  autopayEnabled?: boolean;
-  hasFailed?: boolean;
-  dueDate?: string;
-}): BillStatusType {
-  if (bill.hasFailed) return BillStatus.FAILED;
-  if (bill.isPaid) return BillStatus.PAID;
-  if (bill.isProcessing) return "PROCESSING";
-  if (bill.autopayEnabled) return BillStatus.SCHEDULED;
+type MyPart = {
+  id: string;
+  autopayEnabled: boolean;
+} | null;
+
+export function determineMyStatus(args: {
+  myPart: MyPart;
+  hasSucceededAttempt: boolean;
+  hasFailedAttempt: boolean;
+}): BillStatus {
+  const { myPart, hasSucceededAttempt, hasFailedAttempt } = args;
+
+  // SUCCEEDED → PAID
+  if (hasSucceededAttempt) return BillStatus.PAID;
+
+  // FAILED → FAILED
+  if (hasFailedAttempt) return BillStatus.FAILED;
+
+  // Autopay enabled → SCHEDULED
+  if (myPart?.autopayEnabled) return BillStatus.SCHEDULED;
+
+  // Default
   return BillStatus.PENDING;
 }
 

@@ -1,10 +1,18 @@
+import { PaymentMethodStatus } from "@prisma/client";
+
 export interface PaymentMethod {
   id: string;
-  type: string;
-  last4: string;
+  provider: "stripe";
+  providerPaymentMethodId: string; // Stripe pm_...
+  type: "card" | "bank";
   brand?: string;
+  last4: string;
+  expMonth?: number | null;
+  expYear?: number | null;
+  status: PaymentMethodStatus;
   isDefault: boolean;
   createdAt: string;
+  priorityOrder?: number;
 }
 
 export type PriorityItem = {

@@ -34,7 +34,8 @@ import {
 } from "@/components/ui/dialog";
 
 import { PaymentLedgerDrawer } from "@/components/bills/PaymentLedgerDrawer";
-import { PayBillModal } from "@/components/bills/PayBillModal";
+import { PaymentMethodModal } from "@/components/bills/PaymentMethodModal";
+import { PaymentConfirmationModal } from "@/components/bills/PaymentConfirmationModal";
 import ScanGmailUploadButton from "@/components/bills/ScanGmailUploadButton";
 
 import { toast } from "sonner";
@@ -42,6 +43,7 @@ import { motion } from "framer-motion";
 
 import {
   StatusBadge,
+  determineMyStatus,
   isBillOverdue,
 } from "@/components/bills/BillStatusConfig";
 import { SplitBadge } from "@/components/bills/SplitBadge";
@@ -64,6 +66,7 @@ import {
 import { BillStatus } from "@prisma/client";
 import type { Bill } from "@/interfaces/bills";
 import type { HouseholdApiMember as HouseholdMember } from "@/interfaces/household";
+import { PayWithStripeModal } from "@/components/bills/PayWithStripeModal";
 
 interface BillsPageProps {
   bills: Bill[];
@@ -107,25 +110,25 @@ export default function BillsPage({
   const router = useRouter();
 
   const [bills, setBills] = useState(initialBills);
-  const [autopayStates, setAutopayStates] = useState<Record<string, boolean>>(
-    initialBills.reduce(
-      (acc, bill) => ({ ...acc, [bill.id]: !!bill.myAutopayEnabled }),
-      {}
-    )
-  );
 
   const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
 
-  const [payBillModalOpen, setPayBillModalOpen] = useState(false);
+  const [paymentMethodModalOpen, setPaymentMethodModalOpen] = useState(false);
+  const [paymentConfirmationOpen, setPaymentConfirmationOpen] = useState(false);
+  const [stripePayOpen, setStripePayOpen] = useState(false);
+
   const [selectedBillForPayment, setSelectedBillForPayment] =
     useState<any>(null);
 
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    "venmo" | "zelle" | "bank" | "card" | null
+  >(null);
+  const [stripePaymentType, setStripePaymentType] = useState<"card" | "bank">(
+    "card"
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | "PENDING" | "SCHEDULED" | "PAID"
-  >("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | BillStatus>("all");
   const [sortBy, setSortBy] = useState<"due-date" | "amount" | "biller">(
     "due-date"
   );
@@ -142,7 +145,7 @@ export default function BillsPage({
   };
 
   const pendingBills = useMemo(
-    () => bills.filter((b) => b.status !== BillStatus.PAID),
+    () => bills.filter((b) => b.myStatus !== BillStatus.PAID),
     [bills]
   );
 
@@ -152,13 +155,12 @@ export default function BillsPage({
   );
 
   const autopayCount = useMemo(
-    () => Object.values(autopayStates).filter(Boolean).length,
-    [autopayStates]
+    () => bills.filter((b) => !!b.myAutopayEnabled).length,
+    [bills]
   );
 
-  // "Unpaid" in your app maps to BillStatus.PENDING (from your existing page)
   const unpaidBills = useMemo(
-    () => bills.filter((b) => b.status !== BillStatus.PAID).length,
+    () => bills.filter((b) => b.myStatus !== BillStatus.PAID).length,
     [bills]
   );
 
@@ -203,7 +205,7 @@ export default function BillsPage({
     }
 
     if (statusFilter !== "all") {
-      list = list.filter((bill) => bill.status === statusFilter);
+      list = list.filter((bill) => bill.myStatus === statusFilter);
     }
 
     // Sort bills
@@ -225,19 +227,32 @@ export default function BillsPage({
     const bill = bills.find((b) => b.id === billId);
     if (!bill) return;
 
-    const previous = autopayStates[billId] ?? false;
-    const next = !previous;
+    const previousAutopay = !!bill.myAutopayEnabled;
+    const nextAutopay = !previousAutopay;
 
-    // optimistic UI
-    setAutopayStates((prev) => ({ ...prev, [billId]: next }));
+    const previousMyStatus = bill.myStatus;
+
+    // ---------- optimistic ----------
+    const optimisticMyStatus = determineMyStatus({
+      myPart: {
+        id: bill.myBillParticipantId!,
+        autopayEnabled: nextAutopay,
+      },
+      hasSucceededAttempt: bill.myHasPaid,
+      hasFailedAttempt: bill.myStatus === BillStatus.FAILED,
+    });
+
+    patchBill(billId, {
+      myAutopayEnabled: nextAutopay,
+      myStatus: optimisticMyStatus,
+    });
 
     try {
       const res = await fetch(`/api/bills/${billId}/autopay`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          enabled: next,
-          // NOTE: you currently pass null unless you support choosing PM in UI.
+          enabled: nextAutopay,
           paymentMethodId: bill.myPaymentMethodId ?? null,
         }),
       });
@@ -249,38 +264,58 @@ export default function BillsPage({
 
       const data = await res.json();
 
-      setAutopayStates((prev) => ({
-        ...prev,
-        [billId]: !!data.autopayEnabled,
-      }));
+      // ---------- confirm from server ----------
+      const confirmedAutopay = !!data.autopayEnabled;
 
-      if (next) {
-        toast.success("Autopay enabled", {
-          description:
-            bill.status === BillStatus.PENDING
-              ? `This bill will be paid automatically on ${new Date(
-                  bill.dueDate
-                ).toLocaleDateString()}.`
-              : "Future bills will be paid automatically.",
-        });
-      } else {
-        toast.info("Autopay disabled", {
-          description: "Manual payment required for this bill.",
-        });
-      }
+      const confirmedMyStatus = determineMyStatus({
+        myPart: {
+          id: bill.myBillParticipantId!,
+          autopayEnabled: confirmedAutopay,
+        },
+        hasSucceededAttempt: bill.myHasPaid,
+        hasFailedAttempt: bill.myStatus === BillStatus.FAILED,
+      });
+
+      patchBill(billId, {
+        myAutopayEnabled: confirmedAutopay,
+        myStatus: confirmedMyStatus,
+      });
+
+      toast.success(confirmedAutopay ? "Autopay enabled" : "Autopay disabled", {
+        description: confirmedAutopay
+          ? `This bill will be paid automatically on ${new Date(
+              bill.dueDate
+            ).toLocaleDateString()}.`
+          : "Manual payment required for this bill.",
+      });
     } catch (err) {
       console.error("Failed to update autopay", err);
-      setAutopayStates((prev) => ({ ...prev, [billId]: previous }));
+
+      // ---------- rollback ----------
+      patchBill(billId, {
+        myAutopayEnabled: previousAutopay,
+        myStatus: previousMyStatus,
+      });
+
       toast.error("Failed to update autopay", {
         description: "Please try again.",
       });
     }
   };
 
-  const openPayModal = (bill: Bill, e?: React.MouseEvent) => {
+  const startPayFlow = (bill: Bill, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
 
+    if (getIsOwner(bill)) {
+      toast.info("You can’t pay bills you manage.", {
+        description: "Only other household members can pay their share.",
+      });
+      return;
+    }
+
     const { icon, iconColor, iconBg } = getBillerIcon(bill.billerType);
+    const owner = getBillOwner(bill);
+
     setSelectedBillForPayment({
       id: bill.id,
       biller: bill.biller,
@@ -293,32 +328,10 @@ export default function BillsPage({
       icon,
       iconColor,
       iconBg,
+      recipientName: owner.name,
     });
-    setPayBillModalOpen(true);
-  };
 
-  const handlePaymentSubmit = (
-    billId: string,
-    amount: number,
-    paymentMethodId: string
-  ) => {
-    // keep your existing “simulate then mark PAID” behavior
-    setBills((prev) =>
-      prev.map((b) =>
-        b.id === billId ? { ...b, status: BillStatus.SCHEDULED } : b
-      )
-    );
-
-    setTimeout(() => {
-      setBills((prev) =>
-        prev.map((b) =>
-          b.id === billId ? { ...b, status: BillStatus.PAID } : b
-        )
-      );
-      toast.success("Payment cleared", {
-        description: "Your payment has been successfully processed.",
-      });
-    }, 5000);
+    setPaymentMethodModalOpen(true);
   };
 
   const handleDeleteBillClick = (bill: Bill, e?: React.MouseEvent) => {
@@ -360,6 +373,82 @@ export default function BillsPage({
         description: "Please try again.",
       });
     }
+  };
+
+  const handleVenmoClick = () => {
+    setPaymentMethodModalOpen(false);
+    setSelectedPaymentMethod("venmo");
+    setPaymentConfirmationOpen(true);
+  };
+
+  const handleZelleClick = () => {
+    setPaymentMethodModalOpen(false);
+    setSelectedPaymentMethod("zelle");
+    setPaymentConfirmationOpen(true);
+  };
+
+  const handleAutoPayClick = () => {
+    setPaymentMethodModalOpen(false);
+    toast.success("Autopay setup coming soon!");
+  };
+
+  const handleBankAccountClick = () => {
+    setPaymentMethodModalOpen(false);
+    setSelectedPaymentMethod("bank");
+    setStripePaymentType("bank");
+    setStripePayOpen(true);
+  };
+
+  const handleCreditCardClick = () => {
+    setPaymentMethodModalOpen(false);
+    setSelectedPaymentMethod("card");
+    setStripePaymentType("card");
+    setStripePayOpen(true);
+  };
+
+  const handlePaymentConfirmed = () => {
+    setPaymentConfirmationOpen(false);
+
+    if (!selectedBillForPayment?.id) return;
+
+    // Record as PENDING_APPROVAL
+    patchBill(selectedBillForPayment.id, {
+      myStatus: BillStatus.PENDING_APPROVAL,
+    });
+
+    toast.success("Payment recorded!", {
+      description: "Thanks — we’ll mark it paid once it clears.",
+      duration: 4000,
+    });
+
+    setSelectedBillForPayment(null);
+    setSelectedPaymentMethod(null);
+  };
+
+  const markMyPaidOptimistic = (billId: string) => {
+    setBills((prev) =>
+      prev.map((b: any) => (b.id === billId ? { ...b, myHasPaid: true } : b))
+    );
+  };
+
+  const handlePaymentCancelled = () => {
+    setPaymentConfirmationOpen(false);
+    toast.info("Payment cancelled", {
+      description: "No worries, you can try again later.",
+    });
+    setSelectedPaymentMethod(null);
+    // keep bill selected or clear it:
+    setSelectedBillForPayment(null);
+  };
+
+  const getIsOwner = (bill: Bill) => {
+    return bill.ownerUserId === currentUserId;
+  };
+
+  const patchBill = (billId: string, patch: Partial<Bill>) => {
+    setBills((prev) =>
+      prev.map((b) => (b.id === billId ? ({ ...b, ...patch } as Bill) : b))
+    );
   };
 
   return (
@@ -461,12 +550,6 @@ export default function BillsPage({
               if (!imported || imported.length === 0) return;
 
               setBills((prev) => [...prev, ...imported]);
-
-              setAutopayStates((prev) => {
-                const next = { ...prev };
-                for (const b of imported) next[b.id] = !!b.myAutopayEnabled;
-                return next;
-              });
             }}
             className="rounded-lg cursor-pointer"
             style={{
@@ -711,9 +794,11 @@ export default function BillsPage({
                   <th className="px-6 py-3 text-left">
                     <span style={thStyle}>Status</span>
                   </th>
-                  {/* IMPORTANT: header is "Autopay" and centered */}
                   <th className="px-6 py-3 text-center">
                     <span style={thStyle}>Autopay</span>
+                  </th>
+                  <th className="px-6 py-3 text-center">
+                    <span style={thStyle}></span>
                   </th>
                 </tr>
               </thead>
@@ -728,14 +813,18 @@ export default function BillsPage({
 
                   const owner = getBillOwner(bill);
 
+                  const canPayThisBill = !getIsOwner(bill);
+
                   const isOverdue =
-                    bill.status === BillStatus.PENDING &&
+                    bill.myStatus === BillStatus.PENDING &&
                     isBillOverdue(bill.dueDate);
 
-                  // Show pay for pending OR scheduled (Figma style), not just hover
+                  // Show pay for pending OR scheduled AND not bill owner
                   const showPay =
-                    bill.status === BillStatus.PENDING ||
-                    bill.status === BillStatus.SCHEDULED;
+                    (bill.myStatus === BillStatus.PENDING ||
+                      bill.myStatus === BillStatus.SCHEDULED) &&
+                    canPayThisBill &&
+                    !bill.myHasPaid;
 
                   // If you want stricter permission later, wire it here.
                   const canDeleteBill = true;
@@ -757,11 +846,9 @@ export default function BillsPage({
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = "#F9FAFB";
-                        setHoveredRowId(bill.id);
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = "#FFFFFF";
-                        setHoveredRowId(null);
                       }}
                       onClick={() => {
                         // Optional: row click to details later
@@ -902,23 +989,20 @@ export default function BillsPage({
                         style={{ paddingTop: 14, paddingBottom: 14 }}
                       >
                         <motion.div
-                          key={`status-${bill.id}-${bill.status}`}
+                          key={`status-${bill.id}-${bill.myStatus}`}
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
                         >
                           <StatusBadge
-                            status={bill.status as BillStatus}
+                            status={bill.myStatus as BillStatus}
                             contextData={{
                               dueDate: formatDate(bill.dueDate),
-                              autopayDate: autopayStates[bill.id]
+                              autopayDate: bill.myAutopayEnabled
                                 ? formatDate(bill.dueDate)
                                 : undefined,
                               isOverdue,
-                            }}
-                            onClick={() => {
-                              if (bill.status === BillStatus.PENDING)
-                                openPayModal(bill);
+                              billOwnerName: getBillOwner(bill).name,
                             }}
                           />
                         </motion.div>
@@ -950,7 +1034,7 @@ export default function BillsPage({
                               >
                                 <Button
                                   size="sm"
-                                  onClick={(e) => openPayModal(bill, e)}
+                                  onClick={(e) => startPayFlow(bill, e)}
                                   className="max-h-7 px-3 gap-1.5 cursor-pointer"
                                   style={{
                                     backgroundColor: "#00B948",
@@ -976,7 +1060,7 @@ export default function BillsPage({
                             }}
                           >
                             <Switch
-                              checked={!!autopayStates[bill.id]}
+                              checked={!!bill.myAutopayEnabled}
                               onCheckedChange={() => toggleAutopay(bill.id)}
                               className="data-[state=checked]:bg-[#00B948]"
                             />
@@ -1024,12 +1108,58 @@ export default function BillsPage({
         onOpenChange={setHistoryDrawerOpen}
       />
 
-      <PayBillModal
-        open={payBillModalOpen}
-        onOpenChange={setPayBillModalOpen}
-        bill={selectedBillForPayment}
-        onPaymentSubmit={handlePaymentSubmit}
-      />
+      {selectedBillForPayment && (
+        <PaymentMethodModal
+          open={paymentMethodModalOpen}
+          onOpenChange={(open) => {
+            setPaymentMethodModalOpen(open);
+            if (!open) setSelectedPaymentMethod(null);
+          }}
+          billName={selectedBillForPayment.biller}
+          amount={selectedBillForPayment.yourShare.toFixed(2)}
+          onVenmoClick={handleVenmoClick}
+          onZelleClick={handleZelleClick}
+          onAutoPayClick={handleAutoPayClick}
+          onBankAccountClick={handleBankAccountClick}
+          onCreditCardClick={handleCreditCardClick}
+          bankLabel="Pay with Bank Account"
+          cardLabel="Pay with Credit Card"
+        />
+      )}
+
+      {selectedBillForPayment && (
+        <PaymentConfirmationModal
+          open={paymentConfirmationOpen}
+          onOpenChange={setPaymentConfirmationOpen}
+          amount={selectedBillForPayment.yourShare.toFixed(2)}
+          recipientName={selectedBillForPayment.recipientName}
+          onConfirm={handlePaymentConfirmed}
+          onCancel={handlePaymentCancelled}
+        />
+      )}
+
+      {selectedPaymentMethod && selectedBillForPayment && (
+        <PayWithStripeModal
+          open={stripePayOpen}
+          onOpenChange={setStripePayOpen}
+          billParticipantId={
+            bills.find((b) => b.id === selectedBillForPayment.id)
+              ?.myBillParticipantId ?? null
+          }
+          biller={selectedBillForPayment.biller}
+          amountDisplay={selectedBillForPayment.yourShare.toFixed(2)}
+          recipientName={selectedBillForPayment.recipientName}
+          paymentType={stripePaymentType}
+          onSucceeded={() => {
+            patchBill(selectedBillForPayment.id, {
+              myHasPaid: true,
+              myStatus: BillStatus.PAID, // or PAID if you immediately clear
+            });
+            setSelectedBillForPayment(null);
+            setSelectedPaymentMethod(null);
+          }}
+        />
+      )}
 
       {/* Delete confirm */}
       <Dialog open={deleteBillModalOpen} onOpenChange={setDeleteBillModalOpen}>
@@ -1100,7 +1230,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: {
         bills: bills || [],
         householdMembers: householdData.household?.members || [],
-        currentUserId: householdData.user?.id || "",
+        currentUserId: householdData.currentUserId || "",
       },
     };
   } catch (error) {

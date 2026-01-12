@@ -257,3 +257,918 @@ Invalid `prisma.$queryRawUnsafe()` invocation:
 Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
 
 Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Starting utility link worker
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] poll 3000 ms | headless: false
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmjwa8hq50001kz04rnyuknat provider: AT&T Internet
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job failed cmjwa8hq50001kz04rnyuknat Unsupported provider: AT&T Internet
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0gx3wp0001h34w8xa99wyy provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0gx3wp0001h34w8xa99wyy → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0gx3wp0001h34w8xa99wyy
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0h0nsz0003h34wmwwztlip provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0h0nsz0003h34wmwwztlip → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0h0nsz0003h34wmwwztlip
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0imjvd0004h3rk9bx1n0sz provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0imjvd0004h3rk9bx1n0sz → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0imjvd0004h3rk9bx1n0sz
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0jncjy0001h3icn8avso1m provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jncjy0001h3icn8avso1m → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0jncjy0001h3icn8avso1m
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0jpwr30003h3ic4gs2gfpf provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0jpwr30003h3ic4gs2gfpf → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0jpwr30003h3ic4gs2gfpf
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0khxk10005h3ic3blb4pus provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0khxk10005h3ic3blb4pus → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0khxk10005h3ic3blb4pus
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0knf910007h3icnol6nehj provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0knf910007h3icnol6nehj → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0knf910007h3icnol6nehj
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk0l01a6000bh3ice89qqat1 provider: City of San Luis Obispo, CA
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → RUNNING: Initializing secure session
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → RUNNING: Starting secure browser
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → RUNNING: Navigating to SLO Water login portal
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → RUNNING: Submitting login credentials
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling username field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Filling password field...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Fields filled, clicking Log In...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Login successful - on home page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Clicking 'View My Bill' button...
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Landed on My Bill page
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → RUNNING: Extracting current bill information
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → RUNNING: Syncing bill to your account
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Bill saved and participants created successfully.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job cmk0l01a6000bh3ice89qqat1 → SUCCESS: Bill synced successfully
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job SUCCESS cmk0l01a6000bh3ice89qqat1
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Timed out fetching a new connection from the connection pool. More info: http://pris.ly/d/connection-pool (Current connection pool timeout: 10, connection limit: 29)
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Processing job cmk6erf9k0001h3qg5sbjauy1 provider: San Luis Garbage
+[utility-worker 42195b7e-f0e4-42f9-b0e2-7e1ccd976d62] Job failed cmk6erf9k0001h3qg5sbjauy1 Unsupported provider: San Luis Garbage
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Starting utility link worker
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] poll 3000 ms | headless: false
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6erwll0003h3qgipg5u86b provider: San Luis Garbage
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job failed cmk6erwll0003h3qgipg5u86b Unsupported provider: San Luis Garbage
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6esv0d0005h3qgi91ma3ex provider: San Luis Garbage
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job failed cmk6esv0d0005h3qgi91ma3ex Unsupported provider: San Luis Garbage
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6etj480007h3qgqvye4k2d provider: San Luis Garbage
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job failed cmk6etj480007h3qgqvye4k2d Unsupported provider: San Luis Garbage
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6etwdv0009h3qg1l2gdas2 provider: SoCalGas
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6etwdv0009h3qg1l2gdas2 → RUNNING: Initializing secure session
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6etwdv0009h3qg1l2gdas2 → RUNNING: Starting secure browser
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6etwdv0009h3qg1l2gdas2 → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6etwdv0009h3qg1l2gdas2 → RUNNING: Submitting login credentials
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Fields filled, clicking Log In...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6etwdv0009h3qg1l2gdas2 → RUNNING: Checking authentication status
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Saved error screenshot to error-snapshot-cmk6etwdv0009h3qg1l2gdas2.png
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job failed cmk6etwdv0009h3qg1l2gdas2 Login failed or timed out. Current URL: https://myaccount.socalgas.com/ui/login
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6evgzm000bh3qge3tnoe0j provider: City of San Luis Obispo, CA
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → RUNNING: Initializing secure session
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → RUNNING: Starting secure browser
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → RUNNING: Navigating to SLO Water login portal
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → RUNNING: Submitting login credentials
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling username field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling password field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Fields filled, clicking Log In...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Login successful - on home page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Clicking 'View My Bill' button...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Landed on My Bill page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → RUNNING: Extracting current bill information
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → RUNNING: Syncing bill to your account
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Bill saved and participants created successfully.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6evgzm000bh3qge3tnoe0j → SUCCESS: Bill synced successfully
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job SUCCESS cmk6evgzm000bh3qge3tnoe0j
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6f573q0001h30cbrvy1itf provider: City of San Luis Obispo, CA
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → RUNNING: Initializing secure session
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → RUNNING: Starting secure browser
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → RUNNING: Navigating to SLO Water login portal
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → RUNNING: Submitting login credentials
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling username field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling password field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Fields filled, clicking Log In...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Login successful - on home page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Clicking 'View My Bill' button...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Landed on My Bill page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → RUNNING: Extracting current bill information
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → RUNNING: Syncing bill to your account
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Bill saved and participants created successfully.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6f573q0001h30cbrvy1itf → SUCCESS: Bill synced successfully
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job SUCCESS cmk6f573q0001h30cbrvy1itf
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6fq5jl0008h30cjsmzcx4f provider: City of San Luis Obispo, CA
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → RUNNING: Initializing secure session
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → RUNNING: Starting secure browser
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → RUNNING: Navigating to SLO Water login portal
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → RUNNING: Submitting login credentials
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling username field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling password field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Fields filled, clicking Log In...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Login successful - on home page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Clicking 'View My Bill' button...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Landed on My Bill page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → RUNNING: Extracting current bill information
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → RUNNING: Syncing bill to your account
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Bill saved and participants created successfully.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6fq5jl0008h30cjsmzcx4f → SUCCESS: Bill synced successfully
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job SUCCESS cmk6fq5jl0008h30cjsmzcx4f
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6gdiaa000ah30cfx9xmh1h provider: City of San Luis Obispo, CA
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → RUNNING: Initializing secure session
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → RUNNING: Starting secure browser
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → RUNNING: Navigating to SLO Water login portal
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → RUNNING: Submitting login credentials
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling username field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling password field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Fields filled, clicking Log In...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Login successful - on home page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Clicking 'View My Bill' button...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Landed on My Bill page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → RUNNING: Extracting current bill information
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → RUNNING: Syncing bill to your account
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Bill saved and participants created successfully.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6gdiaa000ah30cfx9xmh1h → SUCCESS: Bill synced successfully
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job SUCCESS cmk6gdiaa000ah30cfx9xmh1h
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Processing job cmk6ifduc0003h34gauolji2d provider: City of San Luis Obispo, CA
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → RUNNING: Initializing secure session
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → RUNNING: Starting secure browser
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → RUNNING: Navigating to SLO Water login portal
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → RUNNING: Submitting login credentials
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling username field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Filling password field...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Fields filled, clicking Log In...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Login successful - on home page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Clicking 'View My Bill' button...
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Landed on My Bill page
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → RUNNING: Extracting current bill information
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → RUNNING: Syncing bill to your account
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Bill saved and participants created successfully.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job cmk6ifduc0003h34gauolji2d → SUCCESS: Bill synced successfully
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] Job SUCCESS cmk6ifduc0003h34gauolji2d
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 141a17fe-4512-4386-8cc5-f7886c7dfae3] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 6b91c30d-4cd5-4cbe-bb0e-10d98810e98b] Starting utility link worker
+[utility-worker 6b91c30d-4cd5-4cbe-bb0e-10d98810e98b] poll 3000 ms | headless: false
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Starting utility link worker
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] poll 3000 ms | headless: false
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Processing job cmkaiylxp0005h3h8tpdcm8nx provider: San Luis Garbage
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Initializing secure session
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Starting secure browser
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Submitting login credentials
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Fields filled, clicking Login...
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Checking authentication status
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Login successful - on dashboard page
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Extracting current bill information
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Acct scraped: 4110-10159362
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Scraped: $163.12 | Due: 1/20/2026
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → RUNNING: Syncing bill to your account
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Bill saved and participants created successfully.
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job cmkaiylxp0005h3h8tpdcm8nx → SUCCESS: Bill synced successfully
+[utility-worker 93b644da-2a2e-48c1-aa32-18a597d7b276] Job SUCCESS cmkaiylxp0005h3h8tpdcm8nx
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Starting utility link worker
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] poll 3000 ms | headless: false
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Processing job cmkak2zox0009h3h8a38w1b2n provider: AT&T Internet
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak2zox0009h3h8a38w1b2n → RUNNING: Initializing secure session
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak2zox0009h3h8a38w1b2n → RUNNING: Starting secure browser
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak2zox0009h3h8a38w1b2n → RUNNING: Navigating to AT&T sign-in
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Navigating to https://signin.att.com/dynamic/iamLRR/LrrController?IAM_OP=login&appName=m14186&loginSuccessURL=https:%2F%2Foidc.idp.clogin.att.com%2Fmga%2Fsps%2Foauth%2Foauth20%2Fauthorize%3Fresponse_type%3Did_token%26client_id%3Dm14186%26redirect_uri%3Dhttps%253A%252F%252Fwww.att.com%252Fmsapi%252Flogin%252Funauth%252Fservice%252Fv1%252Fhaloc%252Foidc%252Fredirect%26state%3Dfrom%253Dnx%26scope%3Dopenid%26response_mode%3Dform_post%26nonce%3DhjDVM56a
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak2zox0009h3h8a38w1b2n → RUNNING: Entering AT&T User ID
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Saved error screenshot to error-snapshot-cmkak2zox0009h3h8a38w1b2n.png
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job failed cmkak2zox0009h3h8a38w1b2n locator.waitFor: Timeout 20000ms exceeded.
+Call log:
+[2m  - waiting for locator('input#userID[name="userID"]') to be visible[22m
+
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Processing job cmkak64dq000bh3h8fx12fthy provider: AT&T Internet
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak64dq000bh3h8fx12fthy → RUNNING: Initializing secure session
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak64dq000bh3h8fx12fthy → RUNNING: Starting secure browser
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak64dq000bh3h8fx12fthy → RUNNING: Navigating to AT&T sign-in
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Navigating to https://signin.att.com/dynamic/iamLRR/LrrController?IAM_OP=login&appName=m14186&loginSuccessURL=https:%2F%2Foidc.idp.clogin.att.com%2Fmga%2Fsps%2Foauth%2Foauth20%2Fauthorize%3Fresponse_type%3Did_token%26client_id%3Dm14186%26redirect_uri%3Dhttps%253A%252F%252Fwww.att.com%252Fmsapi%252Flogin%252Funauth%252Fservice%252Fv1%252Fhaloc%252Foidc%252Fredirect%26state%3Dfrom%253Dnx%26scope%3Dopenid%26response_mode%3Dform_post%26nonce%3DhjDVM56a
+[utility-worker 93606d9f-3914-4bbb-9973-2125ae2cbabb] Job cmkak64dq000bh3h8fx12fthy → RUNNING: Entering AT&T User ID
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Starting utility link worker
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] poll 3000 ms | headless: false
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Processing job cmkak7m9n000dh3h8a49c3wsu provider: AT&T Internet
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Initializing secure session
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Starting secure browser
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Navigating to AT&T sign-in
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Entering AT&T User ID
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Entering AT&T password
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] AT&T password filled, clicking Sign in...
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Checking authentication status
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Auth outcome: UNKNOWN current URL: https://www.att.com/
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Navigating to AT&T billing center
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak7m9n000dh3h8a49c3wsu → RUNNING: Extracting current bill information
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job failed cmkak7m9n000dh3h8a49c3wsu page.screenshot: Target page, context or browser has been closed
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Processing job cmkak9856000fh3h8mmhn8ij8 provider: AT&T Internet
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Initializing secure session
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Starting secure browser
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Navigating to AT&T sign-in
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Entering AT&T User ID
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Entering AT&T password
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] AT&T password filled, clicking Sign in...
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Checking authentication status
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Auth outcome: UNKNOWN current URL: https://signin.att.com/dynamic/iamLRR/LrrController?IAM_OP=error&appName=m14186&error=invalid_request&error_description=902&errorCode=902
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Navigating to AT&T billing center
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkak9856000fh3h8mmhn8ij8 → RUNNING: Extracting current bill information
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Saved error screenshot to error-snapshot-cmkak9856000fh3h8mmhn8ij8.png
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job failed cmkak9856000fh3h8mmhn8ij8 locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="billandpay_BalanceCard"]').first() to be visible[22m
+
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Processing job cmkakeib3000hh3h89vz1y5oe provider: AT&T Internet
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Initializing secure session
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Starting secure browser
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Navigating to AT&T sign-in
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Entering AT&T User ID
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Entering AT&T password
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] AT&T password filled, clicking Sign in...
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Checking authentication status
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Auth outcome: UNKNOWN current URL: https://signin.att.com/dynamic/iamLRR/LrrController?IAM_OP=error&appName=m14186&error=invalid_request&error_description=902&errorCode=902
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Navigating to AT&T billing center
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job cmkakeib3000hh3h89vz1y5oe → RUNNING: Extracting current bill information
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Saved error screenshot to error-snapshot-cmkakeib3000hh3h89vz1y5oe.png
+[utility-worker 21f061d0-2f6d-4c66-977c-2c8a6c8cc2b8] Job failed cmkakeib3000hh3h89vz1y5oe locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="billandpay_BalanceCard"]').first() to be visible[22m
+
+[utility-worker 57d2085a-6469-4f81-aef5-5acbacc4aa12] Starting utility link worker
+[utility-worker 57d2085a-6469-4f81-aef5-5acbacc4aa12] poll 3000 ms | headless: false
+[utility-worker 57d2085a-6469-4f81-aef5-5acbacc4aa12] Processing job cmkaks1zk0001h3bwfp0cbz2g provider: AT&T Internet
+[utility-worker 57d2085a-6469-4f81-aef5-5acbacc4aa12] Job cmkaks1zk0001h3bwfp0cbz2g → RUNNING: Initializing secure session
+[utility-worker 57d2085a-6469-4f81-aef5-5acbacc4aa12] Job cmkaks1zk0001h3bwfp0cbz2g → RUNNING: Starting secure browser
+[utility-worker 57d2085a-6469-4f81-aef5-5acbacc4aa12] Job failed cmkaks1zk0001h3bwfp0cbz2g chromium.use is not a function
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Starting utility link worker
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] poll 3000 ms | headless: false
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Processing job cmkaktrks0003h3bwlwadxsff provider: AT&T Internet
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Job cmkaktrks0003h3bwlwadxsff → RUNNING: Initializing secure session
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Job cmkaktrks0003h3bwlwadxsff → RUNNING: Starting secure browser
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Job cmkaktrks0003h3bwlwadxsff → RUNNING: Navigating to AT&T sign-in
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Job cmkaktrks0003h3bwlwadxsff → RUNNING: Entering AT&T User ID
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Saved error screenshot to error-snapshot-cmkaktrks0003h3bwlwadxsff.png
+[utility-worker 96d19320-13f0-4770-b3b3-bf1a7ae3c1e7] Job failed cmkaktrks0003h3bwlwadxsff page.click: selector: expected string, got object
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Starting utility link worker
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] poll 3000 ms | headless: false
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Processing job cmkakxgog0005h3bwonxcg2uo provider: AT&T Internet
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Initializing secure session
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Starting secure browser
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Navigating to AT&T sign-in
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Entering AT&T User ID
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Entering AT&T password
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] AT&T password filled, clicking Sign in...
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Checking authentication status
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=bFt4ZW5LTGlhX2lbSDElXz51WUFfajIhSy5fXGo3Ki5uUTo4LUk6RlVBUSNzb1FSImskZzolQWh2SXAp
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Navigating to AT&T billing center
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job cmkakxgog0005h3bwonxcg2uo → RUNNING: Extracting current bill information
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Saved error screenshot to error-snapshot-cmkakxgog0005h3bwonxcg2uo.png
+[utility-worker 8cd5c166-b1cf-454e-b248-0fbfca79b155] Job failed cmkakxgog0005h3bwonxcg2uo locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="billandpay_BalanceCard"]').first() to be visible[22m
+
+[utility-worker 9626c29d-da8e-41b8-8adf-069194cb4b65] Starting utility link worker
+[utility-worker 9626c29d-da8e-41b8-8adf-069194cb4b65] poll 3000 ms | headless: false
+[utility-worker 2eafc192-3387-4d66-9817-48d774d4f77a] Starting utility link worker
+[utility-worker 2eafc192-3387-4d66-9817-48d774d4f77a] poll 3000 ms | headless: false
+[utility-worker 2eafc192-3387-4d66-9817-48d774d4f77a] Processing job cmkal4ae20007h3bwcf8b1l66 provider: AT&T Internet
+[utility-worker 2eafc192-3387-4d66-9817-48d774d4f77a] Job cmkal4ae20007h3bwcf8b1l66 → RUNNING: Initializing secure session
+[utility-worker 2eafc192-3387-4d66-9817-48d774d4f77a] Job cmkal4ae20007h3bwcf8b1l66 → RUNNING: Starting secure browser
+[utility-worker 2eafc192-3387-4d66-9817-48d774d4f77a] Job failed cmkal4ae20007h3bwcf8b1l66 path is not defined
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Starting utility link worker
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] poll 3000 ms | headless: false
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Processing job cmkal5e660009h3bw4ucz67xs provider: AT&T Internet
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Initializing secure session
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Starting secure browser
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Navigating to AT&T sign-in
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Entering AT&T User ID
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Entering AT&T password
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] AT&T password filled, clicking Sign in...
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Checking authentication status
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=aGdwWWEtakNZeDJCNHcqLT98c1J2N3A5YiU-TmNWZjozc1lZYFhDIk5GJEB0SUp5XksjYSpvY0ZfWH0-
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Navigating to AT&T billing center
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job cmkal5e660009h3bw4ucz67xs → RUNNING: Extracting current bill information
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Saved error screenshot to error-snapshot-cmkal5e660009h3bw4ucz67xs.png
+[utility-worker 66d5aa6c-b622-4c40-8ae0-4ee1c7ea1f53] Job failed cmkal5e660009h3bw4ucz67xs locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="billandpay_BalanceCard"]').first() to be visible[22m
+
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Starting utility link worker
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] poll 3000 ms | headless: false
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Processing job cmkalcjkx000bh3bw7yl80s26 provider: AT&T Internet
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Job cmkalcjkx000bh3bw7yl80s26 → RUNNING: Initializing secure session
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Job cmkalcjkx000bh3bw7yl80s26 → RUNNING: Starting secure browser
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Job cmkalcjkx000bh3bw7yl80s26 → RUNNING: Navigating to AT&T sign-in
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Job cmkalcjkx000bh3bw7yl80s26 → RUNNING: Entering AT&T User ID
+[utility-worker 7712e5b5-e0fa-4876-8ac7-0672f8006708] Job failed cmkalcjkx000bh3bw7yl80s26 page.screenshot: Target page, context or browser has been closed
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Starting utility link worker
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] poll 3000 ms | headless: false
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Processing job cmkale01h000dh3bw7yqr506x provider: AT&T Internet
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Initializing secure session
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Starting secure browser
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Navigating to AT&T sign-in
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Entering AT&T User ID
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Entering AT&T password
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] AT&T password filled, clicking Sign in...
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Checking authentication status
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=e0luZVAubmAwU191ckJ5eDhUJEgiMFg0UXcid2ZmcEp1anp8MTQybzxaSn1JIXV9aVZbQW5sMWtMRCN8
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] On dashboard, locating navbar billing link...
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Navigating to AT&T billing center
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job cmkale01h000dh3bw7yqr506x → RUNNING: Extracting current bill information
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Saved error screenshot to error-snapshot-cmkale01h000dh3bw7yqr506x.png
+[utility-worker 38b448ef-0806-4780-9eb7-cdaef751e955] Job failed cmkale01h000dh3bw7yqr506x locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="billandpay_BalanceCard"]').first() to be visible[22m
+
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Starting utility link worker
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] poll 3000 ms | headless: false
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Processing job cmkalo3am000fh3bwcm3ji5rp provider: AT&T Internet
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job cmkalo3am000fh3bwcm3ji5rp → RUNNING: Initializing secure session
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job cmkalo3am000fh3bwcm3ji5rp → RUNNING: Starting secure browser
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job cmkalo3am000fh3bwcm3ji5rp → RUNNING: Navigating to AT&T sign-in
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job cmkalo3am000fh3bwcm3ji5rp → RUNNING: Entering AT&T User ID
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job cmkalo3am000fh3bwcm3ji5rp → RUNNING: Entering AT&T password
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] AT&T password filled, clicking Sign in...
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job cmkalo3am000fh3bwcm3ji5rp → RUNNING: Checking authentication status
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=RGRuYWBfb2sjLU16NHk-XUJKbk5pXmU1JFVBJENfemJ2UiJhdU9FenVCQytuUyREfCooVGp5YktLVEld
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] On dashboard, locating navbar billing link...
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job cmkalo3am000fh3bwcm3ji5rp → RUNNING: Navigating to AT&T billing center
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Saved error screenshot to error-snapshot-cmkalo3am000fh3bwcm3ji5rp.png
+[utility-worker 744454c8-e4ad-448d-96ba-e279aa0953f2] Job failed cmkalo3am000fh3bwcm3ji5rp page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "networkidle"
+============================================================
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Starting utility link worker
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] poll 3000 ms | headless: false
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Processing job cmkalt8tf000hh3bwdgr4304v provider: AT&T Internet
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job cmkalt8tf000hh3bwdgr4304v → RUNNING: Initializing secure session
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job cmkalt8tf000hh3bwdgr4304v → RUNNING: Starting secure browser
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job cmkalt8tf000hh3bwdgr4304v → RUNNING: Navigating to AT&T sign-in
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job cmkalt8tf000hh3bwdgr4304v → RUNNING: Entering AT&T User ID
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job cmkalt8tf000hh3bwdgr4304v → RUNNING: Entering AT&T password
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] AT&T password filled, clicking Sign in...
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job cmkalt8tf000hh3bwdgr4304v → RUNNING: Checking authentication status
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=amY1J1wxaWh3dEJ6SD8oUltraUc0JVN4VWVIU1BRb0AkQi5Sbk4oeWZCeVdmNytSPFJpMU4iN2lKIjgk
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] On dashboard, locating navbar billing link...
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job cmkalt8tf000hh3bwdgr4304v → RUNNING: Navigating to AT&T billing center
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Saved error screenshot to error-snapshot-cmkalt8tf000hh3bwdgr4304v.png
+[utility-worker 2812931f-d26a-4960-8d57-8c6dff4cc878] Job failed cmkalt8tf000hh3bwdgr4304v page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "networkidle"
+============================================================
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Starting utility link worker
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] poll 3000 ms | headless: false
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Processing job cmkalyrkp000jh3bwd2sgqs00 provider: AT&T Internet
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkalyrkp000jh3bwd2sgqs00 → RUNNING: Initializing secure session
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkalyrkp000jh3bwd2sgqs00 → RUNNING: Starting secure browser
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkalyrkp000jh3bwd2sgqs00 → RUNNING: Navigating to AT&T sign-in
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkalyrkp000jh3bwd2sgqs00 → RUNNING: Entering AT&T User ID
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkalyrkp000jh3bwd2sgqs00 → RUNNING: Entering AT&T password
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] AT&T password filled, clicking Sign in...
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkalyrkp000jh3bwd2sgqs00 → RUNNING: Checking authentication status
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=a1J5KEA6RWpraXR0KGJdMi50XlY1MT9paWhLYlM2TmFUcU4mTWhzQ2cwIyZEbGp0bG9be0FrXlFpXT98
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkalyrkp000jh3bwd2sgqs00 → RUNNING: Navigating to AT&T billing center
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Feedback popup detected. Dismissing...
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Feedback popup detected. Dismissing...
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Feedback popup dismissed successfully.
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Feedback popup dismissed successfully.
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Saved error screenshot to error-snapshot-cmkalyrkp000jh3bwd2sgqs00.png
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job failed cmkalyrkp000jh3bwd2sgqs00 page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+  "commit" event fired
+  "domcontentloaded" event fired
+  "load" event fired
+============================================================
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Processing job cmkam2hne000lh3bweg1g89bu provider: AT&T Internet
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam2hne000lh3bweg1g89bu → RUNNING: Initializing secure session
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam2hne000lh3bweg1g89bu → RUNNING: Starting secure browser
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam2hne000lh3bweg1g89bu → RUNNING: Navigating to AT&T sign-in
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam2hne000lh3bweg1g89bu → RUNNING: Entering AT&T User ID
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam2hne000lh3bweg1g89bu → RUNNING: Entering AT&T password
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] AT&T password filled, clicking Sign in...
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam2hne000lh3bweg1g89bu → RUNNING: Checking authentication status
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Auth outcome: UNKNOWN current URL: https://www.att.com/
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job failed cmkam2hne000lh3bweg1g89bu page.screenshot: Target page, context or browser has been closed
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Processing job cmkam3t1i000nh3bw3gj4axt9 provider: AT&T Internet
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam3t1i000nh3bw3gj4axt9 → RUNNING: Initializing secure session
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam3t1i000nh3bw3gj4axt9 → RUNNING: Starting secure browser
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam3t1i000nh3bw3gj4axt9 → RUNNING: Navigating to AT&T sign-in
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam3t1i000nh3bw3gj4axt9 → RUNNING: Entering AT&T User ID
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam3t1i000nh3bw3gj4axt9 → RUNNING: Entering AT&T password
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] AT&T password filled, clicking Sign in...
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam3t1i000nh3bw3gj4axt9 → RUNNING: Checking authentication status
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Auth outcome: UNKNOWN current URL: https://signin.att.com/dynamic/iamLRR/LrrController?IAM_OP=error&appName=m14186&error=invalid_request&error_description=902&errorCode=902
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job failed cmkam3t1i000nh3bw3gj4axt9 page.screenshot: Target page, context or browser has been closed
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Processing job cmkam6lxa000ph3bwd5gstebi provider: AT&T Internet
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam6lxa000ph3bwd5gstebi → RUNNING: Initializing secure session
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam6lxa000ph3bwd5gstebi → RUNNING: Starting secure browser
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam6lxa000ph3bwd5gstebi → RUNNING: Navigating to AT&T sign-in
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam6lxa000ph3bwd5gstebi → RUNNING: Entering AT&T User ID
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam6lxa000ph3bwd5gstebi → RUNNING: Entering AT&T password
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] AT&T password filled, clicking Sign in...
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam6lxa000ph3bwd5gstebi → RUNNING: Checking authentication status
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=Iyg-RV51ZT9pSU0xQnM2XDJXJHZrdSprdyg3a2NqYHdgY3wwaTM8YyVtRXlTQFl3ZXZbWXNWM1VTKVs-
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job cmkam6lxa000ph3bwd5gstebi → RUNNING: Navigating to AT&T billing center
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Saved error screenshot to error-snapshot-cmkam6lxa000ph3bwd5gstebi.png
+[utility-worker dc3ed10f-7040-4248-ab7c-bddcbb30b0f4] Job failed cmkam6lxa000ph3bwd5gstebi page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+  "commit" event fired
+  "domcontentloaded" event fired
+  "load" event fired
+============================================================
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Starting utility link worker
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] poll 3000 ms | headless: false
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Processing job cmkaman6d000rh3bwk2f606hh provider: AT&T Internet
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Initializing secure session
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Starting secure browser
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Navigating to AT&T sign-in
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Entering AT&T User ID
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Entering AT&T password
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] AT&T password filled, clicking Sign in...
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Checking authentication status
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=TylkfGtKd0cuT1UzYFFMc2x1PnhjPHhEYEBELjYlLVZ3LS1weDoiTj5ZT1QncThRY0lHPGNXVVhiOFAp
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Navigating to AT&T billing center
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job cmkaman6d000rh3bwk2f606hh → RUNNING: Extracting current bill information
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Saved error screenshot to error-snapshot-cmkaman6d000rh3bwk2f606hh.png
+[utility-worker 9f824793-8029-4c27-ab70-aa83b0879901] Job failed cmkaman6d000rh3bwk2f606hh AT&T scrape failed: could not parse bill range ""
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Starting utility link worker
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] poll 3000 ms | headless: false
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Processing job cmkapzky3000th3bwul3h4co0 provider: AT&T Internet
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Initializing secure session
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Starting secure browser
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Navigating to AT&T sign-in
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Entering AT&T User ID
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Entering AT&T password
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] AT&T password filled, clicking Sign in...
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Checking authentication status
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=ejBVe3F7SWxze0ExUF5QT2RPNURQXSNOajA3dE1WR043QXgoXHFqMm95WEF4JV0ocDNFZ2gxbCYkYHwp
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Navigating to AT&T billing center
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job cmkapzky3000th3bwul3h4co0 → RUNNING: Extracting current bill information
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Saved error screenshot to error-snapshot-cmkapzky3000th3bwul3h4co0.png
+[utility-worker b5d71cb8-a24c-460e-b3a7-20878a1f997c] Job failed cmkapzky3000th3bwul3h4co0 expect is not defined
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Starting utility link worker
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] poll 3000 ms | headless: false
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Processing job cmkaq3tct000vh3bw4hi7jdll provider: AT&T Internet
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Initializing secure session
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Starting secure browser
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Navigating to AT&T sign-in
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Entering AT&T User ID
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Entering AT&T password
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] AT&T password filled, clicking Sign in...
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Checking authentication status
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=W0MxOVlAOmx9TElqUHtZTjFAKXNJUjw4UE4rMCFDPzFJc2xwYSFZKHsnP2lzckk5RikqcDN2X19GY258
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Navigating to AT&T billing center
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Feedback popup detected. Dismissing...
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Feedback popup detected. Dismissing...
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Feedback popup dismissed successfully.
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Feedback popup dismissed successfully.
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job cmkaq3tct000vh3bw4hi7jdll → RUNNING: Extracting current bill information
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Waiting for bill range text to hydrate... (Attempt 1)
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Waiting for bill range text to hydrate... (Attempt 2)
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Waiting for bill range text to hydrate... (Attempt 3)
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Waiting for bill range text to hydrate... (Attempt 4)
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Waiting for bill range text to hydrate... (Attempt 5)
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Waiting for bill range text to hydrate... (Attempt 6)
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Waiting for bill range text to hydrate... (Attempt 7)
+[utility-worker 3b2a0f33-35ca-4583-bddd-d668a1d075f2] Job failed cmkaq3tct000vh3bw4hi7jdll page.screenshot: Target page, context or browser has been closed
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Starting utility link worker
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] poll 3000 ms | headless: false
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Processing job cmkaqaypr000xh3bwg3jdljw6 provider: AT&T Internet
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Initializing secure session
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Starting secure browser
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Navigating to AT&T sign-in
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Entering AT&T User ID
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Entering AT&T password
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] AT&T password filled, clicking Sign in...
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Checking authentication status
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=OmZNZW5lQyoxXltHYkA-aE5tdlhaTHtgQFRxXEokIkMqbF4lcVdqYCtEIVZBJlBadyR2Om4mKSktX0U-
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Navigating to AT&T billing center
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Feedback popup detected. Dismissing...
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Feedback popup detected. Dismissing...
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Feedback popup dismissed successfully.
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Feedback popup dismissed successfully.
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Extracting current bill information
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] AT&T scraped: $80.3 | Due (range end): 12/25/2025 | Acct: 339854937
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → RUNNING: Syncing bill to your account
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job cmkaqaypr000xh3bwg3jdljw6 → SUCCESS: Bill synced successfully
+[utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job SUCCESS cmkaqaypr000xh3bwg3jdljw6
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Starting utility link worker
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] poll 3000 ms | headless: false

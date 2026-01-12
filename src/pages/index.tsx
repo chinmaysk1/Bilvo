@@ -13,7 +13,7 @@ import {
   ArrowUpRightIcon,
 } from "lucide-react";
 import { useRouter } from "next/router";
-import Footer from "@/components/LandingFooter";
+import Footer from "@/components/common/LandingFooter";
 import { useSession } from "next-auth/react";
 
 export default function BilvoLanding() {

@@ -1,4 +1,4 @@
-// pages/api/bills/[id].ts
+// pages/api/bills/[billId]/index.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
@@ -45,6 +45,15 @@ export default async function handler(
     }
 
     if (req.method === "GET") {
+      const myPart = bill.participants.find((p) => p.userId === me.id);
+
+      const myHasPaid = myPart
+        ? !!(await prisma.paymentAttempt.findFirst({
+            where: { billParticipantId: myPart.id, status: "SUCCEEDED" },
+            select: { id: true },
+          }))
+        : false;
+
       return res.status(200).json({
         bill: {
           ...bill,
@@ -52,6 +61,7 @@ export default async function handler(
           scheduledCharge: bill.scheduledCharge
             ? bill.scheduledCharge.toISOString()
             : null,
+          myHasPaid,
         },
       });
     }
@@ -107,7 +117,7 @@ export default async function handler(
         include: { participants: true },
       });
 
-      // ✅ Recompute equal split for ALL participants when amount/owner changes
+      // Recompute equal split for ALL participants when amount/owner changes
       if (amountChanged || ownerChanged) {
         const amt = updated.amount ?? 0;
 

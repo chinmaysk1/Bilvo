@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "../auth/[...nextauth]";
 import { BillStatus } from "@prisma/client";
+import { determineMyStatus } from "@/components/bills/BillStatusConfig";
 
 export default async function handler(
   req: NextApiRequest,
@@ -48,8 +49,52 @@ export default async function handler(
         },
       });
 
+      // 1) collect my participant ids
+      const myParticipantIds = bills
+        .map((b) => b.participants.find((p) => p.userId === myUserId)?.id)
+        .filter((id): id is string => !!id);
+
+      // 2) load all SUCCEEDED attempts for those participants
+      const succeeded = await prisma.paymentAttempt.findMany({
+        where: {
+          billParticipantId: { in: myParticipantIds },
+          status: "SUCCEEDED",
+        },
+        select: { billParticipantId: true },
+      });
+
+      // 3) build set for quick lookup
+      const paidSet = new Set(succeeded.map((a) => a.billParticipantId));
+
+      // Same for FAILED attempts
+      const failed = await prisma.paymentAttempt.findMany({
+        where: {
+          billParticipantId: { in: myParticipantIds },
+          status: "FAILED",
+        },
+        select: { billParticipantId: true },
+      });
+      const failedSet = new Set(failed.map((a) => a.billParticipantId));
+
       const shaped = bills.map((b) => {
         const myPart = b.participants.find((p) => p.userId === myUserId);
+
+        const myParticipantId = myPart?.id ?? null;
+        const hasSucceededAttempt = myParticipantId
+          ? paidSet.has(myParticipantId)
+          : false;
+        const hasFailedAttempt = myParticipantId
+          ? failedSet.has(myParticipantId)
+          : false;
+
+        const myStatus = determineMyStatus({
+          myPart: myPart
+            ? { id: myPart.id, autopayEnabled: !!myPart.autopayEnabled }
+            : null,
+          hasSucceededAttempt,
+          hasFailedAttempt,
+        });
+
         return {
           id: b.id,
           source: b.source,
@@ -59,6 +104,9 @@ export default async function handler(
           yourShare: myPart?.shareAmount ?? 0,
           myAutopayEnabled: !!myPart?.autopayEnabled,
           myPaymentMethodId: myPart?.paymentMethodId ?? null,
+          myBillParticipantId: myPart?.id ?? null,
+          myHasPaid: hasSucceededAttempt,
+          myStatus,
           dueDate: b.dueDate.toISOString(),
           scheduledCharge: b.scheduledCharge
             ? b.scheduledCharge.toISOString()
@@ -80,7 +128,7 @@ export default async function handler(
 
     // -----------------------
     // POST /api/bills
-    // Creates Bill + BillParticipants (✅ equal split for ALL members)
+    // Creates Bill + BillParticipants (equal split for ALL members)
     // -----------------------
     if (req.method === "POST") {
       const { biller, billerType, amount, dueDate, source, externalId } =
@@ -122,7 +170,7 @@ export default async function handler(
           },
         });
 
-        // 2) participants: ✅ equal split for all members (including owner)
+        // 2) participants: equal split for all members (including owner)
         const members = me.household!.members;
         const divisor = Math.max(members.length, 1);
         const split = amountNum ? amountNum / divisor : 0;

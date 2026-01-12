@@ -130,6 +130,7 @@ export default async function handler(
           myAutopayEnabled: false,
           myPaymentMethodId: null,
           participants: participantsForResponse,
+          myHasPaid: false,
         });
       } catch (error) {
         console.error(`Error importing bill ${billData.id}:`, error);

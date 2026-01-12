@@ -19,7 +19,7 @@ export default async function handler(
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    // ✅ Server-side session for Pages API
+    // Server-side session for Pages API
     const session = await getServerSession(req, res, authOptions);
     const email = session?.user?.email;
     if (!email) return res.status(401).json({ error: "Unauthorized" });

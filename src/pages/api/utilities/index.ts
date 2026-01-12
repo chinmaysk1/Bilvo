@@ -81,7 +81,7 @@ async function handleGetUtilities(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleCreateUtility(req: NextApiRequest, res: NextApiResponse) {
-  const { user, household } = await assertHouseholdAdmin(req, res);
+  const { user, household } = await assertHouseholdMember(req, res);
 
   const {
     type,
