@@ -481,7 +481,7 @@ export default function ActiveBillsTable({
                     <AutopayToggleCell
                       billId={bill.id}
                       hasPaymentMethod={hasPaymentMethod}
-                      initialEnabled={false} // set true if you hydrate from API later
+                      initialEnabled={bill.myAutopayEnabled} // set true if you hydrate from API later
                     />
                   </TableCell>
                 </TableRow>

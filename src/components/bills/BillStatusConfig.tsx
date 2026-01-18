@@ -62,7 +62,7 @@ export const getStatusConfig = (
       return {
         label: "Processing",
         bg: "#FEF6E6",
-        color: "#F2C94C",
+        color: "#c99700",
         icon: Clock,
         tooltip:
           "Payment in progress — estimated clear date in 2–3 business days",
@@ -226,14 +226,23 @@ export function determineMyStatus(args: {
   myPart: MyPart;
   hasSucceededAttempt: boolean;
   hasFailedAttempt: boolean;
+  hasProcessingAttempt?: boolean;
 }): BillStatus {
-  const { myPart, hasSucceededAttempt, hasFailedAttempt } = args;
+  const {
+    myPart,
+    hasSucceededAttempt,
+    hasFailedAttempt,
+    hasProcessingAttempt = false,
+  } = args;
 
   // SUCCEEDED → PAID
   if (hasSucceededAttempt) return BillStatus.PAID;
 
   // FAILED → FAILED
   if (hasFailedAttempt) return BillStatus.FAILED;
+
+  // PROCESSING (Venmo “I sent it”) → PENDING_APPROVAL
+  if (hasProcessingAttempt) return BillStatus.PENDING_APPROVAL;
 
   // Autopay enabled → SCHEDULED
   if (myPart?.autopayEnabled) return BillStatus.SCHEDULED;

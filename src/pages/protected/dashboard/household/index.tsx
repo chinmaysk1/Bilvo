@@ -72,6 +72,9 @@ import {
   Phone,
   MessageSquare,
   UserCheck,
+  UserPlus,
+  Lock,
+  Check,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -80,61 +83,60 @@ import { HouseholdApiResponse, Member } from "@/interfaces/household";
 import { UtilityAccount, UtilitySplit } from "@/interfaces/utilities";
 import { UserMeResponse } from "@/interfaces/user";
 
-// placeholder UtilitySplitEditor – replace with your real component if you have one
-type UtilitySplitEditorProps = {
-  utilityId: string;
-  utilityName: string;
-  members: { id: string; name: string; initials: string; color: string }[];
-  split: UtilitySplit;
-  onSplitChange: (split: UtilitySplit) => void;
-  isAdmin: boolean;
-  totalBillAmount?: number;
-};
+import dynamic from "next/dynamic";
+import type { ComponentType } from "react";
+import UtilitySplitEditor from "@/components/household/UtilitySplitEditor";
 
-function UtilitySplitEditor(props: UtilitySplitEditorProps) {
-  const { members, split } = props;
+function utilityTypeToUi(type: string) {
+  const t = (type || "").toLowerCase();
 
-  return (
-    <div className="mt-2 rounded-lg border border-gray-100 bg-gray-50 px-3 py-3 text-xs text-gray-700">
-      <p className="mb-2 font-semibold text-gray-800">
-        Split configuration (placeholder)
-      </p>
-      <div className="space-y-1">
-        {split.memberSplits.map((ms) => {
-          const m = members.find((mm) => mm.id === ms.memberId);
-          if (!m || !ms.included) return null;
-          return (
-            <div
-              key={ms.memberId}
-              className="flex items-center justify-between"
-            >
-              <div className="flex items-center gap-2">
-                <Avatar className="h-5 w-5">
-                  <AvatarFallback
-                    style={{
-                      backgroundColor: m.color,
-                      color: "white",
-                      fontSize: "10px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {m.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-[11px] font-medium">{m.name}</span>
-              </div>
-              <span className="text-[11px]">{ms.value.toFixed(1)}%</span>
-            </div>
-          );
-        })}
-      </div>
-      <p className="mt-2 text-[11px] text-gray-500">
-        This is a placeholder. Replace with your real{" "}
-        <code>UtilitySplitEditor</code> component when ready.
-      </p>
-    </div>
-  );
+  if (t.includes("internet") || t.includes("wifi"))
+    return { icon: Wifi, iconColor: "#8B5CF6", iconBg: "#EDE9FE" };
+
+  if (t.includes("gas") && !t.includes("electric"))
+    return { icon: Flame, iconColor: "#EF4444", iconBg: "#FEE2E2" };
+
+  if (t.includes("water"))
+    return { icon: Droplets, iconColor: "#3B82F6", iconBg: "#DBEAFE" };
+
+  if (t.includes("trash") || t.includes("recycl"))
+    return { icon: Recycle, iconColor: "#10B981", iconBg: "#D1FAE5" };
+
+  // default: electric / other
+  return { icon: Zap, iconColor: "#F59E0B", iconBg: "#FEF3C7" };
 }
+
+type PieDatum = { name: string; value: number; color: string };
+
+const UtilitySplitPie = dynamic(
+  async () => {
+    const recharts = await import("recharts");
+    const { PieChart, Pie, Cell, ResponsiveContainer } = recharts;
+
+    const Comp = ({ data }: { data: PieDatum[] }) => (
+      <ResponsiveContainer width={100} height={100}>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={30}
+            outerRadius={50}
+            paddingAngle={2}
+            dataKey="value"
+          >
+            {data.map((d, idx) => (
+              <Cell key={`cell-${idx}`} fill={d.color} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+    );
+
+    return Comp as ComponentType<{ data: PieDatum[] }>;
+  },
+  { ssr: false }
+);
 
 // ------------------------------------------------------
 // Page component wrapper
@@ -166,6 +168,7 @@ function HouseholdContent() {
   const [householdName, setHouseholdName] = useState("");
   const [householdAddress, setHouseholdAddress] = useState("");
   const [createdAt, setCreatedAt] = useState<Date | null>(null);
+  const [inviteCode, setInviteCode] = useState("");
 
   const [isAdmin, setisAdmin] = useState(false);
   const [isParentView] = useState(false); // keep feature-flag for later
@@ -193,7 +196,7 @@ function HouseholdContent() {
   const [confirmationText, setConfirmationText] = useState("");
 
   const [members, setMembers] = useState<Member[]>([]);
-  const [utilities, setUtilities] = useState<UtilityAccount[]>([]); // still front-end only for now
+  const [utilities, setUtilities] = useState<UtilityAccount[]>([]);
 
   const [utilitySplits, setUtilitySplits] = useState<
     Record<string, UtilitySplit>
@@ -201,6 +204,14 @@ function HouseholdContent() {
 
   const [activities, setActivities] = useState<DashboardActivity[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // ✅ Bill Configuration (Figma) – hook “Customize” to show the split editor for that utility
+  const [editingSplitUtilityId, setEditingSplitUtilityId] = useState<
+    string | null
+  >(null);
+  const editingUtility =
+    utilities.find((u) => u.id === editingSplitUtilityId) || null;
+  const editingSplit = editingUtility ? utilitySplits[editingUtility.id] : null;
 
   useEffect(() => {
     const load = async () => {
@@ -230,6 +241,7 @@ function HouseholdContent() {
         setHouseholdName(householdJson.household.name);
         setHouseholdAddress(householdJson.household.address);
         setCreatedAt(new Date(householdJson.household.createdAt));
+        setInviteCode(householdJson.household.inviteCode);
 
         setisAdmin(
           householdJson.household.adminId === householdJson.currentUserId
@@ -286,26 +298,53 @@ function HouseholdContent() {
 
         setMembers(mappedMembers);
 
-        // (Optional) if you want some placeholder utilities for now, keep your old initial utilities instead of empty
-        // setUtilities([...]);
+        // ✅ Fetch utilities (you already have /api/utilities)
+        const utilitiesRes = await fetch("/api/utilities");
+        const utilitiesJson = await utilitiesRes.json();
 
-        // initialize splits for whatever utilities exist
-        setUtilitySplits((prev) => {
-          if (utilities.length === 0 || mappedMembers.length === 0) return prev;
+        if (!utilitiesRes.ok) {
+          throw new Error(utilitiesJson?.error || "Failed to load utilities");
+        }
+
+        const fetchedUtilities: UtilityAccount[] = (
+          utilitiesJson.utilityAccounts || []
+        ).map((u: any) => {
+          const ui = utilityTypeToUi(u.type);
+          return {
+            id: u.id,
+            provider: u.provider,
+            accountNumber: u.accountNumber ? String(u.accountNumber) : "—",
+            type: u.type,
+            ownerId: u.ownerUserId,
+            icon: ui.icon,
+            iconColor: ui.iconColor,
+            iconBg: ui.iconBg,
+          };
+        });
+
+        setUtilities(fetchedUtilities);
+
+        // ✅ Initialize splits using fetchedUtilities + mappedMembers (NOT state `utilities`)
+        setUtilitySplits(() => {
+          if (fetchedUtilities.length === 0 || mappedMembers.length === 0)
+            return {};
+
           const splits: Record<string, UtilitySplit> = {};
-          utilities.forEach((utility) => {
-            const equalValue = 100 / mappedMembers.length;
+          const equalValue = 100 / mappedMembers.length;
+
+          for (const utility of fetchedUtilities) {
             splits[utility.id] = {
               utilityId: utility.id,
               splitType: "percentage",
-              memberSplits: mappedMembers.map((member) => ({
-                memberId: member.id,
+              memberSplits: mappedMembers.map((m) => ({
+                memberId: m.id,
                 value: equalValue,
                 included: true,
               })),
               isCustom: false,
             };
-          });
+          }
+
           return splits;
         });
 
@@ -557,6 +596,53 @@ function HouseholdContent() {
 
   return (
     <>
+      <Dialog
+        open={!!editingSplitUtilityId}
+        onOpenChange={(open) => {
+          if (!open) setEditingSplitUtilityId(null);
+        }}
+      >
+        <DialogContent
+          className="
+          w-[95vw] max-w-[980px]
+          h-[65vh] max-h-[65vh]
+          overflow-hidden
+          overflow-x-hidden
+          p-0
+          min-w-0
+        "
+        >
+          <div className="h-full w-full overflow-y-auto p-6 min-w-0">
+            {editingUtility && editingSplit ? (
+              <UtilitySplitEditor
+                utilityId={editingUtility.id}
+                utilityName={editingUtility.provider}
+                members={members.map((m) => ({
+                  id: m.id,
+                  name: m.name,
+                  initials: m.initials,
+                  color: m.color,
+                  phone: (m as any).phone,
+                  email: m.email,
+                }))}
+                split={editingSplit}
+                onSplitChange={(newSplit) => {
+                  setUtilitySplits((prev) => ({
+                    ...prev,
+                    [editingUtility.id]: newSplit,
+                  }));
+                }}
+                isAdmin={isAdmin || editingUtility.ownerId === currentUserId}
+                totalBillAmount={100}
+                onClose={() => setEditingSplitUtilityId(null)}
+              />
+            ) : (
+              <div className="text-sm text-gray-500">Loading split…</div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Invite Member Modal */}
       <Dialog open={inviteModalOpen} onOpenChange={setInviteModalOpen}>
         <DialogContent className="max-w-[480px] rounded-lg">
@@ -954,7 +1040,23 @@ function HouseholdContent() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
+          {/* Household Invite Code */}
+          <div className="p-4 rounded-xl bg-gray-50 border border-gray-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <UserPlus className="h-4 w-4 text-slate-600" />
+              </div>
+            </div>
+            <p
+              className="text-2xl text-gray-900 mb-1"
+              style={{ fontWeight: 600 }}
+            >
+              {inviteCode}
+            </p>
+            <p className="text-sm text-gray-500">Household Invite Code</p>
+          </div>
+
           {/* Members */}
           <div className="p-4 rounded-xl bg-gray-50 border border-gray-200">
             <div className="flex items-center gap-2 mb-2">
@@ -1067,221 +1169,304 @@ function HouseholdContent() {
         </div>
       </Card>
 
-      {/* Utility Accounts */}
+      {/* ------------------------------------------------------ */}
+      {/* ✅ Bill Configuration (Figma) – replaces Utility Accounts */}
+      {/* ------------------------------------------------------ */}
       <Card className="rounded-lg border border-gray-200 bg-white p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg text-gray-900" style={{ fontWeight: 600 }}>
-            Utility Accounts
+            Bill Configuration
           </h2>
+
           {!isParentView && (
             <Button
               size="sm"
-              disabled={!isAdmin}
               className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
               style={{ fontWeight: 600 }}
               onClick={() =>
-                toast.info("Add Utility", {
-                  description: "Hook this up to your link-utilities flow.",
-                })
+                router.push("/protected/dashboard/utilities").catch(() => {})
               }
             >
               <Plus className="h-3.5 w-3.5 mr-1.5" />
-              Add Utility
+              Add Service
             </Button>
           )}
         </div>
 
-        <div className="space-y-3">
-          {utilities.map((utility) => {
-            const Icon = utility.icon;
-            const owner = members.find((m) => m.id === utility.ownerId);
-            const split = utilitySplits[utility.id];
+        {utilities.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
+            No services linked yet. Click{" "}
+            <span className="font-semibold">Add Service</span> to connect a
+            utility.
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {utilities.map((utility) => {
+              const Icon = utility.icon as any;
+              const owner = members.find((m) => m.id === utility.ownerId);
+              const split = utilitySplits[utility.id];
 
-            return (
-              <div
-                key={utility.id}
-                className="rounded-lg border border-gray-200 bg-white"
-              >
-                <div className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="flex h-10 w-10 items-center justify-center rounded-lg"
-                      style={{ backgroundColor: utility.iconBg }}
-                    >
-                      <Icon
-                        className="h-5 w-5"
-                        style={{ color: utility.iconColor }}
-                      />
-                    </div>
-                    <div>
-                      <p
-                        className="text-sm text-gray-900"
-                        style={{ fontWeight: 600 }}
-                      >
-                        {utility.provider}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {utility.type} · Account {utility.accountNumber}
-                      </p>
-                    </div>
-                  </div>
+              // Who can edit this utility?
+              const canEdit =
+                !isParentView &&
+                !!currentUserId &&
+                utility.ownerId === currentUserId;
 
-                  {/* Bill Owner */}
-                  {isParentView ? (
+              const includedSplits =
+                split?.memberSplits?.filter((ms) => ms.included) || [];
+
+              return (
+                <div
+                  key={utility.id}
+                  className="rounded-xl border border-gray-200 bg-white shadow-sm"
+                >
+                  <div className="flex items-center justify-between p-4">
                     <div className="flex items-center gap-3">
-                      <span
-                        className="text-xs text-gray-500"
-                        style={{ fontWeight: 600 }}
+                      <div
+                        className="flex h-10 w-10 items-center justify-center rounded-lg"
+                        style={{ backgroundColor: utility.iconBg }}
                       >
-                        BILL OWNER
-                      </span>
-                      {owner && (
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
+                        <Icon
+                          className="h-5 w-5"
+                          style={{ color: utility.iconColor }}
+                        />
+                      </div>
+                      <div>
+                        <p
+                          className="text-sm text-gray-900"
+                          style={{ fontWeight: 600 }}
+                        >
+                          {utility.provider}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {utility.type} · Account {utility.accountNumber}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-200">
                           <Avatar className="h-5 w-5">
                             <AvatarFallback
                               style={{
-                                backgroundColor: owner.color,
+                                backgroundColor: owner?.color || "#9CA3AF",
                                 color: "white",
                                 fontSize: "10px",
                                 fontWeight: 600,
                               }}
                             >
-                              {owner.initials}
+                              {owner?.initials || "?"}
                             </AvatarFallback>
                           </Avatar>
                           <span
                             className="text-sm text-gray-900"
                             style={{ fontWeight: 600 }}
                           >
-                            {owner.name}
+                            {owner?.name || "Unknown"}
+                          </span>
+                          <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#00B948]">
+                            <Check
+                              className="h-3 w-3 text-white"
+                              style={{ strokeWidth: 3 }}
+                            />
+                          </div>
+                        </div>
+
+                        {canEdit ? (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 px-3 text-xs"
+                                  style={{
+                                    fontSize: "12px",
+                                    fontWeight: 500,
+                                    color: "#6B7280",
+                                    borderColor: "#D1D5DB",
+                                  }}
+                                  onClick={() =>
+                                    router
+                                      .push("/protected/dashboard/utilities")
+                                      .catch(() => {})
+                                  }
+                                >
+                                  Manage / Unlink
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">
+                                  Edit account settings or unlink utility
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100">
+                                  <Lock className="h-4 w-4 text-gray-400" />
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">
+                                  Only {owner?.name || "the owner"} can edit
+                                  this utility account
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {split && (
+                    <div
+                      className="px-4 pb-4 pt-3 border-t"
+                      style={{ borderColor: "#F3F4F6" }}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-sm"
+                            style={{
+                              color: "#6B7280",
+                              fontWeight: 500,
+                              fontFamily: "Inter, sans-serif",
+                            }}
+                          >
+                            Split Method:
+                          </span>
+                          <span
+                            className="text-sm"
+                            style={{
+                              color: "#111827",
+                              fontWeight: 600,
+                              fontFamily: "Inter, sans-serif",
+                            }}
+                          >
+                            {split.isCustom ? "Custom" : "Equal (Automatic)"}
                           </span>
                         </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="text-xs text-gray-500"
-                        style={{ fontWeight: 600 }}
-                      >
-                        BILL OWNER
-                      </span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div>
-                              <Select
-                                value={utility.ownerId}
-                                onValueChange={(newOwnerId) => {
-                                  setUtilities(
-                                    utilities.map((u) =>
-                                      u.id === utility.id
-                                        ? { ...u, ownerId: newOwnerId }
-                                        : u
-                                    )
-                                  );
-                                  const newOwner = members.find(
-                                    (m) => m.id === newOwnerId
-                                  );
-                                  if (newOwner) {
-                                    toast.success(
-                                      `${
-                                        utility.type
-                                      } ownership updated to ${newOwner.name.replace(
+
+                        {!isParentView && (
+                          <>
+                            {canEdit ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-3 hover:bg-[#00B948]/10 transition-all"
+                                style={{
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  color: "#00B948",
+                                }}
+                                onClick={() =>
+                                  setEditingSplitUtilityId(utility.id)
+                                }
+                              >
+                                Customize
+                              </Button>
+                            ) : (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-gray-100">
+                                      <Lock className="h-3 w-3 text-gray-400" />
+                                      <span
+                                        className="text-xs text-gray-500"
+                                        style={{ fontWeight: 500 }}
+                                      >
+                                        Managed by{" "}
+                                        {(owner?.name || "Owner").replace(
+                                          " (You)",
+                                          ""
+                                        )}
+                                      </span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">
+                                      Only{" "}
+                                      {(owner?.name || "the owner").replace(
                                         " (You)",
                                         ""
-                                      )}.`
-                                    );
-                                  }
-                                }}
-                                disabled={!isAdmin}
+                                      )}{" "}
+                                      can customize this split
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </>
+                        )}
+                      </div>
+
+                      {/* Pie Chart + Member Breakdown */}
+                      <div className="flex items-center gap-4">
+                        {/* Pie Chart */}
+                        <div className="flex-shrink-0">
+                          <UtilitySplitPie
+                            data={includedSplits.map((ms) => {
+                              const m = members.find(
+                                (mm) => mm.id === ms.memberId
+                              );
+                              return {
+                                name: m?.name || "Unknown",
+                                value: ms.value,
+                                color: m?.color || "#9CA3AF",
+                              };
+                            })}
+                          />
+                        </div>
+
+                        {/* Member Breakdown */}
+                        <div className="flex-1 space-y-1.5">
+                          {includedSplits.map((ms) => {
+                            const m = members.find(
+                              (mm) => mm.id === ms.memberId
+                            );
+                            return (
+                              <div
+                                key={`${utility.id}-${ms.memberId}`}
+                                className="flex items-center justify-between"
                               >
-                                <SelectTrigger
-                                  className="w-48 h-9"
-                                  style={{ fontSize: "14px" }}
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="h-2.5 w-2.5 rounded-full"
+                                    style={{
+                                      backgroundColor: m?.color || "#9CA3AF",
+                                    }}
+                                  />
+                                  <span
+                                    className="text-xs text-gray-700"
+                                    style={{ fontWeight: 500 }}
+                                  >
+                                    {m?.name || "Unknown"}
+                                  </span>
+                                </div>
+                                <span
+                                  className="text-xs text-gray-500"
+                                  style={{ fontWeight: 600 }}
                                 >
-                                  <SelectValue placeholder="Select owner" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {members.map((member) => (
-                                    <SelectItem
-                                      key={member.id}
-                                      value={member.id}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <Avatar className="h-5 w-5">
-                                          <AvatarFallback
-                                            style={{
-                                              backgroundColor: member.color,
-                                              color: "white",
-                                              fontSize: "10px",
-                                              fontWeight: 600,
-                                            }}
-                                          >
-                                            {member.initials}
-                                          </AvatarFallback>
-                                        </Avatar>
-                                        <span>{member.name}</span>
-                                      </div>
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </TooltipTrigger>
-                          {!isAdmin && (
-                            <TooltipContent>
-                              <p className="text-xs">
-                                Only the household admin can edit bill owners
-                              </p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
+                                  {(ms.value || 0).toFixed(1)}%
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-
-                {/* Split Editor */}
-                {split && !isParentView && (
-                  <div className="px-4 pb-4">
-                    <UtilitySplitEditor
-                      utilityId={utility.id}
-                      utilityName={utility.provider}
-                      members={members.map((m) => ({
-                        id: m.id,
-                        name: m.name,
-                        initials: m.initials,
-                        color: m.color,
-                      }))}
-                      split={split}
-                      onSplitChange={(newSplit) =>
-                        handleSplitChange(utility.id, newSplit)
-                      }
-                      isAdmin={isAdmin}
-                      totalBillAmount={100}
-                    />
-                  </div>
-                )}
-                {split && isParentView && (
-                  <div className="px-4 pb-4 pt-2 border-t border-gray-100">
-                    <p
-                      className="text-xs text-gray-500 mb-2"
-                      style={{ fontWeight: 600 }}
-                    >
-                      SPLIT CONFIGURATION
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      {split.isCustom
-                        ? "Custom Split"
-                        : `Equal Split — 1/${totalMembers} each`}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </Card>
 
       {/* Members */}
@@ -1529,7 +1714,30 @@ function HouseholdContent() {
             </div>
             <Switch
               checked={autopayEnabled}
-              onCheckedChange={setAutopayEnabled}
+              onCheckedChange={async (next) => {
+                // optimistic
+                setAutopayEnabled(next);
+                try {
+                  const res = await fetch("/api/user/me", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ autopayEnabled: next }),
+                  });
+                  const data = await res.json().catch(() => null);
+                  if (!res.ok) {
+                    throw new Error(data?.error || "Failed to update autopay");
+                  }
+                  toast.success("Autopay updated", {
+                    description: next ? "Autopay enabled" : "Autopay disabled",
+                  });
+                } catch (err: any) {
+                  console.error(err);
+                  setAutopayEnabled(!next);
+                  toast.error("Failed to update autopay", {
+                    description: err.message ?? "Please try again.",
+                  });
+                }
+              }}
               disabled={!isAdmin || isParentView}
             />
           </div>
@@ -1579,9 +1787,10 @@ function HouseholdContent() {
                 )}
               </Tooltip>
             </TooltipProvider>
+
             <p className="text-xs text-gray-500 mt-2">
               Bills are split equally among all {totalMembers} members (
-              {(100 / totalMembers).toFixed(1)}% each)
+              {totalMembers > 0 ? (100 / totalMembers).toFixed(1) : "—"}% each)
             </p>
           </div>
 

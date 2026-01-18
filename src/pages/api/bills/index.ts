@@ -49,6 +49,44 @@ export default async function handler(
         },
       });
 
+      const myOwnedBillIds = bills
+        .filter((b) => b.ownerUserId === myUserId)
+        .map((b) => b.id);
+
+      const pendingVenmoAttempts = myOwnedBillIds.length
+        ? await prisma.paymentAttempt.findMany({
+            where: {
+              billId: { in: myOwnedBillIds },
+              provider: "venmo",
+              status: "PROCESSING",
+            },
+            select: {
+              id: true,
+              billId: true,
+              amountCents: true,
+              createdAt: true,
+              user: { select: { id: true, name: true } },
+              bill: { select: { biller: true, dueDate: true } },
+            },
+            orderBy: { createdAt: "asc" },
+          })
+        : [];
+
+      const pendingByBillId = new Map<string, any[]>();
+      for (const a of pendingVenmoAttempts) {
+        const arr = pendingByBillId.get(a.billId) || [];
+        arr.push({
+          id: a.id,
+          paymentMethod: "venmo" as const,
+          billName: a.bill?.biller || "Bill",
+          amount: (a.amountCents ?? 0) / 100,
+          payerName: a.user?.name || "Unknown",
+          dueDate: a.bill?.dueDate ? a.bill.dueDate.toISOString() : null,
+          submittedDate: a.createdAt.toISOString(),
+        });
+        pendingByBillId.set(a.billId, arr);
+      }
+
       // 1) collect my participant ids
       const myParticipantIds = bills
         .map((b) => b.participants.find((p) => p.userId === myUserId)?.id)
@@ -76,6 +114,16 @@ export default async function handler(
       });
       const failedSet = new Set(failed.map((a) => a.billParticipantId));
 
+      // Same for PROCESSING attempts (used for Pending Approval UI)
+      const processing = await prisma.paymentAttempt.findMany({
+        where: {
+          billParticipantId: { in: myParticipantIds },
+          status: "PROCESSING",
+        },
+        select: { billParticipantId: true },
+      });
+      const processingSet = new Set(processing.map((a) => a.billParticipantId));
+
       const shaped = bills.map((b) => {
         const myPart = b.participants.find((p) => p.userId === myUserId);
 
@@ -86,6 +134,9 @@ export default async function handler(
         const hasFailedAttempt = myParticipantId
           ? failedSet.has(myParticipantId)
           : false;
+        const hasProcessingAttempt = myParticipantId
+          ? processingSet.has(myParticipantId)
+          : false;
 
         const myStatus = determineMyStatus({
           myPart: myPart
@@ -93,6 +144,7 @@ export default async function handler(
             : null,
           hasSucceededAttempt,
           hasFailedAttempt,
+          hasProcessingAttempt,
         });
 
         return {
@@ -107,6 +159,8 @@ export default async function handler(
           myBillParticipantId: myPart?.id ?? null,
           myHasPaid: hasSucceededAttempt,
           myStatus,
+          pendingVenmoApprovals:
+            b.ownerUserId === myUserId ? pendingByBillId.get(b.id) || [] : [],
           dueDate: b.dueDate.toISOString(),
           scheduledCharge: b.scheduledCharge
             ? b.scheduledCharge.toISOString()

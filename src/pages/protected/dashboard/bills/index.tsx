@@ -67,6 +67,11 @@ import { BillStatus } from "@prisma/client";
 import type { Bill } from "@/interfaces/bills";
 import type { HouseholdApiMember as HouseholdMember } from "@/interfaces/household";
 import { PayWithStripeModal } from "@/components/bills/PayWithStripeModal";
+import {
+  PaymentConfirmationBanner,
+  PendingPayment,
+} from "@/components/bills/PaymentConfirmationBanner";
+import { formatMonthDay } from "@/utils/common/formatMonthYear";
 
 interface BillsPageProps {
   bills: Bill[];
@@ -101,6 +106,23 @@ const getBillerIcon = (billerType: string) => {
 
 // Avatar colors for household members
 const avatarColors = ["#F2C94C", "#00B948", "#BB6BD9", "#3B82F6", "#EF4444"];
+
+function buildVenmoPayUrl(params: {
+  handle: string;
+  amount: number;
+  note: string;
+}) {
+  const handle = (params.handle || "").trim().replace(/^@/, "");
+  const amount = Number(params.amount);
+
+  const qs = new URLSearchParams({
+    txn: "pay",
+    amount: amount.toFixed(2),
+    note: params.note || "",
+  });
+
+  return `https://venmo.com/${encodeURIComponent(handle)}?${qs.toString()}`;
+}
 
 export default function BillsPage({
   bills: initialBills,
@@ -143,6 +165,40 @@ export default function BillsPage({
       day: "numeric",
     });
   };
+
+  const pendingApprovals = useMemo(() => {
+    const initialsFor = (name: string) =>
+      name
+        .split(" ")
+        .filter(Boolean)
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2) || "U";
+
+    const list: PendingPayment[] = [];
+
+    for (const b of bills as any[]) {
+      if (b.ownerUserId !== currentUserId) continue;
+
+      const approvals = (b.pendingVenmoApprovals || []) as PendingPayment[];
+      for (const a of approvals) {
+        const payerName = a.payerName || "Unknown";
+        list.push({
+          id: a.id,
+          billName: a.billName || b.biller,
+          amount: Number(a.amount || 0),
+          payerName,
+          payerInitials: initialsFor(payerName),
+          paymentMethod: a.paymentMethod, // "venmo" | "zelle"
+          dueDate: a.dueDate,
+          submittedDate: formatMonthDay(a.submittedDate),
+        });
+      }
+    }
+    console.log("pendingApprovals list", list);
+    return list;
+  }, [bills, currentUserId]);
 
   const pendingBills = useMemo(
     () => bills.filter((b) => b.myStatus !== BillStatus.PAID),
@@ -318,6 +374,7 @@ export default function BillsPage({
 
     setSelectedBillForPayment({
       id: bill.id,
+      ownerUserId: bill.ownerUserId,
       biller: bill.biller,
       category: bill.billerType,
       yourShare: bill.yourShare,
@@ -375,10 +432,54 @@ export default function BillsPage({
     }
   };
 
-  const handleVenmoClick = () => {
+  const handleVenmoClick = async () => {
     setPaymentMethodModalOpen(false);
-    setSelectedPaymentMethod("venmo");
-    setPaymentConfirmationOpen(true);
+
+    const bill = selectedBillForPayment;
+    if (!bill?.ownerUserId || !bill?.yourShare) {
+      toast.error("Missing bill details for Venmo.");
+      return;
+    }
+
+    try {
+      // Fetch owner wallet settings (household-gated)
+      const res = await fetch(
+        `/api/payments/payment-methods/venmo/${bill.ownerUserId}`
+      );
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to load Venmo handle");
+      }
+
+      const data = await res.json();
+      const handle: string | null = data?.venmoHandle || null;
+
+      if (!handle) {
+        toast.error("Venmo not set up", {
+          description: `${bill.recipientName} hasn’t added a Venmo handle yet.`,
+        });
+        return;
+      }
+
+      const note = `Bilvo • ${bill.biller} • ${bill.dueDate}`;
+      const url = buildVenmoPayUrl({
+        handle,
+        amount: Number(bill.yourShare),
+        note,
+      });
+
+      // Open Venmo (web)
+      window.open(url, "_blank", "noopener,noreferrer");
+
+      // Continue your existing flow: ask “did you send it?”
+      setSelectedPaymentMethod("venmo");
+      setPaymentConfirmationOpen(true);
+    } catch (e: any) {
+      console.error(e);
+      toast.error("Couldn’t open Venmo", {
+        description: e?.message || "Please try again.",
+      });
+    }
   };
 
   const handleZelleClick = () => {
@@ -406,23 +507,47 @@ export default function BillsPage({
     setStripePayOpen(true);
   };
 
-  const handlePaymentConfirmed = () => {
+  const handlePaymentConfirmed = async () => {
     setPaymentConfirmationOpen(false);
 
     if (!selectedBillForPayment?.id) return;
 
-    // Record as PENDING_APPROVAL
-    patchBill(selectedBillForPayment.id, {
-      myStatus: BillStatus.PENDING_APPROVAL,
-    });
+    try {
+      // Persist for Venmo so it survives reload:
+      if (selectedPaymentMethod === "venmo") {
+        const res = await fetch("/api/payments/payment-attempts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            billId: selectedBillForPayment.id,
+            provider: "venmo",
+          }),
+        });
 
-    toast.success("Payment recorded!", {
-      description: "Thanks — we’ll mark it paid once it clears.",
-      duration: 4000,
-    });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(data?.error || "Failed to record Venmo payment");
+        }
+      }
 
-    setSelectedBillForPayment(null);
-    setSelectedPaymentMethod(null);
+      // Optimistic UI update (still good UX)
+      patchBill(selectedBillForPayment.id, {
+        myStatus: BillStatus.PENDING_APPROVAL,
+      });
+
+      toast.success("Payment recorded!", {
+        description: "Thanks — we’ll mark it paid once it clears.",
+        duration: 4000,
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Couldn’t record payment", {
+        description: "Please try again.",
+      });
+    } finally {
+      setSelectedBillForPayment(null);
+      setSelectedPaymentMethod(null);
+    }
   };
 
   const markMyPaidOptimistic = (billId: string) => {
@@ -453,6 +578,70 @@ export default function BillsPage({
 
   return (
     <DashboardLayout>
+      <div className="mb-7">
+        <PaymentConfirmationBanner
+          pendingPayments={pendingApprovals}
+          currentRole={pendingApprovals.length > 0 ? "admin" : "member"}
+          onConfirmPayment={async (paymentId) => {
+            const res = await fetch(
+              `/api/payments/payment-attempts/${paymentId}`,
+              {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "approve" }),
+              }
+            );
+            if (!res.ok) throw new Error("Failed to approve");
+
+            // Update UI without full reload: remove that approval and mark paid for payer
+            setBills((prev: any[]) =>
+              prev.map((bill: Bill) => {
+                if (
+                  !bill.pendingVenmoApprovals?.some(
+                    (a: any) => a.id === paymentId
+                  )
+                )
+                  return bill;
+                return {
+                  ...bill,
+                  pendingVenmoApprovals: bill.pendingVenmoApprovals.filter(
+                    (a: any) => a.id !== paymentId
+                  ),
+                };
+              })
+            );
+          }}
+          onDisputePayment={async (paymentId) => {
+            const res = await fetch(
+              `/api/payments/payment-attempts/${paymentId}`,
+              {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "reject" }),
+              }
+            );
+            if (!res.ok) throw new Error("Failed to deny");
+
+            setBills((prev: any[]) =>
+              prev.map((bill) => {
+                if (
+                  !bill.pendingVenmoApprovals?.some(
+                    (a: any) => a.id === paymentId
+                  )
+                )
+                  return bill;
+                return {
+                  ...bill,
+                  pendingVenmoApprovals: bill.pendingVenmoApprovals.filter(
+                    (a: any) => a.id !== paymentId
+                  ),
+                };
+              })
+            );
+          }}
+        />
+      </div>
+
       {/* Header */}
       <div style={{ marginBottom: "16px" }}>
         <div className="flex items-baseline justify-between">
@@ -822,12 +1011,12 @@ export default function BillsPage({
                   // Show pay for pending OR scheduled AND not bill owner
                   const showPay =
                     (bill.myStatus === BillStatus.PENDING ||
-                      bill.myStatus === BillStatus.SCHEDULED) &&
+                      bill.myStatus === BillStatus.SCHEDULED ||
+                      bill.myStatus === BillStatus.FAILED) &&
                     canPayThisBill &&
                     !bill.myHasPaid;
 
-                  // If you want stricter permission later, wire it here.
-                  const canDeleteBill = true;
+                  const canDeleteBill = !canPayThisBill;
 
                   return (
                     <motion.tr

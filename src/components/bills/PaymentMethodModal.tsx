@@ -86,23 +86,6 @@ export function PaymentMethodModal({
               Pay with Venmo
             </Button>
 
-            {/* Zelle */}
-            <Button
-              onClick={onZelleClick}
-              variant="outline"
-              className="w-full h-14 rounded-xl border-2 hover:bg-gray-50 transition-all"
-              style={{
-                borderColor: "#D1D5DB",
-                backgroundColor: "white",
-                color: "#374151",
-                fontWeight: 600,
-                fontSize: "16px",
-              }}
-            >
-              <Copy className="h-5 w-5 mr-2" />
-              Copy Zelle Info
-            </Button>
-
             {/* Bank */}
             <Button
               onClick={onBankAccountClick}

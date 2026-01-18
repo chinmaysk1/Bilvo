@@ -1172,3 +1172,1115 @@ waiting for navigation until "networkidle"
 [utility-worker 568ce732-9cd2-4eaa-8a17-e3536460c5b8] Job SUCCESS cmkaqaypr000xh3bwg3jdljw6
 [utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Starting utility link worker
 [utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] poll 3000 ms | headless: false
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkaskpjz0003ld04qb3d9z8i provider: Pacific Gas & Electric
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Initializing secure session
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Starting secure browser
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Navigating to PG&E login portal
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Navigating to https://www.pge.com/myaccount/
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Submitting login credentials
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Fields filled, clicking Sign In...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Checking authentication status
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Waiting for transition (MFA or Dashboard)...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Two-factor authentication required
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] SMS Button clicked. Waiting for code input field...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Verifying security code
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Code received. Filling input...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Waiting for button to enable...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Confirming...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Landed on Dashboard!
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Extracting current bill information
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Scraped: $181.91 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → RUNNING: Syncing bill to your account
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Bill saved and participants created successfully.
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaskpjz0003ld04qb3d9z8i → SUCCESS: Bill synced successfully
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job SUCCESS cmkaskpjz0003ld04qb3d9z8i
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkasn52a0003jr04sw336vra provider: City of San Luis Obispo, CA
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → RUNNING: Initializing secure session
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → RUNNING: Starting secure browser
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → RUNNING: Navigating to SLO Water login portal
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → RUNNING: Submitting login credentials
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Filling username field...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Filling password field...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Fields filled, clicking Log In...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Login successful - on home page
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Clicking 'View My Bill' button...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Landed on My Bill page
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → RUNNING: Extracting current bill information
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Scraped: $191.92 | Due: 1/15/2026 | Acct: 055873-000
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → RUNNING: Syncing bill to your account
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Bill saved and participants created successfully.
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasn52a0003jr04sw336vra → SUCCESS: Bill synced successfully
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job SUCCESS cmkasn52a0003jr04sw336vra
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkaso0lk0007jr04lqsm6ngx provider: SoCalGas
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaso0lk0007jr04lqsm6ngx → RUNNING: Initializing secure session
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaso0lk0007jr04lqsm6ngx → RUNNING: Starting secure browser
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaso0lk0007jr04lqsm6ngx → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaso0lk0007jr04lqsm6ngx → RUNNING: Submitting login credentials
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Fields filled, clicking Log In...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaso0lk0007jr04lqsm6ngx → RUNNING: Checking authentication status
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Login successful - on home page
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaso0lk0007jr04lqsm6ngx → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkaso0lk0007jr04lqsm6ngx → RUNNING: Extracting current bill information
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Saved error screenshot to error-snapshot-cmkaso0lk0007jr04lqsm6ngx.png
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job failed cmkaso0lk0007jr04lqsm6ngx locator.textContent: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="balance-due-date"] span.font-extrabold').first()[22m
+
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkasqot4000bjr04n3hpe1vy provider: SoCalGas
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasqot4000bjr04n3hpe1vy → RUNNING: Initializing secure session
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasqot4000bjr04n3hpe1vy → RUNNING: Starting secure browser
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasqot4000bjr04n3hpe1vy → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasqot4000bjr04n3hpe1vy → RUNNING: Submitting login credentials
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Fields filled, clicking Log In...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasqot4000bjr04n3hpe1vy → RUNNING: Checking authentication status
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Login successful - on home page
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasqot4000bjr04n3hpe1vy → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasqot4000bjr04n3hpe1vy → RUNNING: Extracting current bill information
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Saved error screenshot to error-snapshot-cmkasqot4000bjr04n3hpe1vy.png
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job failed cmkasqot4000bjr04n3hpe1vy locator.textContent: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="balance-due-date"] span.font-extrabold').first()[22m
+
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkasu0pg000fjr0440sc65vk provider: AT&T Internet
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Initializing secure session
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Starting secure browser
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Navigating to AT&T sign-in
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Entering AT&T User ID
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Entering AT&T password
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] AT&T password filled, clicking Sign in...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Checking authentication status
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=V3NmcVhPbVIkbHxBUmR7YjcnOExIUnc1S1FzbzI8WX0lQFdGLmBPJ0VQVlp7b1ZQdFhhV04yXVZzTjVd
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Navigating to AT&T billing center
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Extracting current bill information
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] AT&T scraped: $80.3 | Due (range end): 1/25/2026 | Acct: 339854937
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → RUNNING: Syncing bill to your account
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasu0pg000fjr0440sc65vk → SUCCESS: Bill synced successfully
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job SUCCESS cmkasu0pg000fjr0440sc65vk
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkaswyj10007ld04l6x5ff9a provider: Waste Management
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job failed cmkaswyj10007ld04l6x5ff9a Unsupported provider: Waste Management
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkasx7ov0009ld04sb0v5skt provider: Waste Management
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job failed cmkasx7ov0009ld04sb0v5skt Unsupported provider: Waste Management
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkasy32e0005l504aw4z57d0 provider: San Luis Garbage
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasy32e0005l504aw4z57d0 → RUNNING: Initializing secure session
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasy32e0005l504aw4z57d0 → RUNNING: Starting secure browser
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasy32e0005l504aw4z57d0 → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Saved error screenshot to error-snapshot-cmkasy32e0005l504aw4z57d0.png
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job failed cmkasy32e0005l504aw4z57d0 WCI_LOGIN_URL is not defined
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Processing job cmkasyc0d0007l5046b3srfss provider: San Luis Garbage
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasyc0d0007l5046b3srfss → RUNNING: Initializing secure session
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasyc0d0007l5046b3srfss → RUNNING: Starting secure browser
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job cmkasyc0d0007l5046b3srfss → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Saved error screenshot to error-snapshot-cmkasyc0d0007l5046b3srfss.png
+[utility-worker 3c531af7-61ad-4641-a573-1ad7fbd029c7] Job failed cmkasyc0d0007l5046b3srfss WCI_LOGIN_URL is not defined
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Starting utility link worker
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] poll 3000 ms | headless: false
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Processing job cmkat1cdm000jjr04b87f5d42 provider: San Luis Garbage
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Initializing secure session
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Starting secure browser
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Submitting login credentials
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Fields filled, clicking Login...
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Checking authentication status
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Login successful - on dashboard page
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Extracting current bill information
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Acct scraped: 4110-10159362
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Scraped: $163.12 | Due: 1/20/2026
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → RUNNING: Syncing bill to your account
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Bill saved and participants created successfully.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job cmkat1cdm000jjr04b87f5d42 → SUCCESS: Bill synced successfully
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] Job SUCCESS cmkat1cdm000jjr04b87f5d42
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Timed out fetching a new connection from the connection pool. More info: http://pris.ly/d/connection-pool (Current connection pool timeout: 10, connection limit: 29)
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 17fa514b-30cb-44c9-9013-4fb9971a2d37] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Starting utility link worker
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] poll 3000 ms | headless: false
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Processing job cmkgj1py90001h39cfrplrngn provider: San Luis Garbage
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1py90001h39cfrplrngn → RUNNING: Initializing secure session
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1py90001h39cfrplrngn → RUNNING: Starting secure browser
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1py90001h39cfrplrngn → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1py90001h39cfrplrngn → RUNNING: Submitting login credentials
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Fields filled, clicking Login...
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1py90001h39cfrplrngn → RUNNING: Checking authentication status
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Saved error screenshot to error-snapshot-cmkgj1py90001h39cfrplrngn.png
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job failed cmkgj1py90001h39cfrplrngn Login Failed - Invalid User ID/Password
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Processing job cmkgj1qw90003h39cfkc7qov2 provider: AT&T Internet
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1qw90003h39cfkc7qov2 → RUNNING: Initializing secure session
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1qw90003h39cfkc7qov2 → RUNNING: Starting secure browser
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1qw90003h39cfkc7qov2 → RUNNING: Navigating to AT&T sign-in
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1qw90003h39cfkc7qov2 → RUNNING: Entering AT&T User ID
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1qw90003h39cfkc7qov2 → RUNNING: Entering AT&T password
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] AT&T password filled, clicking Sign in...
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job cmkgj1qw90003h39cfkc7qov2 → RUNNING: Checking authentication status
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Saved error screenshot to error-snapshot-cmkgj1qw90003h39cfkc7qov2.png
+[utility-worker 49dfa807-00f4-4de0-82b8-6903fab39d3f] Job failed cmkgj1qw90003h39cfkc7qov2 AT&T login failed: Incorrect user ID or password. Try again.Care code:  201 [LU100]
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Starting utility link worker
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] poll 3000 ms | headless: false
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Processing job cmkgji1km0005h39cl2b1thz2 provider: SoCalGas
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgji1km0005h39cl2b1thz2 → RUNNING: Initializing secure session
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgji1km0005h39cl2b1thz2 → RUNNING: Starting secure browser
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgji1km0005h39cl2b1thz2 → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgji1km0005h39cl2b1thz2 → RUNNING: Submitting login credentials
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Fields filled, clicking Log In...
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgji1km0005h39cl2b1thz2 → RUNNING: Checking authentication status
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job failed cmkgji1km0005h39cl2b1thz2 page.screenshot: Target page, context or browser has been closed
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Processing job cmkgjkecu0007h39c8y5nf835 provider: SoCalGas
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjkecu0007h39c8y5nf835 → RUNNING: Initializing secure session
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjkecu0007h39c8y5nf835 → RUNNING: Starting secure browser
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjkecu0007h39c8y5nf835 → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjkecu0007h39c8y5nf835 → RUNNING: Submitting login credentials
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Fields filled, clicking Log In...
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjkecu0007h39c8y5nf835 → RUNNING: Checking authentication status
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job failed cmkgjkecu0007h39c8y5nf835 page.screenshot: Target page, context or browser has been closed
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Processing job cmkgjlq5d0009h39c2r5l2sbn provider: SoCalGas
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjlq5d0009h39c2r5l2sbn → RUNNING: Initializing secure session
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjlq5d0009h39c2r5l2sbn → RUNNING: Starting secure browser
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjlq5d0009h39c2r5l2sbn → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjlq5d0009h39c2r5l2sbn → RUNNING: Submitting login credentials
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Fields filled, clicking Log In...
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjlq5d0009h39c2r5l2sbn → RUNNING: Checking authentication status
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Login successful - on home page
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjlq5d0009h39c2r5l2sbn → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job cmkgjlq5d0009h39c2r5l2sbn → RUNNING: Extracting current bill information
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Saved error screenshot to error-snapshot-cmkgjlq5d0009h39c2r5l2sbn.png
+[utility-worker 7e03904c-1c15-47be-821a-789a0b7e331f] Job failed cmkgjlq5d0009h39c2r5l2sbn locator.textContent: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="balance-due-date"] span.font-extrabold').first()[22m
+
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Starting utility link worker
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] poll 3000 ms | headless: false
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Processing job cmkgkrvbv000bh39cg8gmbex0 provider: SoCalGas
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job cmkgkrvbv000bh39cg8gmbex0 → RUNNING: Initializing secure session
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job cmkgkrvbv000bh39cg8gmbex0 → RUNNING: Starting secure browser
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job cmkgkrvbv000bh39cg8gmbex0 → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job cmkgkrvbv000bh39cg8gmbex0 → RUNNING: Submitting login credentials
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Fields filled, clicking Log In...
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job cmkgkrvbv000bh39cg8gmbex0 → RUNNING: Checking authentication status
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Login successful - on home page
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job cmkgkrvbv000bh39cg8gmbex0 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job cmkgkrvbv000bh39cg8gmbex0 → RUNNING: Extracting current bill information
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Saved error screenshot to error-snapshot-cmkgkrvbv000bh39cg8gmbex0.png
+[utility-worker 632324e5-7214-444a-8c94-8be6bc412f61] Job failed cmkgkrvbv000bh39cg8gmbex0 locator.textContent: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="balance-due-date"] span.font-extrabold').first()[22m
+
+[utility-worker 0913a142-861a-494e-8f48-80e6fceb4b63] Starting utility link worker
+[utility-worker 0913a142-861a-494e-8f48-80e6fceb4b63] poll 3000 ms | headless: false
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Starting utility link worker
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] poll 3000 ms | headless: false
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Processing job cmkglg11q000dh39cdi7to5y3 provider: SoCalGas
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → RUNNING: Initializing secure session
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → RUNNING: Starting secure browser
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → RUNNING: Navigating to SoCalGas login portal
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → RUNNING: Submitting login credentials
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Fields filled, clicking Log In...
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → RUNNING: Checking authentication status
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Login successful - on home page
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → RUNNING: Extracting current bill information
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkglg11q000dh39cdi7to5y3 → SUCCESS: No bill available yet (missing amount/due widgets)
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job SUCCESS (finalized in runner) cmkglg11q000dh39cdi7to5y3
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Processing job cmkgliri5000fh39c5xy5ittt provider: San Luis Garbage
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Initializing secure session
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Starting secure browser
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Submitting login credentials
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Fields filled, clicking Login...
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Checking authentication status
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Login successful - on dashboard page
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Extracting current bill information
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Acct scraped: 4110-10159362
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Scraped: $163.12 | Due: 1/20/2026
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → RUNNING: Syncing bill to your account
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Bill saved and participants created successfully.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job cmkgliri5000fh39c5xy5ittt → SUCCESS: Bill synced successfully
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] Job SUCCESS cmkgliri5000fh39c5xy5ittt
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker a235dfbd-81ee-4bb0-a002-ed31f52de9ab] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.

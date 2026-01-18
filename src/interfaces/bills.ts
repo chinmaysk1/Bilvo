@@ -14,6 +14,13 @@ export interface Bill {
   scheduledCharge: string | null;
   status: BillStatus;
   myStatus: BillStatus;
+  pendingVenmoApprovals: {
+    id: string;
+    createdAt: Date;
+    userId: string;
+    billId: string;
+    amountCents: number;
+  }[];
   ownerUserId: string;
   createdByUserId: string;
   participants: Array<{

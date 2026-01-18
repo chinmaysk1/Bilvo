@@ -41,28 +41,40 @@ export default async function handler(
       return res.status(403).json({ error: "Forbidden" });
     }
 
-    const { loginEmail, password, accountNumber, accountHolderName } = req.body;
+    const { loginEmail, password, accountHolderName } = req.body;
 
-    if (!loginEmail || !password) {
+    // Check if this is a re-sync (no password provided, but existing encrypted password exists)
+    const isResync = !password && !!utility.encryptedPassword;
+
+    if (!loginEmail) {
+      return res.status(400).json({ error: "loginEmail required" });
+    }
+
+    // For new links (no existing encrypted password), password is required
+    if (!isResync && !password) {
       return res
         .status(400)
         .json({ error: "loginEmail and password required" });
     }
 
-    const enc = encryptPassword(password);
-
     const { jobCreated } = await prisma.$transaction(async (tx) => {
       // 1) Save credentials to utility account
+      const updateData: any = {
+        loginEmail,
+        accountHolderName: accountHolderName ?? null,
+        isLinked: false, // stays false until worker succeeds
+      };
+
+      // Only update password if provided (new link, not re-sync)
+      if (!isResync) {
+        const enc = encryptPassword(password);
+        updateData.encryptedPassword = enc.encrypted;
+        updateData.passwordIv = enc.iv;
+      }
+
       await tx.utilityAccount.update({
         where: { id },
-        data: {
-          loginEmail,
-          accountNumber: accountNumber ?? null,
-          accountHolderName: accountHolderName ?? null,
-          encryptedPassword: enc.encrypted,
-          passwordIv: enc.iv,
-          isLinked: false, // stays false until worker succeeds
-        },
+        data: updateData,
       });
 
       // 2) Prevent duplicate "in-flight" jobs
@@ -97,7 +109,9 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       message: jobCreated
-        ? "Credentials saved. Link attempt will proceed."
+        ? isResync
+          ? "Re-sync job created successfully."
+          : "Credentials saved. Link attempt will proceed."
         : "Credentials saved. A link attempt is already in progress.",
     });
   } catch (err) {

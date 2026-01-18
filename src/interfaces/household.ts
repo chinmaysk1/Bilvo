@@ -31,6 +31,7 @@ export interface HouseholdApiResponse {
     createdAt: string;
     adminId: string;
     members: HouseholdApiMember[];
+    inviteCode: string;
   };
   currentUserId: string;
 }

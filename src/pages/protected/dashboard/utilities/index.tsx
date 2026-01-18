@@ -35,6 +35,7 @@ import {
   AlertCircle,
   Globe,
   Database,
+  RefreshCw,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -100,8 +101,8 @@ const PHASE_INFO: Record<LinkingPhase, PhaseInfo> = {
     icon: ShieldCheck,
   },
   BROWSER_STARTING: {
-    label: "Starting Browser",
-    description: "Launching secure browser environment",
+    label: "Starting Session",
+    description: "Launching secure session",
     icon: Globe,
   },
   NAVIGATING: {
@@ -505,15 +506,24 @@ function UtilitiesContent() {
   >(null);
   const [stripeCtaLoading, setStripeCtaLoading] = useState(false);
 
-  // Enhanced state tracking
-  const [jobStatus, setJobStatus] = useState("IDLE");
-  const [linkingPhase, setLinkingPhase] = useState<LinkingPhase>("IDLE");
-  const [progressMessage, setProgressMessage] = useState<string | null>(null);
-  const [lastError, setLastError] = useState<string | null>(null);
-  const [twoFactorCode, setTwoFactorCode] = useState("");
-  const [isPolling, setIsPolling] = useState(false);
-  const [sessionStartTime, setSessionStartTime] = useState<number>(0);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  // Enhanced state tracking - now supports multiple utilities syncing
+  const [syncingUtilities, setSyncingUtilities] = useState<Set<string>>(
+    new Set()
+  );
+  const [utilityStates, setUtilityStates] = useState<
+    Record<
+      string,
+      {
+        phase: LinkingPhase;
+        progressMessage: string | null;
+        lastError: string | null;
+        twoFactorCode: string;
+        sessionStartTime: number;
+        elapsedTime: number;
+      }
+    >
+  >({});
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -521,7 +531,6 @@ function UtilitiesContent() {
     email: "",
     password: "",
     confirmPassword: "",
-    accountNumber: "",
   });
 
   // Add Utility modal state
@@ -600,6 +609,11 @@ function UtilitiesContent() {
   const userOwnsAnyUtility =
     !!currentUserId && utilities.some((u) => u.ownerUserId === currentUserId);
 
+  // Get count of linked utilities
+  const linkedUtilitiesCount = utilities.filter(
+    (u) => u.isLinked && u.ownerUserId === currentUserId
+  ).length;
+
   const fetchData = useCallback(async () => {
     try {
       const userRes = await fetch("/api/user/me");
@@ -637,84 +651,112 @@ function UtilitiesContent() {
     fetchData();
   }, [fetchData]);
 
-  // Elapsed time counter
+  // Elapsed time counter - now works for multiple utilities
   useEffect(() => {
-    if (!isPolling || linkingPhase === "IDLE") return;
+    const activeUtilities = Object.entries(utilityStates).filter(
+      ([_, state]) => state.phase !== "IDLE"
+    );
+
+    if (activeUtilities.length === 0) return;
 
     const interval = setInterval(() => {
-      setElapsedTime(Date.now() - sessionStartTime);
+      const now = Date.now();
+      setUtilityStates((prev) => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach((id) => {
+          if (updated[id].phase !== "IDLE") {
+            updated[id] = {
+              ...updated[id],
+              elapsedTime: now - updated[id].sessionStartTime,
+            };
+          }
+        });
+        return updated;
+      });
     }, 100);
 
     return () => clearInterval(interval);
-  }, [isPolling, sessionStartTime, linkingPhase]);
+  }, [Object.keys(utilityStates).length]);
 
-  // Enhanced polling with backend message parsing
+  // Enhanced polling - now handles multiple utilities simultaneously
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    const intervals: Record<string, NodeJS.Timeout> = {};
 
-    if (isPolling && expandedUtility) {
-      interval = setInterval(async () => {
+    syncingUtilities.forEach((utilityId) => {
+      intervals[utilityId] = setInterval(async () => {
         try {
-          const res = await fetch(
-            `/api/utilities/${expandedUtility}/job-status`
-          );
+          const res = await fetch(`/api/utilities/${utilityId}/job-status`);
           if (!res.ok) return;
 
           const data = await res.json();
           const backendStatus = data.status;
           const error = data.lastError;
 
-          // Parse phase from backend
           const newPhase = parseBackendStatus(backendStatus, error);
-
-          // Extract progress message
           const message = extractProgressMessage(error);
-          setProgressMessage(message);
 
-          // Only update actual errors (not progress messages)
-          if (backendStatus === "FAILED") {
-            setLastError(error);
-          }
+          setUtilityStates((prev) => ({
+            ...prev,
+            [utilityId]: {
+              ...prev[utilityId],
+              phase: newPhase,
+              progressMessage: message,
+              lastError:
+                backendStatus === "FAILED" ? error : prev[utilityId]?.lastError,
+            },
+          }));
 
           // Terminal states
           if (backendStatus === "SUCCESS") {
-            setLinkingPhase("SUCCESS");
-            setIsPolling(false);
-            toast.success("Account Linked!");
+            setSyncingUtilities((prev) => {
+              const next = new Set(prev);
+              next.delete(utilityId);
+              return next;
+            });
+            toast.success(
+              `${
+                utilities.find((u) => u.id === utilityId)?.type
+              } synced successfully!`
+            );
             await fetchData();
-
-            // After successful link, refresh Stripe status to decide whether banner should show
             await refreshStripeConnectStatus();
-
             return;
           }
 
           if (backendStatus === "FAILED") {
-            setLinkingPhase("FAILED");
-            setIsPolling(false);
-            toast.error("Linking failed. Please check your credentials.");
+            setSyncingUtilities((prev) => {
+              const next = new Set(prev);
+              next.delete(utilityId);
+              return next;
+            });
+            const errorMessage =
+              error?.replace(/^\[PROGRESS\]\s*/i, "") || "Linking failed";
+            toast.error(
+              `${
+                utilities.find((u) => u.id === utilityId)?.type
+              }: ${errorMessage}`
+            );
             return;
           }
 
           // Prevent 2FA state from reverting after code submission
+          const currentPhase = utilityStates[utilityId]?.phase;
           if (
-            linkingPhase === "VERIFYING_2FA" &&
+            currentPhase === "VERIFYING_2FA" &&
             backendStatus === "NEEDS_2FA"
           ) {
             return;
           }
-
-          setLinkingPhase(newPhase);
         } catch (error) {
           console.error("Polling error:", error);
         }
       }, 2000);
-    }
+    });
 
     return () => {
-      if (interval) clearInterval(interval);
+      Object.values(intervals).forEach((interval) => clearInterval(interval));
     };
-  }, [isPolling, expandedUtility, fetchData, linkingPhase]);
+  }, [syncingUtilities, fetchData, utilities]);
 
   // ------------------------------------------------------
   // Handlers
@@ -747,7 +789,6 @@ function UtilitiesContent() {
         email: utility.email,
         password: "",
         confirmPassword: "",
-        accountNumber: utility.accountNumber,
       });
     } else {
       setFormData({
@@ -755,33 +796,51 @@ function UtilitiesContent() {
         email: "",
         password: "",
         confirmPassword: "",
-        accountNumber: "",
       });
+    }
+
+    // Initialize state for this utility if not exists
+    if (!utilityStates[utilityId]) {
+      setUtilityStates((prev) => ({
+        ...prev,
+        [utilityId]: {
+          phase: "IDLE",
+          progressMessage: null,
+          lastError: null,
+          twoFactorCode: "",
+          sessionStartTime: 0,
+          elapsedTime: 0,
+        },
+      }));
     }
   };
 
   // Submit 2FA Code
-  const handleTwoFactorSubmit = async () => {
+  const handleTwoFactorSubmit = async (utilityId: string) => {
     try {
-      await fetch(`/api/utilities/${expandedUtility}/job-status`, {
+      const code = utilityStates[utilityId]?.twoFactorCode;
+      await fetch(`/api/utilities/${utilityId}/job-status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: twoFactorCode }),
+        body: JSON.stringify({ code }),
       });
       toast.info("Submitting code...");
-      setJobStatus("RUNNING"); // Optimistic UI update
+
+      // Update to verifying state
+      setUtilityStates((prev) => ({
+        ...prev,
+        [utilityId]: {
+          ...prev[utilityId],
+          phase: "VERIFYING_2FA",
+        },
+      }));
     } catch (err) {
       toast.error("Failed to submit 2FA code");
     }
   };
 
   const handleLinkUtility = async () => {
-    if (
-      !formData.accountHolderName ||
-      !formData.email ||
-      !formData.password ||
-      !formData.accountNumber
-    ) {
+    if (!formData.accountHolderName || !formData.email || !formData.password) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -802,17 +861,8 @@ function UtilitiesContent() {
           loginEmail: formData.email,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
-          accountNumber: formData.accountNumber,
         }),
       });
-
-      if (res.ok) {
-        setIsPolling(true); // Start watching the job status
-        setSessionStartTime(Date.now());
-        setElapsedTime(0);
-        setLinkingPhase("PENDING");
-        setLastError(null);
-      }
 
       const body = await res.json().catch(() => ({}));
 
@@ -820,7 +870,21 @@ function UtilitiesContent() {
         throw new Error(body.error || "Failed to link utility");
       }
 
-      // Update local non-sensitive fields to match what we just submitted
+      // Start tracking this utility
+      setSyncingUtilities((prev) => new Set([...prev, expandedUtility]));
+      setUtilityStates((prev) => ({
+        ...prev,
+        [expandedUtility]: {
+          phase: "PENDING",
+          progressMessage: null,
+          lastError: null,
+          twoFactorCode: "",
+          sessionStartTime: Date.now(),
+          elapsedTime: 0,
+        },
+      }));
+
+      // Update local non-sensitive fields
       setUtilities((prev) =>
         prev.map((u) =>
           u.id === expandedUtility
@@ -828,8 +892,6 @@ function UtilitiesContent() {
                 ...u,
                 accountHolderName: formData.accountHolderName,
                 email: formData.email,
-                accountNumber: formData.accountNumber,
-                // isLinked stays as DB says (likely false until worker verifies)
               }
             : u
         )
@@ -885,17 +947,12 @@ function UtilitiesContent() {
         email: utility.email,
         password: "",
         confirmPassword: "",
-        accountNumber: utility.accountNumber,
       });
     }
   };
 
   const handleSaveEdit = async () => {
-    if (
-      !formData.accountHolderName ||
-      !formData.email ||
-      !formData.accountNumber
-    ) {
+    if (!formData.accountHolderName || !formData.email) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -914,7 +971,6 @@ function UtilitiesContent() {
         body: JSON.stringify({
           accountHolderName: formData.accountHolderName,
           email: formData.email,
-          accountNumber: formData.accountNumber,
           // ownerUserId can be added here later if you build "change owner" UI
         }),
       });
@@ -950,7 +1006,6 @@ function UtilitiesContent() {
           email: utility.email,
           password: "",
           confirmPassword: "",
-          accountNumber: utility.accountNumber,
         });
       }
     }
@@ -1028,7 +1083,6 @@ function UtilitiesContent() {
         email: "",
         password: "",
         confirmPassword: "",
-        accountNumber: "",
       });
       setShowCompanyModal(false);
       setSelectedUtilityType(null);
@@ -1037,6 +1091,90 @@ function UtilitiesContent() {
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Failed to add utility");
+    }
+  };
+
+  // Sync All Utilities - calls existing link endpoint for each linked utility
+  const handleSyncAllUtilities = async () => {
+    const linkedUtilities = utilities.filter(
+      (u) => u.isLinked && u.ownerUserId === currentUserId
+    );
+
+    if (linkedUtilities.length === 0) {
+      toast.error("No linked utilities to sync");
+      return;
+    }
+
+    setIsSyncing(true);
+
+    try {
+      let successCount = 0;
+      let failCount = 0;
+
+      // Call link endpoint for each utility (without password to trigger re-sync)
+      for (const utility of linkedUtilities) {
+        try {
+          // Just create a new job - the backend will use existing credentials
+          const res = await fetch(`/api/utilities/${utility.id}/link`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              accountHolderName: utility.accountHolderName,
+              loginEmail: utility.email,
+              password: "", // Backend will use existing encrypted password
+            }),
+          });
+
+          if (res.ok) {
+            successCount++;
+
+            // Start tracking this utility and expand it
+            setSyncingUtilities((prev) => new Set([...prev, utility.id]));
+            setUtilityStates((prev) => ({
+              ...prev,
+              [utility.id]: {
+                phase: "PENDING",
+                progressMessage: null,
+                lastError: null,
+                twoFactorCode: "",
+                sessionStartTime: Date.now(),
+                elapsedTime: 0,
+              },
+            }));
+
+            // Auto-expand first syncing utility
+            if (successCount === 1) {
+              setExpandedUtility(utility.id);
+            }
+          } else {
+            failCount++;
+          }
+        } catch (err) {
+          console.error(`Failed to sync ${utility.type}:`, err);
+          failCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(
+          `Started syncing ${successCount} ${
+            successCount === 1 ? "utility" : "utilities"
+          }`
+        );
+      }
+
+      if (failCount > 0) {
+        toast.error(
+          `Failed to start sync for ${failCount} ${
+            failCount === 1 ? "utility" : "utilities"
+          }`
+        );
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to sync utilities");
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -1196,35 +1334,51 @@ function UtilitiesContent() {
                   {isExpanded && (
                     <div className="px-6 py-4 border-b border-gray-200 bg-white">
                       {/* 1. Success Banner (Only show if not currently polling) */}
-                      {utility.isLinked && !isPolling && (
-                        <div
-                          className="mb-4 px-3 py-2 rounded-lg flex items-center gap-2"
-                          style={{
-                            backgroundColor: "#D1FAE5",
-                            border: "1px solid #A7F3D0",
-                          }}
-                        >
-                          <CheckCircle2
-                            className="h-4 w-4 flex-shrink-0"
-                            style={{ color: "#00B948" }}
-                          />
-                          <p className="text-sm text-gray-900">
-                            This account information has been accepted and we
-                            are able to access your account!
-                          </p>
-                        </div>
-                      )}
+                      {utility.isLinked &&
+                        !syncingUtilities.has(utility.id) && (
+                          <div
+                            className="mb-4 px-3 py-2 rounded-lg flex items-center gap-2"
+                            style={{
+                              backgroundColor: "#D1FAE5",
+                              border: "1px solid #A7F3D0",
+                            }}
+                          >
+                            <CheckCircle2
+                              className="h-4 w-4 flex-shrink-0"
+                              style={{ color: "#00B948" }}
+                            />
+                            <p className="text-sm text-gray-900">
+                              This account information has been accepted and we
+                              are able to access your account!
+                            </p>
+                          </div>
+                        )}
 
                       {/* 2. INTERACTIVE SESSION MODE (Shows when isPolling is true) */}
-                      {isPolling ? (
+                      {syncingUtilities.has(utility.id) &&
+                      utilityStates[utility.id] ? (
                         <LinkingSession
-                          phase={linkingPhase}
-                          progressMessage={progressMessage}
-                          twoFactorCode={twoFactorCode}
-                          onTwoFactorChange={setTwoFactorCode}
-                          onTwoFactorSubmit={handleTwoFactorSubmit}
-                          lastError={lastError}
-                          elapsedTime={elapsedTime}
+                          phase={utilityStates[utility.id].phase}
+                          progressMessage={
+                            utilityStates[utility.id].progressMessage
+                          }
+                          twoFactorCode={
+                            utilityStates[utility.id].twoFactorCode
+                          }
+                          onTwoFactorChange={(code) =>
+                            setUtilityStates((prev) => ({
+                              ...prev,
+                              [utility.id]: {
+                                ...prev[utility.id],
+                                twoFactorCode: code,
+                              },
+                            }))
+                          }
+                          onTwoFactorSubmit={() =>
+                            handleTwoFactorSubmit(utility.id)
+                          }
+                          lastError={utilityStates[utility.id].lastError}
+                          elapsedTime={utilityStates[utility.id].elapsedTime}
                         />
                       ) : (
                         /* 3. STANDARD UI (Shows when NOT polling) */
@@ -1413,37 +1567,6 @@ function UtilitiesContent() {
                                 />
                               </div>
 
-                              <div>
-                                <Label
-                                  className="text-sm text-gray-700 mb-1 block"
-                                  style={{ fontWeight: 500 }}
-                                >
-                                  Account Number
-                                </Label>
-                                <Input
-                                  type="text"
-                                  value={
-                                    isOwner
-                                      ? formData.accountNumber
-                                      : "****-****"
-                                  }
-                                  onChange={(e) =>
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      accountNumber: e.target.value,
-                                    }))
-                                  }
-                                  placeholder={
-                                    utility.isLinked ? "055873-000" : ""
-                                  }
-                                  className="h-10 rounded-lg border-gray-300"
-                                  disabled={
-                                    utility.isLinked &&
-                                    (editingUtility !== utility.id || !isOwner)
-                                  }
-                                />
-                              </div>
-
                               {/* Actions (Buttons) */}
                               <div className="pt-1 space-y-2">
                                 {utility.isLinked &&
@@ -1503,7 +1626,9 @@ function UtilitiesContent() {
                                       onClick={handleLinkUtility}
                                       className="w-full h-10 rounded-lg bg-[#00B948] hover:bg-[#00A040]"
                                       style={{ fontWeight: 600 }}
-                                      disabled={isPolling}
+                                      disabled={syncingUtilities.has(
+                                        utility.id
+                                      )}
                                     >
                                       Link Account
                                     </Button>
@@ -1533,8 +1658,47 @@ function UtilitiesContent() {
           </div>
         </Card>
 
-        {/* Add utility button */}
-        <div className="flex justify-center">
+        {/* Action buttons */}
+        <div className="flex justify-center gap-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={handleSyncAllUtilities}
+                size="lg"
+                variant="outline"
+                className="border-[#00B948] text-[#00B948] hover:bg-[#00B948] hover:text-white rounded-lg px-8"
+                style={{ fontWeight: 600 }}
+                disabled={isSyncing || linkedUtilitiesCount === 0}
+              >
+                {isSyncing ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Syncing...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-5 w-5 mr-2" />
+                    Sync Utilities
+                    {linkedUtilitiesCount > 0 && (
+                      <span className="ml-2 px-2 py-0.5 bg-[#00B948] text-white rounded-full text-xs">
+                        {linkedUtilitiesCount}
+                      </span>
+                    )}
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {linkedUtilitiesCount === 0
+                  ? "No linked utilities to sync"
+                  : `Sync all ${linkedUtilitiesCount} linked ${
+                      linkedUtilitiesCount === 1 ? "utility" : "utilities"
+                    }`}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+
           <Button
             onClick={handleAddUtility}
             size="lg"

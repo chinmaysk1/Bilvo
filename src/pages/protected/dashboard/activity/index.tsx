@@ -254,7 +254,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
     // Fetch activities from the dashboard API
-    const response = await fetch(`${baseUrl}/api/dashboard`, {
+    const response = await fetch(`${baseUrl}/api/activities`, {
       headers: {
         Cookie: context.req.headers.cookie || "",
       },
@@ -276,7 +276,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     return {
       props: {
-        activities: data.recentActivity || [],
+        activities: data.activities || [],
       },
     };
   } catch (error) {

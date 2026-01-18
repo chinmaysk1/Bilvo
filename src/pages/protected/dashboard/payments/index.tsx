@@ -9,6 +9,8 @@ import {
   Building2,
   Check,
   CreditCard,
+  Edit,
+  EditIcon,
   GripVertical,
   Lock,
   Plus,
@@ -56,6 +58,12 @@ export default function PaymentsPage({
     boolean | null
   >(null);
   const [stripeStatusLoading, setStripeStatusLoading] = useState(true);
+  const [venmoHandle, setVenmoHandle] = useState("");
+  const [venmoLoading, setVenmoLoading] = useState(true);
+  const [venmoSaving, setVenmoSaving] = useState(false);
+  const [isEditingVenmo, setIsEditingVenmo] = useState(false);
+
+  const isVenmoSaved = !!venmoHandle && !venmoSaving;
 
   useEffect(() => {
     let cancelled = false;
@@ -72,9 +80,10 @@ export default function PaymentsPage({
 
         setCurrentUserId(me.id);
 
-        const [utilRes, stripeRes] = await Promise.all([
+        const [utilRes, stripeRes, venmoRes] = await Promise.all([
           fetch("/api/utilities"),
           fetch("/api/payments/stripe/connect/status-from-db"),
+          fetch("/api/payments/payment-methods/venmo"),
         ]);
 
         if (!utilRes.ok) throw new Error("Failed to fetch utilities");
@@ -94,6 +103,11 @@ export default function PaymentsPage({
         } else {
           if (!cancelled) setStripeReadyToReceive(null);
         }
+
+        if (venmoRes.ok) {
+          const wallet = await venmoRes.json().catch(() => ({}));
+          if (!cancelled) setVenmoHandle(wallet?.venmoHandle || "");
+        }
       } catch (e) {
         console.error("Failed to load ownership/stripe status:", e);
         if (!cancelled) {
@@ -104,6 +118,7 @@ export default function PaymentsPage({
         if (!cancelled) {
           setUtilityOwnershipLoading(false);
           setStripeStatusLoading(false);
+          setVenmoLoading(false);
         }
       }
     })();
@@ -530,57 +545,100 @@ export default function PaymentsPage({
                     <input
                       placeholder="@username"
                       className="flex-1 h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#00B948] focus:border-transparent"
-                      defaultValue=""
+                      value={venmoHandle}
+                      onChange={(e) => setVenmoHandle(e.target.value)}
+                      disabled={
+                        venmoLoading ||
+                        venmoSaving ||
+                        (isVenmoSaved && !isEditingVenmo)
+                      }
                     />
-                    <button
-                      type="button"
-                      className="h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] hover:bg-[#F9FAFB]"
-                      style={{ fontWeight: 600 }}
-                      onClick={() => alert("Verify Venmo (later)")}
-                    >
-                      Verify
-                    </button>
-                  </div>
-                </div>
-              </div>
 
-              {/* Zelle Row (UI only) */}
-              <div
-                className="flex items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white"
-                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
-              >
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
-                  style={{ backgroundColor: "#F5F3FF" }}
-                >
-                  <Check className="h-4 w-4" style={{ color: "#7C3AED" }} />
-                </div>
+                    {isVenmoSaved && !isEditingVenmo ? (
+                      <>
+                        <div
+                          className="flex items-center gap-1 px-2 py-1 rounded-md"
+                          style={{ backgroundColor: "#ECFDF5" }}
+                        >
+                          <VerifiedBadge label="Saved" />
+                        </div>
 
-                <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-shrink-0" style={{ width: "100px" }}>
-                    <h3
-                      className="text-[14px] text-[#111827]"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Zelle
-                    </h3>
-                  </div>
+                        <button
+                          type="button"
+                          disabled={venmoLoading || venmoSaving}
+                          className={[
+                            "h-9 px-3 rounded-lg border text-[13px]",
+                            venmoLoading || venmoSaving
+                              ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
+                              : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
+                          ].join(" ")}
+                          style={{ fontWeight: 600 }}
+                          onClick={() => setIsEditingVenmo(true)}
+                        >
+                          <Edit size={16} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          disabled={
+                            venmoLoading || venmoSaving || !venmoHandle.trim()
+                          }
+                          className={[
+                            "h-9 px-3 rounded-lg border text-[13px]",
+                            venmoLoading || venmoSaving || !venmoHandle.trim()
+                              ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
+                              : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
+                          ].join(" ")}
+                          style={{ fontWeight: 600 }}
+                          onClick={async () => {
+                            setVenmoSaving(true);
+                            try {
+                              const res = await fetch(
+                                "/api/payments/payment-methods/venmo",
+                                {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({ venmoHandle }),
+                                }
+                              );
+                              if (!res.ok)
+                                throw new Error("Failed to save Venmo");
+                              const data = await res.json();
+                              setVenmoHandle(data?.venmoHandle || "");
+                              setIsEditingVenmo(false); // lock it back down after save
+                            } catch (e) {
+                              console.error(e);
+                              alert("Failed to save Venmo handle");
+                            } finally {
+                              setVenmoSaving(false);
+                            }
+                          }}
+                        >
+                          {venmoSaving ? "Saving..." : "Save"}
+                        </button>
 
-                  <div className="flex-1">
-                    <select
-                      className="w-full h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#00B948] focus:border-transparent"
-                      defaultValue="email"
-                    >
-                      <option value="email">Email: john.smith@email.com</option>
-                      <option value="phone">Phone: +1 (555) 123-4567</option>
-                    </select>
-                  </div>
-
-                  <div
-                    className="flex items-center gap-1 px-2 py-1 rounded-md"
-                    style={{ backgroundColor: "#ECFDF5" }}
-                  >
-                    <VerifiedBadge />
+                        {isVenmoSaved && isEditingVenmo && (
+                          <button
+                            type="button"
+                            disabled={venmoLoading || venmoSaving}
+                            className={[
+                              "h-9 px-3 rounded-lg border text-[13px]",
+                              venmoLoading || venmoSaving
+                                ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
+                                : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
+                            ].join(" ")}
+                            style={{ fontWeight: 600 }}
+                            onClick={() => setIsEditingVenmo(false)}
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -599,14 +657,14 @@ export default function PaymentsPage({
                 className="text-[16px] text-[#111827]"
                 style={{ fontWeight: 600, lineHeight: 1.3 }}
               >
-                Parent or External Payers
+                Parent or External Payers (Coming Soon)
               </h2>
 
               <button
                 type="button"
                 className="rounded-lg bg-[#00B948] hover:bg-[#00A03C] text-white h-9 px-3 text-[13px]"
                 style={{ fontWeight: 600 }}
-                onClick={() => alert("Invite payer (later)")}
+                onClick={() => alert("Invite payer (coming soon)")}
               >
                 <Plus className="h-3.5 w-3.5 mr-1.5 inline-block" />
                 Invite Payer
@@ -614,8 +672,7 @@ export default function PaymentsPage({
             </div>
 
             <p className="text-[13px] text-[#6B7280] mb-4">
-              Invite someone else to pay. (Wiring + permissions later — UI only
-              for now.)
+              Invite someone else to pay.
             </p>
 
             {/* Example active payer card (static for now) */}
@@ -631,7 +688,7 @@ export default function PaymentsPage({
                         className="text-[15px] text-[#111827]"
                         style={{ fontWeight: 600 }}
                       >
-                        Mary Sanchez
+                        Julia Mantel
                       </h3>
                       <span
                         className="bg-[#F3E8FF] text-[#9333EA] border-[#E9D5FF] text-[10px] px-2 py-0 rounded border"
@@ -658,7 +715,7 @@ export default function PaymentsPage({
                     type="button"
                     className="rounded-lg h-8 px-3 border border-[#D1D5DB] bg-white hover:bg-[#F9FAFB] text-[12px]"
                     style={{ fontWeight: 600 }}
-                    onClick={() => alert("Edit payer (later)")}
+                    onClick={() => alert("Edit payer (coming soon)")}
                   >
                     Edit
                   </button>
@@ -666,7 +723,7 @@ export default function PaymentsPage({
                     type="button"
                     className="rounded-lg h-8 px-3 border border-[#00B948] text-[#00B948] hover:bg-[#ECFDF5] text-[12px]"
                     style={{ fontWeight: 600 }}
-                    onClick={() => alert("Resend invite (later)")}
+                    onClick={() => alert("Resend invite (coming soon)")}
                   >
                     <Send className="h-3.5 w-3.5 mr-1 inline-block" />
                     Resend

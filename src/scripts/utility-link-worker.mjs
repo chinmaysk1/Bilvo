@@ -5,6 +5,7 @@ import { chromium } from "playwright-extra";
 import stealth from "puppeteer-extra-plugin-stealth";
 import path from "node:path";
 import CryptoUtils from "../utils/common/crypto.ts";
+import { raw } from "@prisma/client/runtime/library";
 const { decryptPassword } = CryptoUtils;
 
 // Immediate safety check
@@ -47,6 +48,32 @@ async function humanType(page, locator, text) {
     for (const char of text) {
       await page.keyboard.type(char, { delay: Math.random() * 100 + 50 });
     }
+  }
+}
+
+// =====================================================
+// Fix pattern: “try-get” helpers + only NoBill on missing bill widgets
+// =====================================================
+
+async function tryText(locator, timeoutMs = 8000) {
+  try {
+    await locator.first().waitFor({ state: "visible", timeout: timeoutMs });
+    const t = await locator.first().textContent();
+    const trimmed = (t || "").trim();
+    return trimmed.length ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
+async function tryAttr(locator, name, timeoutMs = 8000) {
+  try {
+    await locator.first().waitFor({ state: "visible", timeout: timeoutMs });
+    const v = await locator.first().getAttribute(name);
+    const trimmed = (v || "").trim();
+    return trimmed.length ? trimmed : null;
+  } catch {
+    return null;
   }
 }
 
@@ -133,15 +160,35 @@ async function markJobFailed(job, errMsg) {
 
   const msg = errMsg?.slice(0, 2000) || "Unknown error";
 
-  await prisma.utilityLinkJob.update({
-    where: { id: job.id },
-    data: {
-      status: "FAILED",
-      lastError: msg,
-      finishedAt: new Date(),
-      lockedAt: null,
-      lockedBy: null,
-    },
+  await prisma.$transaction(async (tx) => {
+    // Update job status
+    await tx.utilityLinkJob.update({
+      where: { id: job.id },
+      data: {
+        status: "FAILED",
+        lastError: msg,
+        finishedAt: new Date(),
+        lockedAt: null,
+        lockedBy: null,
+      },
+    });
+
+    // Check if utility was already linked before this job
+    const utility = await tx.utilityAccount.findUnique({
+      where: { id: job.utilityAccountId },
+      select: { isLinked: true },
+    });
+
+    // Only unlink if this was an initial link attempt (not a re-sync)
+    // If already linked, keep it linked - this was just a re-sync failure
+    if (utility && !utility.isLinked) {
+      await tx.utilityAccount.update({
+        where: { id: job.utilityAccountId },
+        data: {
+          isLinked: false,
+        },
+      });
+    }
   });
 }
 
@@ -187,6 +234,32 @@ async function markJobSuccess(job) {
       },
     });
 
+    await tx.utilityAccount.update({
+      where: { id: job.utilityAccountId },
+      data: {
+        isLinked: true,
+      },
+    });
+  });
+}
+
+async function markJobSuccessNoBill(
+  job,
+  note = "No bill available in current cycle"
+) {
+  await prisma.$transaction(async (tx) => {
+    await tx.utilityLinkJob.update({
+      where: { id: job.id },
+      data: {
+        status: "SUCCESS",
+        lastError: `[PROGRESS] ${note}`,
+        finishedAt: new Date(),
+        lockedAt: null,
+        lockedBy: null,
+      },
+    });
+
+    // Mark as linked even if no bill found (credentials are valid)
     await tx.utilityAccount.update({
       where: { id: job.utilityAccountId },
       data: {
@@ -485,6 +558,15 @@ async function runPgeLink(job) {
         .locator(accountValueSelector)
         .textContent();
 
+      // If any critical data is missing, bill isn't ready yet
+      if (!rawAmount || !rawDate || !rawAccount) {
+        await markJobSuccessNoBill(
+          job,
+          "Account linked - bill data not yet available"
+        );
+        return { status: "SUCCESS", note: "Bill not ready", finalized: true };
+      }
+
       const amountClean = parseFloat(rawAmount.replace(/[$,\s]/g, ""));
       const dateClean = new Date(rawDate.trim());
       const accountClean = rawAccount.trim();
@@ -508,7 +590,7 @@ async function runPgeLink(job) {
           "No balance due - account linked successfully"
         );
         await markJobSuccess(job);
-        return { status: "SUCCESS", note: "No balance due" };
+        return { status: "SUCCESS", note: "No balance due", finalized: true };
       }
 
       // Step 10: Save to database
@@ -535,29 +617,11 @@ async function runPgeLink(job) {
 
       // Step 11: Complete
       await updateJobProgress(job.id, "SUCCESS", "Bill synced successfully");
+      return { status: "SUCCESS" };
     } catch (scrapeError) {
       log("Scraping/Saving Error:", scrapeError.message);
       throw scrapeError;
     }
-
-    // Error detection if still on a login/error page
-    const errorMsg = await page
-      .locator("#inputuser-1")
-      .textContent()
-      .catch(() => null);
-    if (errorMsg?.includes("Error:")) {
-      throw new Error(`PG&E Login Error: ${errorMsg.trim()}`);
-    }
-
-    const currentUrl = page.url();
-
-    if (!currentUrl.includes("login")) {
-      return { status: "SUCCESS" };
-    }
-
-    throw new Error(
-      "Failed to determine login result. Current URL: " + currentUrl
-    );
   } catch (e) {
     if (DEBUG) {
       const path = `error-snapshot-${job.id}.png`;
@@ -735,12 +799,25 @@ async function runSloWaterLink(job) {
       );
       const dueDateText = await dueDateRow.textContent();
 
+      // If any critical data is missing, bill isn't ready yet
+      if (!rawAmount || !dueDateText || !accountClean) {
+        await markJobSuccessNoBill(
+          job,
+          "Account linked - bill data not yet available"
+        );
+        return { status: "SUCCESS", note: "Bill not ready", finalized: true };
+      }
+
       // Parse "Current Charges Due By 1/15/2026" to get the date
       const dueDateMatch = dueDateText.match(
         /Due By\s+(\d{1,2}\/\d{1,2}\/\d{4})/
       );
       if (!dueDateMatch) {
-        throw new Error("Could not extract due date from bill");
+        await markJobSuccessNoBill(
+          job,
+          "Account linked - bill data not yet available"
+        );
+        return { status: "SUCCESS", note: "Bill not ready", finalized: true };
       }
       const dueDateString = dueDateMatch[1];
 
@@ -764,13 +841,8 @@ async function runSloWaterLink(job) {
       }
 
       if (amountClean <= 0) {
-        await updateJobProgress(
-          job.id,
-          "SUCCESS",
-          "No balance due - account linked successfully"
-        );
-        await markJobSuccess(job);
-        return { status: "SUCCESS", note: "No balance due" };
+        await markJobSuccessNoBill(job, "No balance due");
+        return { status: "SUCCESS", note: "No balance due", finalized: true };
       }
 
       // Step 8: Save to database
@@ -848,12 +920,11 @@ async function runSloWaterLink(job) {
 
       // Step 9: Complete
       await updateJobProgress(job.id, "SUCCESS", "Bill synced successfully");
+      return { status: "SUCCESS" };
     } catch (scrapeError) {
       log("Scraping/Saving Error:", scrapeError.message);
       throw scrapeError;
     }
-
-    return { status: "SUCCESS" };
   } catch (e) {
     if (DEBUG) {
       const path = `error-snapshot-${job.id}.png`;
@@ -995,31 +1066,63 @@ async function runSoCalGasLink(job) {
     await homeHeader.waitFor({ state: "visible", timeout: 15000 });
     const aria = await homeHeader.getAttribute("aria-label");
     const acctMatch = aria?.match(/Acct#\s*([0-9]+)/i);
-    const accountClean = acctMatch?.[1]?.trim();
+    const accountClean = acctMatch?.[1]?.trim() || null;
 
     // Balance + due date
     const balanceWrap = page.locator('[data-testid="balance-with-due-date"]');
     await balanceWrap.waitFor({ state: "visible", timeout: 20000 });
 
-    const rawAmount = await balanceWrap
-      .locator("span.text-4xl")
-      .first()
-      .textContent();
-    const rawDue = await page
-      .locator('[data-testid="balance-due-date"] span.font-extrabold')
-      .first()
-      .textContent();
+    // IMPORTANT: use tryText so missing pieces become null instead of throwing
+    const rawAmount = await tryText(balanceWrap.locator("span.text-4xl"), 8000);
+
+    // Try multiple due selectors in case the UI changed slightly
+    const rawDue =
+      (await tryText(
+        page.locator('[data-testid="balance-due-date"] span.font-extrabold'),
+        8000
+      )) ||
+      (await tryText(page.locator('[data-testid="balance-due-date"]'), 8000)) ||
+      null;
+
+    // ---- Decide: NoBill vs Hard Fail ----
+    // If we can prove login succeeded (homeHeader visible) AND we have an account number,
+    // but the bill fields aren't present, treat as "no bill yet".
+    if (!accountClean) {
+      throw new Error(
+        `SoCalGas scrape failed: could not extract account number (aria="${aria}")`
+      );
+    }
+
+    if (!rawAmount || !rawDue) {
+      await updateJobProgress(
+        job.id,
+        "SUCCESS",
+        "No bill available yet (missing amount/due widgets)"
+      );
+      await markJobSuccessNoBill(
+        job,
+        "Account linked - bill data not yet available"
+      );
+      return { status: "SUCCESS", note: "Bill not ready", finalized: true };
+    }
 
     const amountClean = parseFloat((rawAmount || "").replace(/[$,\s]/g, ""));
-    const dueStr = (rawDue || "").trim(); // "01/12/2026"
+    const dueStr = (rawDue || "").trim();
+
+    // Some accounts show extra words; keep only date-like pattern if possible
+    const m = dueStr.match(/(\d{1,2}\/\d{1,2}\/\d{4})/);
+    const datePart = m ? m[1] : dueStr;
 
     // Safer date parsing than new Date("01/12/2026") (locale ambiguity):
-    const [mm, dd, yyyy] = dueStr.split("/").map((v) => parseInt(v, 10));
+    const [mm, dd, yyyy] = String(datePart)
+      .split("/")
+      .map((v) => parseInt(v, 10));
     const dateClean = new Date(yyyy, (mm || 1) - 1, dd || 1);
 
-    if (!accountClean || !Number.isFinite(amountClean) || !dueStr) {
+    if (!Number.isFinite(amountClean) || Number.isNaN(dateClean.getTime())) {
+      // If the widgets exist but parsing fails, that’s likely a real bug
       throw new Error(
-        `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}", Due: "${rawDue}", aria: "${aria}"`
+        `SoCalGas parse failed: amount="${rawAmount}" due="${rawDue}"`
       );
     }
 
@@ -1030,13 +1133,8 @@ async function runSoCalGasLink(job) {
     }
 
     if (amountClean <= 0) {
-      await updateJobProgress(
-        job.id,
-        "SUCCESS",
-        "No balance due - account linked successfully"
-      );
-      await markJobSuccess(job);
-      return { status: "SUCCESS", note: "No balance due" };
+      await markJobSuccessNoBill(job, "No balance due");
+      return { status: "SUCCESS", note: "No balance due", finalized: true };
     }
 
     // Step 7: Save to database
@@ -1127,6 +1225,7 @@ async function runSoCalGasLink(job) {
 
 async function runSanLuisGarbageLink(job) {
   const WCI_DASHBOARD_URL_PART = "/dashboard";
+  const WCI_LOGIN_URL = "https://myaccount.wcicustomer.com/district/4110";
 
   // Step 1: Fetch utility account
   await updateJobProgress(job.id, "RUNNING", "Initializing secure session");
@@ -1298,8 +1397,13 @@ async function runSanLuisGarbageLink(job) {
 
     const accountClean = (rawAcct || "").trim();
 
-    if (!accountClean) {
-      throw new Error(`Could not extract account number. raw="${rawAcct}"`);
+    // If any critical data is missing, bill isn't ready yet
+    if (!rawAmount || !dueStr || !accountClean) {
+      await markJobSuccessNoBill(
+        job,
+        "Account linked - bill data not yet available"
+      );
+      return { status: "SUCCESS", note: "Bill not ready", finalized: true };
     }
 
     if (DEBUG) log(`Acct scraped: ${accountClean}`);
@@ -1322,13 +1426,8 @@ async function runSanLuisGarbageLink(job) {
     }
 
     if (amountClean <= 0) {
-      await updateJobProgress(
-        job.id,
-        "SUCCESS",
-        "No balance due - account linked successfully"
-      );
-      await markJobSuccess(job);
-      return { status: "SUCCESS", note: "No balance due" };
+      await markJobSuccessNoBill(job, "No balance due");
+      return { status: "SUCCESS", note: "No balance due", finalized: true };
     }
 
     // Step 7: Save to database
@@ -1787,12 +1886,6 @@ async function runAttLink(job) {
     const acctMatch = headerAcctText.match(/Account\s*#\s*([0-9]+)/i);
     const accountClean = acctMatch?.[1]?.trim();
 
-    if (!accountClean) {
-      throw new Error(
-        `AT&T scrape failed: could not extract account number from "${headerAcctText}"`
-      );
-    }
-
     // Due date per your note: from the *first* Bill activity period range, take the end date.
     // Grab first "Bill activity" range text like "Nov 26 - Dec 25"
     const activityCard = page
@@ -1815,17 +1908,15 @@ async function runAttLink(job) {
       await page.waitForTimeout(500);
     }
 
-    if (!firstRangeText) {
-      throw new Error(
-        "AT&T scrape failed: Could not find date range in data-test-id card."
-      );
-    }
-
     const dueDate = parseAttBillRangeEndDate(firstRangeText, new Date());
-    if (!dueDate) {
-      throw new Error(
-        `AT&T scrape failed: could not parse bill range "${firstRangeText}"`
+
+    // If any critical data is missing, bill isn't ready yet
+    if (!amountClean || !dueDate || !accountClean) {
+      await markJobSuccessNoBill(
+        job,
+        "Account linked - bill data not yet available"
       );
+      return { status: "SUCCESS", note: "Bill not ready", finalized: true };
     }
 
     if (DEBUG) {
@@ -1835,13 +1926,8 @@ async function runAttLink(job) {
     }
 
     if (amountClean <= 0) {
-      await updateJobProgress(
-        job.id,
-        "SUCCESS",
-        "No balance due - account linked successfully"
-      );
-      await markJobSuccess(job);
-      return { status: "SUCCESS", note: "No balance due" };
+      await markJobSuccessNoBill(job, "No balance due");
+      return { status: "SUCCESS", note: "No balance due", finalized: true };
     }
 
     // 7) Save bill
@@ -1930,9 +2016,15 @@ async function processJob(job) {
     if (job.provider?.toLowerCase().includes("pacific gas")) {
       const result = await runPgeLink(job);
 
-      if (result.status === "NEEDS_2FA") {
+      if (result?.status === "NEEDS_2FA") {
         await markJobNeeds2FA(job, result.note);
         log("Job NEEDS_2FA", job.id);
+        return;
+      }
+
+      // If runner already finalized (NoBill / NoBalance / etc), don't overwrite.
+      if (result?.finalized) {
+        log("Job SUCCESS (finalized in runner)", job.id);
         return;
       }
 
@@ -1947,6 +2039,12 @@ async function processJob(job) {
     ) {
       const result = await runSloWaterLink(job);
 
+      // If runner already finalized, don't overwrite.
+      if (result?.finalized) {
+        log("Job SUCCESS (finalized in runner)", job.id);
+        return;
+      }
+
       await markJobSuccess(job);
       log("Job SUCCESS", job.id);
       return;
@@ -1954,6 +2052,13 @@ async function processJob(job) {
 
     if (job.provider?.toLowerCase().includes("socalgas")) {
       const result = await runSoCalGasLink(job);
+
+      // If runner already finalized (NoBill / NoBalance / etc), don't overwrite.
+      if (result?.finalized) {
+        log("Job SUCCESS (finalized in runner)", job.id);
+        return;
+      }
+
       await markJobSuccess(job);
       log("Job SUCCESS", job.id);
       return;
@@ -1964,6 +2069,13 @@ async function processJob(job) {
       job.provider?.toLowerCase().includes("wcicustomer")
     ) {
       const result = await runSanLuisGarbageLink(job);
+
+      // If runner already finalized, don't overwrite.
+      if (result?.finalized) {
+        log("Job SUCCESS (finalized in runner)", job.id);
+        return;
+      }
+
       await markJobSuccess(job);
       log("Job SUCCESS", job.id);
       return;
@@ -1975,9 +2087,15 @@ async function processJob(job) {
     ) {
       const result = await runAttLink(job);
 
-      if (result.status === "NEEDS_2FA") {
+      if (result?.status === "NEEDS_2FA") {
         await markJobNeeds2FA(job, result.note);
         log("Job NEEDS_2FA", job.id);
+        return;
+      }
+
+      // If runner already finalized, don't overwrite.
+      if (result?.finalized) {
+        log("Job SUCCESS (finalized in runner)", job.id);
         return;
       }
 

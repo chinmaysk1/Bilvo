@@ -57,6 +57,7 @@ model User {
   createdAt                          DateTime          @default(now())
   updatedAt                          DateTime          @updatedAt
   autopayEnabled                     Boolean?          @default(false)
+  venmoHandle                        String?
   accounts                           Account[]
   activities                         Activity[]
   createdBills                       Bill[]            @relation("BillCreator")

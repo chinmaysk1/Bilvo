@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Bill } from "@/interfaces/bills";
 import { BillStatus } from "@prisma/client";
+import { formatMonthDay } from "@/utils/common/formatMonthYear";
 
 interface BilvoSummaryCardsProps {
   household: {
@@ -92,12 +93,12 @@ export default function BilvoSummaryCards({
     })[0];
 
   const nextAutopayAmount = nextAutoPayBill?.yourShare || 0;
-  const nextAutopayDate = nextAutoPayBill?.dueDate || "";
+  const nextAutopayDate = formatMonthDay(nextAutoPayBill?.dueDate) || "";
   const nextAutopayBiller = nextAutoPayBill?.biller || "";
 
   // Count paid bills
   const paidBillsCount = bills.filter(
-    (bill) => bill.status === BillStatus.PAID
+    (bill) => bill.myStatus === BillStatus.PAID
   ).length;
   const totalBillsCount = bills.length;
 

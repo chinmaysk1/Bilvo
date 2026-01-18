@@ -5,3 +5,10 @@ export const formatMonthYear = (date: Date | null) => {
     year: "numeric",
   });
 };
+
+export const formatMonthDay = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
