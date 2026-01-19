@@ -28,10 +28,17 @@ const LineTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function InsightsLineChartClient({
-  trendData,
+  trendData = [],
 }: {
   trendData: TrendPoint[];
 }) {
+  if (!trendData.length) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-sm text-[#6B7280]">
+        No trend data yet
+      </div>
+    );
+  }
   return (
     <div className="flex-1" style={{ minHeight: "140px" }}>
       <ResponsiveContainer width="100%" height="100%">

@@ -25,10 +25,17 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export default function InsightsPieChartClient({
-  spendingData,
+  spendingData = [],
 }: {
   spendingData: SpendingItem[];
 }) {
+  if (!spendingData.length) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-sm text-[#6B7280]">
+        No spending data yet
+      </div>
+    );
+  }
   return (
     <div className="flex-1 flex items-center gap-4">
       <div

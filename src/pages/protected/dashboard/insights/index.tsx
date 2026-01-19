@@ -122,13 +122,13 @@ function isoDaysAgo(days: number) {
  * Recharts v2 pulls Redux Toolkit internally; in Next SSR it can break depending on bundling.
  */
 const InsightsPieChartClient = dynamic(
-  () => import("./_charts/InsightsPieChartClient"),
-  { ssr: false }
+  () => import("../../../../components/insights/InsightsPieChartClient"),
+  { ssr: false },
 );
 
 const InsightsLineChartClient = dynamic(
-  () => import("./_charts/InsightsLineChartClient"),
-  { ssr: false }
+  () => import("../../../../components/insights/InsightsLineChartClient"),
+  { ssr: false },
 );
 
 export default function InsightsPage({
@@ -200,7 +200,7 @@ export default function InsightsPage({
 
   const totalSpend = useMemo(
     () => spendingData.reduce((sum, item) => sum + item.value, 0),
-    [spendingData]
+    [spendingData],
   );
 
   const avgPerRoommate = useMemo(() => {
@@ -298,7 +298,7 @@ export default function InsightsPage({
       (a) =>
         a.provider === "venmo" &&
         a.status === "PROCESSING" &&
-        a.bill?.owner?.id === currentUserId
+        a.bill?.owner?.id === currentUserId,
     ).length;
   }, [attemptsLast30, isAdmin, currentUserId]);
 
@@ -313,7 +313,7 @@ export default function InsightsPage({
       if (!payerId) continue;
       paidByUser.set(
         payerId,
-        (paidByUser.get(payerId) || 0) + Number(a.amount || 0)
+        (paidByUser.get(payerId) || 0) + Number(a.amount || 0),
       );
     }
 
@@ -323,7 +323,7 @@ export default function InsightsPage({
     const memberName =
       household.members.find((m) => m.id === top[0])?.name || "Someone";
     return `${memberName} paid $${clamp2(top[1]).toFixed(
-      2
+      2,
     )} in the last 30 days`;
   }, [attemptsLast30, household.members]);
 
@@ -331,7 +331,7 @@ export default function InsightsPage({
     const recs: RecommendationItem[] = [];
 
     const firstAutopay = billsWithDates.find(
-      (b) => b.myStatus === BillStatus.PENDING && !b.myAutopayEnabled
+      (b) => b.myStatus === BillStatus.PENDING && !b.myAutopayEnabled,
     );
     if (firstAutopay) {
       recs.push({
@@ -372,7 +372,7 @@ export default function InsightsPage({
         iconColor: "#16A34A",
         iconBg: "#ECFDF5",
         text: `Nice — spending is down ${Math.abs(
-          spendingDeltaPct
+          spendingDeltaPct,
         )}% vs last month`,
         impact: "Keep it up",
         impactType: "positive",
@@ -486,8 +486,8 @@ export default function InsightsPage({
                         spendingDeltaPct < 0
                           ? "#16A34A"
                           : spendingDeltaPct > 0
-                          ? "#DC2626"
-                          : "#111827",
+                            ? "#DC2626"
+                            : "#111827",
                     }}
                   >
                     {spendingDeltaPct === 0
@@ -734,8 +734,8 @@ export default function InsightsPage({
                             rec.impactType === "positive"
                               ? "#16A34A"
                               : rec.impactType === "negative"
-                              ? "#DC2626"
-                              : "#6B7280",
+                                ? "#DC2626"
+                                : "#6B7280",
                         }}
                       >
                         {rec.impact}
@@ -758,7 +758,7 @@ export default function InsightsPage({
               {Math.round(
                 (billsWithDates.filter((b) => b.myAutopayEnabled).length /
                   Math.max(billsWithDates.length, 1)) *
-                  100
+                  100,
               )}
               % of your bills are automated
             </span>{" "}
@@ -772,8 +772,8 @@ export default function InsightsPage({
               {spendingDeltaPct < 0
                 ? `decreased by ${Math.abs(spendingDeltaPct)}%`
                 : spendingDeltaPct > 0
-                ? `increased by ${spendingDeltaPct}%`
-                : "is flat"}
+                  ? `increased by ${spendingDeltaPct}%`
+                  : "is flat"}
             </span>{" "}
             vs last month.
           </p>
@@ -810,11 +810,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     // ✅ NEW: fetch attempts history from your updated endpoint
     const attemptsRes = await fetch(
       `${baseUrl}/api/payments/payment-attempts?from=${encodeURIComponent(
-        isoDaysAgo(30)
+        isoDaysAgo(30),
       )}&limit=250`,
       {
         headers: { Cookie: context.req.headers.cookie || "" },
-      }
+      },
     );
     if (!attemptsRes.ok) throw new Error("Failed to fetch payment attempts");
     const attemptsJson = await attemptsRes.json();
