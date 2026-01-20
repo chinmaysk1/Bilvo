@@ -16,12 +16,12 @@ function Checkbox({ className = "", ...props }: CheckboxProps) {
         "bg-white dark:bg-input/30",
 
         // checked state
-        "data-[state=checked]:bg-[#00B948]",
-        "data-[state=checked]:border-[#00B948]",
+        "data-[state=checked]:bg-[#008a4b]",
+        "data-[state=checked]:border-[#008a4b]",
         "data-[state=checked]:text-white",
 
         // focus + invalid
-        "focus-visible:ring-[3px] focus-visible:ring-[#00B948]/50",
+        "focus-visible:ring-[3px] focus-visible:ring-[#008a4b]/50",
         "aria-invalid:border-red-500 aria-invalid:ring-red-500/20",
 
         // disabled

@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { BillStatus } from "@prisma/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { PaymentAttemptRow } from "@/interfaces/payments";
 
 type InsightsPageProps = {
   bills: any[];
@@ -34,28 +35,6 @@ type InsightsPageProps = {
   };
   currentUserId: string;
   attempts: PaymentAttemptRow[];
-};
-
-type PaymentAttemptRow = {
-  id: string;
-  status: string;
-  provider: string;
-  amount: number;
-  amountCents?: number | null;
-  currency?: string | null;
-  createdAt: string;
-  processedAt: string | null;
-  failureCode: string | null;
-  failureMessage: string | null;
-  payer: { id: string | null; name: string; email: string | null };
-  bill: {
-    id: string;
-    biller: string;
-    billerType: string;
-    dueDate: string;
-    owner: { id: string; name: string; email: string | null } | null;
-  } | null;
-  billParticipantId: string | null;
 };
 
 type SpendingItem = {
@@ -153,7 +132,7 @@ export default function InsightsPage({
     .join("")
     .toUpperCase()
     .slice(0, 2);
-  const currentUserColor = isAdmin ? "#F2C94C" : "#00B948";
+  const currentUserColor = isAdmin ? "#F2C94C" : "#008a4b";
 
   const now = new Date();
   const d30 = new Date(now);

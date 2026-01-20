@@ -162,7 +162,7 @@ const PHASE_INFO: Record<LinkingPhase, PhaseInfo> = {
  */
 function parseBackendStatus(
   status: string,
-  lastError: string | null
+  lastError: string | null,
 ): LinkingPhase {
   // Terminal states
   if (status === "SUCCESS") return "SUCCESS";
@@ -291,10 +291,10 @@ function LinkingSession({
                 phase === "SUCCESS"
                   ? "bg-green-100"
                   : phase === "FAILED"
-                  ? "bg-red-100"
-                  : isWaitingForUser
-                  ? "bg-blue-100"
-                  : "bg-transparent"
+                    ? "bg-red-100"
+                    : isWaitingForUser
+                      ? "bg-blue-100"
+                      : "bg-transparent"
               }`}
             >
               <Icon
@@ -302,8 +302,8 @@ function LinkingSession({
                   phase === "SUCCESS"
                     ? "text-green-600"
                     : phase === "FAILED"
-                    ? "text-red-600"
-                    : "text-blue-600"
+                      ? "text-red-600"
+                      : "text-blue-600"
                 } ${isActive && !isWaitingForUser ? "animate-pulse" : ""}`}
               />
             </div>
@@ -508,7 +508,7 @@ function UtilitiesContent() {
 
   // Enhanced state tracking - now supports multiple utilities syncing
   const [syncingUtilities, setSyncingUtilities] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [utilityStates, setUtilityStates] = useState<
     Record<
@@ -611,7 +611,7 @@ function UtilitiesContent() {
 
   // Get count of linked utilities
   const linkedUtilitiesCount = utilities.filter(
-    (u) => u.isLinked && u.ownerUserId === currentUserId
+    (u) => u.isLinked && u.ownerUserId === currentUserId,
   ).length;
 
   const fetchData = useCallback(async () => {
@@ -654,7 +654,7 @@ function UtilitiesContent() {
   // Elapsed time counter - now works for multiple utilities
   useEffect(() => {
     const activeUtilities = Object.entries(utilityStates).filter(
-      ([_, state]) => state.phase !== "IDLE"
+      ([_, state]) => state.phase !== "IDLE",
     );
 
     if (activeUtilities.length === 0) return;
@@ -716,7 +716,7 @@ function UtilitiesContent() {
             toast.success(
               `${
                 utilities.find((u) => u.id === utilityId)?.type
-              } synced successfully!`
+              } synced successfully!`,
             );
             await fetchData();
             await refreshStripeConnectStatus();
@@ -734,7 +734,7 @@ function UtilitiesContent() {
             toast.error(
               `${
                 utilities.find((u) => u.id === utilityId)?.type
-              }: ${errorMessage}`
+              }: ${errorMessage}`,
             );
             return;
           }
@@ -893,12 +893,12 @@ function UtilitiesContent() {
                 accountHolderName: formData.accountHolderName,
                 email: formData.email,
               }
-            : u
-        )
+            : u,
+        ),
       );
 
       toast.success(
-        body.message || "Credentials saved. Link attempt will proceed."
+        body.message || "Credentials saved. Link attempt will proceed.",
       );
     } catch (err: any) {
       console.error(err);
@@ -918,7 +918,7 @@ function UtilitiesContent() {
 
       const body: UtilityAccountResponse | { error?: string } = await res
         .json()
-        .catch(() => ({} as any));
+        .catch(() => ({}) as any);
 
       if (!res.ok) {
         throw new Error((body as any).error || "Failed to unlink utility");
@@ -926,7 +926,7 @@ function UtilitiesContent() {
 
       const updated = mapApiToUtilityLink(body as UtilityAccountResponse);
       setUtilities((prev) =>
-        prev.map((u) => (u.id === updated.id ? updated : u))
+        prev.map((u) => (u.id === updated.id ? updated : u)),
       );
 
       toast.success("Utility account unlinked successfully");
@@ -977,7 +977,7 @@ function UtilitiesContent() {
 
       const body: UtilityAccountResponse | { error?: string } = await res
         .json()
-        .catch(() => ({} as any));
+        .catch(() => ({}) as any);
 
       if (!res.ok) {
         throw new Error((body as any).error || "Failed to update utility");
@@ -985,7 +985,7 @@ function UtilitiesContent() {
 
       const updated = mapApiToUtilityLink(body as UtilityAccountResponse);
       setUtilities((prev) =>
-        prev.map((u) => (u.id === updated.id ? updated : u))
+        prev.map((u) => (u.id === updated.id ? updated : u)),
       );
 
       toast.success("Utility account updated successfully!");
@@ -1097,7 +1097,7 @@ function UtilitiesContent() {
   // Sync All Utilities - calls existing link endpoint for each linked utility
   const handleSyncAllUtilities = async () => {
     const linkedUtilities = utilities.filter(
-      (u) => u.isLinked && u.ownerUserId === currentUserId
+      (u) => u.isLinked && u.ownerUserId === currentUserId,
     );
 
     if (linkedUtilities.length === 0) {
@@ -1159,7 +1159,7 @@ function UtilitiesContent() {
         toast.success(
           `Started syncing ${successCount} ${
             successCount === 1 ? "utility" : "utilities"
-          }`
+          }`,
         );
       }
 
@@ -1167,7 +1167,7 @@ function UtilitiesContent() {
         toast.error(
           `Failed to start sync for ${failCount} ${
             failCount === 1 ? "utility" : "utilities"
-          }`
+          }`,
         );
       }
     } catch (err: any) {
@@ -1216,7 +1216,7 @@ function UtilitiesContent() {
         {/* Page header */}
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <Link2 className="h-7 w-7" style={{ color: "#00B948" }} />
+            <Link2 className="h-7 w-7" style={{ color: "#008a4b" }} />
             <h1
               className="text-[28px] text-gray-900"
               style={{ fontWeight: 600 }}
@@ -1293,11 +1293,11 @@ function UtilitiesContent() {
                         <div className="flex items-center gap-2">
                           <LinkIcon
                             className="h-4 w-4"
-                            style={{ color: "#00B948" }}
+                            style={{ color: "#008a4b" }}
                           />
                           <span
                             className="text-sm"
-                            style={{ color: "#00B948", fontWeight: 600 }}
+                            style={{ color: "#008a4b", fontWeight: 600 }}
                           >
                             Linked
                           </span>
@@ -1345,7 +1345,7 @@ function UtilitiesContent() {
                           >
                             <CheckCircle2
                               className="h-4 w-4 flex-shrink-0"
-                              style={{ color: "#00B948" }}
+                              style={{ color: "#008a4b" }}
                             />
                             <p className="text-sm text-gray-900">
                               This account information has been accepted and we
@@ -1399,7 +1399,7 @@ function UtilitiesContent() {
                                   href={utility.providerWebsite ?? ""}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[#00B948] hover:underline"
+                                  className="text-[#008a4b] hover:underline"
                                   style={{ fontWeight: 600 }}
                                 >
                                   here
@@ -1604,7 +1604,7 @@ function UtilitiesContent() {
                                   <div className="space-y-2">
                                     <Button
                                       onClick={handleSaveEdit}
-                                      className="w-full h-10 rounded-lg bg-[#00B948] hover:bg-[#00A040]"
+                                      className="w-full h-10 rounded-lg bg-[#008a4b] hover:bg-[#00A040]"
                                       style={{ fontWeight: 600 }}
                                     >
                                       <Save className="h-4 w-4 mr-2" />
@@ -1624,10 +1624,10 @@ function UtilitiesContent() {
                                   <div className="space-y-2">
                                     <Button
                                       onClick={handleLinkUtility}
-                                      className="w-full h-10 rounded-lg bg-[#00B948] hover:bg-[#00A040]"
+                                      className="w-full h-10 rounded-lg bg-[#008a4b] hover:bg-[#00A040]"
                                       style={{ fontWeight: 600 }}
                                       disabled={syncingUtilities.has(
-                                        utility.id
+                                        utility.id,
                                       )}
                                     >
                                       Link Account
@@ -1666,7 +1666,7 @@ function UtilitiesContent() {
                 onClick={handleSyncAllUtilities}
                 size="lg"
                 variant="outline"
-                className="border-[#00B948] text-[#00B948] hover:bg-[#00B948] hover:text-white rounded-lg px-8"
+                className="border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-8"
                 style={{ fontWeight: 600 }}
                 disabled={isSyncing || linkedUtilitiesCount === 0}
               >
@@ -1680,7 +1680,7 @@ function UtilitiesContent() {
                     <RefreshCw className="h-5 w-5 mr-2" />
                     Sync Utilities
                     {linkedUtilitiesCount > 0 && (
-                      <span className="ml-2 px-2 py-0.5 bg-[#00B948] text-white rounded-full text-xs">
+                      <span className="ml-2 px-2 py-0.5 bg-[#008a4b] text-white rounded-full text-xs">
                         {linkedUtilitiesCount}
                       </span>
                     )}
@@ -1702,7 +1702,7 @@ function UtilitiesContent() {
           <Button
             onClick={handleAddUtility}
             size="lg"
-            className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg px-8"
+            className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg px-8"
             style={{ fontWeight: 600 }}
           >
             <Plus className="h-5 w-5 mr-2" />
@@ -1731,7 +1731,7 @@ function UtilitiesContent() {
                   <button
                     key={utilityType.name}
                     onClick={() => handleSelectUtilityType(utilityType)}
-                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#00B948] hover:bg-gray-50 transition-all group"
+                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#008a4b] hover:bg-gray-50 transition-all group"
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -1750,7 +1750,7 @@ function UtilitiesContent() {
                         {utilityType.name}
                       </span>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-[#00B948]" />
+                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-[#008a4b]" />
                   </button>
                 );
               })}
@@ -1775,7 +1775,7 @@ function UtilitiesContent() {
                   <button
                     key={company.name}
                     onClick={() => handleSelectCompany(company)}
-                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#00B948] hover:bg-gray-50 transition-all group text-left"
+                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#008a4b] hover:bg-gray-50 transition-all group text-left"
                   >
                     <span
                       className="text-base text-gray-900"
@@ -1783,7 +1783,7 @@ function UtilitiesContent() {
                     >
                       {company.name}
                     </span>
-                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-[#00B948] flex-shrink-0" />
+                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-[#008a4b] flex-shrink-0" />
                   </button>
                 ))}
             </div>

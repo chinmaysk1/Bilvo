@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { PaymentMethod } from "@/interfaces/payments";
 
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
 );
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
@@ -108,7 +108,7 @@ export function PayWithStripeModal(props: Props) {
     const byType = active.filter((m) => m.type === paymentType);
     // order: default/priority first if you have it
     return byType.sort(
-      (a, b) => (a.priorityOrder ?? 999) - (b.priorityOrder ?? 999)
+      (a, b) => (a.priorityOrder ?? 999) - (b.priorityOrder ?? 999),
     );
   }, [methods, paymentType]);
 
@@ -117,7 +117,7 @@ export function PayWithStripeModal(props: Props) {
     try {
       const data = await fetchJson<{ paymentMethods: PaymentMethod[] }>(
         "/api/payments/payment-methods",
-        { method: "GET" }
+        { method: "GET" },
       );
       setMethods(data.paymentMethods || []);
 
@@ -320,7 +320,7 @@ export function PayWithStripeModal(props: Props) {
                 onClick={continueToMethods}
                 className="w-full h-12"
                 style={{
-                  backgroundColor: "#00B948",
+                  backgroundColor: "#008a4b",
                   borderRadius: 12,
                   fontWeight: 600,
                 }}
@@ -381,7 +381,7 @@ export function PayWithStripeModal(props: Props) {
                     style={{
                       borderColor:
                         selectedProviderPmId === m.providerPaymentMethodId
-                          ? "#00B948"
+                          ? "#008a4b"
                           : "#E5E7EB",
                     }}
                   >
@@ -407,7 +407,7 @@ export function PayWithStripeModal(props: Props) {
                     {m.isDefault ? (
                       <span
                         className="text-xs font-semibold"
-                        style={{ color: "#00B948" }}
+                        style={{ color: "#008a4b" }}
                       >
                         Default
                       </span>
@@ -432,7 +432,7 @@ export function PayWithStripeModal(props: Props) {
                   }
                   className="w-full h-12 gap-2"
                   style={{
-                    backgroundColor: "#00B948",
+                    backgroundColor: "#008a4b",
                     borderRadius: 12,
                     fontWeight: 600,
                   }}

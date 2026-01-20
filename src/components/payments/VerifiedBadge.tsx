@@ -18,10 +18,10 @@ export default function VerifiedBadge({
       ].join(" ")}
       style={{ backgroundColor: "#ECFDF5" }}
     >
-      <Check className="h-3 w-3" style={{ color: "#00B948" }} />
+      <Check className="h-3 w-3" style={{ color: "#008a4b" }} />
       <span
         className="text-[11px]"
-        style={{ fontWeight: 600, color: "#00B948" }}
+        style={{ fontWeight: 600, color: "#008a4b" }}
       >
         {label}
       </span>

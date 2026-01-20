@@ -45,7 +45,7 @@ interface PayBillModalProps {
   onPaymentSubmit: (
     billId: string,
     amount: number,
-    paymentMethodId: string
+    paymentMethodId: string,
   ) => void;
 }
 
@@ -113,7 +113,7 @@ export function PayBillModal({
 
     toast.success("Payment initiated", {
       description: `Your payment of $${paymentAmount.toFixed(
-        2
+        2,
       )} is being processed.`,
     });
 
@@ -124,7 +124,7 @@ export function PayBillModal({
   };
 
   const selectedPaymentMethod = paymentMethods.find(
-    (m) => m.id === selectedMethod
+    (m) => m.id === selectedMethod,
   );
   const PaymentIcon = selectedPaymentMethod?.icon || CreditCard;
 
@@ -183,7 +183,7 @@ export function PayBillModal({
               >
                 <CheckCircle2
                   className="h-8 w-8"
-                  style={{ color: "#00B948" }}
+                  style={{ color: "#008a4b" }}
                 />
               </div>
               <h3
@@ -406,7 +406,7 @@ export function PayBillModal({
                 disabled={isProcessing || !amount || !(paymentAmount > 0)}
                 className="w-full h-12 gap-2"
                 style={{
-                  backgroundColor: "#00B948",
+                  backgroundColor: "#008a4b",
                   borderRadius: "12px",
                   fontSize: "16px",
                   fontWeight: 600,

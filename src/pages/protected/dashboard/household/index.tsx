@@ -135,7 +135,7 @@ const UtilitySplitPie = dynamic(
 
     return Comp as ComponentType<{ data: PieDatum[] }>;
   },
-  { ssr: false }
+  { ssr: false },
 );
 
 // ------------------------------------------------------
@@ -175,7 +175,7 @@ function HouseholdContent() {
   const sponsoredMemberName = "Alex Chen"; // placeholder for parent view
 
   const [splitRule, setSplitRule] = useState<"equal" | "custom" | "itemized">(
-    "equal"
+    "equal",
   );
   const [autopayEnabled, setAutopayEnabled] = useState(false);
   const [defaultPayment] = useState("Bank of America Checking ••••1234"); // still stub for now
@@ -229,7 +229,7 @@ function HouseholdContent() {
 
         if (!householdRes.ok) {
           throw new Error(
-            (householdJson as any).error || "Failed to load household"
+            (householdJson as any).error || "Failed to load household",
           );
         }
         if (!userRes.ok) {
@@ -244,7 +244,7 @@ function HouseholdContent() {
         setInviteCode(householdJson.household.inviteCode);
 
         setisAdmin(
-          householdJson.household.adminId === householdJson.currentUserId
+          householdJson.household.adminId === householdJson.currentUserId,
         );
 
         setAutopayEnabled(userJson.autopayEnabled ?? false);
@@ -252,7 +252,7 @@ function HouseholdContent() {
         // map members from API -> UI members
         const colors = [
           "#F2C94C",
-          "#00B948",
+          "#008a4b",
           "#BB6BD9",
           "#3B82F6",
           "#8B5CF6",
@@ -293,7 +293,7 @@ function HouseholdContent() {
               moveOutDate: null,
               hasAccount: true, // until you add SMS-only logic from backend
             };
-          }
+          },
         );
 
         setMembers(mappedMembers);
@@ -350,7 +350,7 @@ function HouseholdContent() {
 
         if (activityRes.ok) {
           setActivities(
-            (activitiesJson.activities || []) as DashboardActivity[]
+            (activitiesJson.activities || []) as DashboardActivity[],
           );
         }
       } catch (err: any) {
@@ -559,13 +559,13 @@ function HouseholdContent() {
         prev.map((m) =>
           m.id === selectedNewOwner
             ? { ...m, role: "Admin" as const }
-            : { ...m, role: "Member" as const }
-        )
+            : { ...m, role: "Member" as const },
+        ),
       );
 
       setTransferStep("success");
       toast.success(
-        `Ownership transferred to ${newOwner.name.replace(" (You)", "")}.`
+        `Ownership transferred to ${newOwner.name.replace(" (You)", "")}.`,
       );
     } catch (err: any) {
       console.error(err);
@@ -734,7 +734,7 @@ function HouseholdContent() {
                   ? !inviteEmail
                   : !(inviteName && invitePhone)
               }
-              className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
               style={{ fontWeight: 600 }}
             >
               Send Invitation
@@ -807,7 +807,7 @@ function HouseholdContent() {
                   const data = await res.json().catch(() => null);
                   if (!res.ok) {
                     throw new Error(
-                      data?.error || "Failed to update household"
+                      data?.error || "Failed to update household",
                     );
                   }
 
@@ -820,7 +820,7 @@ function HouseholdContent() {
                   });
                 }
               }}
-              className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
               style={{ fontWeight: 600 }}
             >
               Save Changes
@@ -931,7 +931,7 @@ function HouseholdContent() {
               <Button
                 onClick={() => setTransferStep("confirm")}
                 disabled={!selectedNewOwner}
-                className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
                 style={{ fontWeight: 600 }}
               >
                 Next
@@ -941,7 +941,7 @@ function HouseholdContent() {
               <Button
                 onClick={handleTransferOwnership}
                 disabled={confirmationText.toUpperCase() !== "TRANSFER"}
-                className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
                 style={{ fontWeight: 600 }}
               >
                 Transfer Ownership
@@ -950,7 +950,7 @@ function HouseholdContent() {
             {transferStep === "success" && (
               <Button
                 onClick={() => setTransferOwnershipModalOpen(false)}
-                className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
                 style={{ fontWeight: 600 }}
               >
                 Close
@@ -985,13 +985,13 @@ function HouseholdContent() {
       {/* Header */}
       <div className="mt-4">
         <div className="flex items-center gap-3 mb-2">
-          <Home className="h-7 w-7" style={{ color: "#00B948" }} />
+          <Home className="h-7 w-7" style={{ color: "#008a4b" }} />
           <h1 className="text-[28px] text-gray-900" style={{ fontWeight: 600 }}>
             Household
           </h1>
           {isAdmin && (
             <Badge
-              className="bg-[#E9F7EE] text-[#00B948] border-0"
+              className="bg-[#E9F7EE] text-[#008a4b] border-0"
               style={{ fontWeight: 600 }}
             >
               <Crown className="h-3 w-3 mr-1" />
@@ -1133,7 +1133,7 @@ function HouseholdContent() {
               onClick={() =>
                 router.push("/protected/dashboard/bills").catch(() => {})
               }
-              className="text-[#00B948] hover:text-[#00A040] hover:bg-green-50 text-sm"
+              className="text-[#008a4b] hover:text-[#00A040] hover:bg-green-50 text-sm"
               style={{ fontWeight: 500 }}
             >
               View Bills
@@ -1160,7 +1160,7 @@ function HouseholdContent() {
               onClick={() =>
                 router.push("/protected/dashboard/payments").catch(() => {})
               }
-              className="text-[#00B948] hover:text-[#00A040] hover:bg-green-50 text-sm"
+              className="text-[#008a4b] hover:text-[#00A040] hover:bg-green-50 text-sm"
               style={{ fontWeight: 500 }}
             >
               View Payments
@@ -1181,7 +1181,7 @@ function HouseholdContent() {
           {!isParentView && (
             <Button
               size="sm"
-              className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
               style={{ fontWeight: 600 }}
               onClick={() =>
                 router.push("/protected/dashboard/utilities").catch(() => {})
@@ -1265,7 +1265,7 @@ function HouseholdContent() {
                           >
                             {owner?.name || "Unknown"}
                           </span>
-                          <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#00B948]">
+                          <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#008a4b]">
                             <Check
                               className="h-3 w-3 text-white"
                               style={{ strokeWidth: 3 }}
@@ -1359,11 +1359,11 @@ function HouseholdContent() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 px-3 hover:bg-[#00B948]/10 transition-all"
+                                className="h-8 px-3 hover:bg-[#008a4b]/10 transition-all"
                                 style={{
                                   fontSize: "12px",
                                   fontWeight: 500,
-                                  color: "#00B948",
+                                  color: "#008a4b",
                                 }}
                                 onClick={() =>
                                   setEditingSplitUtilityId(utility.id)
@@ -1384,7 +1384,7 @@ function HouseholdContent() {
                                         Managed by{" "}
                                         {(owner?.name || "Owner").replace(
                                           " (You)",
-                                          ""
+                                          "",
                                         )}
                                       </span>
                                     </div>
@@ -1394,7 +1394,7 @@ function HouseholdContent() {
                                       Only{" "}
                                       {(owner?.name || "the owner").replace(
                                         " (You)",
-                                        ""
+                                        "",
                                       )}{" "}
                                       can customize this split
                                     </p>
@@ -1413,7 +1413,7 @@ function HouseholdContent() {
                           <UtilitySplitPie
                             data={includedSplits.map((ms) => {
                               const m = members.find(
-                                (mm) => mm.id === ms.memberId
+                                (mm) => mm.id === ms.memberId,
                               );
                               return {
                                 name: m?.name || "Unknown",
@@ -1428,7 +1428,7 @@ function HouseholdContent() {
                         <div className="flex-1 space-y-1.5">
                           {includedSplits.map((ms) => {
                             const m = members.find(
-                              (mm) => mm.id === ms.memberId
+                              (mm) => mm.id === ms.memberId,
                             );
                             return (
                               <div
@@ -1494,7 +1494,7 @@ function HouseholdContent() {
                       <Button
                         size="sm"
                         onClick={handleOpenTransferModal}
-                        className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+                        className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
                         style={{ fontWeight: 600 }}
                       >
                         <Repeat className="h-3.5 w-3.5 mr-1.5" />
@@ -1513,7 +1513,7 @@ function HouseholdContent() {
                 size="sm"
                 onClick={() => setInviteModalOpen(true)}
                 disabled={!isAdmin}
-                className="bg-[#00B948] hover:bg-[#00A040] text-white rounded-lg"
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
                 style={{ fontWeight: 600 }}
               >
                 <Plus className="h-3.5 w-3.5 mr-1.5" />
@@ -1554,7 +1554,7 @@ function HouseholdContent() {
                     </Badge>
                     {member.hasAccount ? (
                       <Badge
-                        className="bg-[#E9F7EE] text-[#00B948] border-0 text-xs"
+                        className="bg-[#E9F7EE] text-[#008a4b] border-0 text-xs"
                         style={{ fontWeight: 600 }}
                       >
                         <UserCheck className="h-3 w-3 mr-1" />
@@ -1571,7 +1571,7 @@ function HouseholdContent() {
                     )}
                     {member.autopay && member.hasAccount && (
                       <Badge
-                        className="bg-[#E9F7EE] text-[#00B948] border-0 text-xs"
+                        className="bg-[#E9F7EE] text-[#008a4b] border-0 text-xs"
                         style={{ fontWeight: 600 }}
                       >
                         Autopay On
@@ -1934,7 +1934,7 @@ function HouseholdContent() {
             <span
               style={{
                 fontWeight: 600,
-                color: "#00B948",
+                color: "#008a4b",
                 cursor: "pointer",
               }}
               onClick={() =>

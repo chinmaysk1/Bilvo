@@ -44,7 +44,7 @@ export interface StatusConfig {
 
 export const getStatusConfig = (
   status: BillStatusType,
-  contextData?: statusBadgeContextData
+  contextData?: statusBadgeContextData,
 ): StatusConfig => {
   switch (status) {
     case BillStatus.SCHEDULED:
@@ -83,7 +83,7 @@ export const getStatusConfig = (
       return {
         label: "Paid",
         bg: "#E9F7EE",
-        color: "#00B948",
+        color: "#008a4b",
         icon: CheckCircle2,
         tooltip: "Payment completed",
       };

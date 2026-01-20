@@ -30,7 +30,7 @@ export function SplitBadge({
             <Badge
               className={`text-xs border-0 ${
                 isEqual
-                  ? "bg-[#E8FFF2] text-[#00B948]"
+                  ? "bg-[#E8FFF2] text-[#008a4b]"
                   : "bg-gray-100 text-gray-700"
               }`}
               style={{ fontWeight: 600 }}

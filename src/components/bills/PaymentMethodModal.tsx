@@ -124,7 +124,7 @@ export function PaymentMethodModal({
           <div className="text-center pt-2">
             <button
               onClick={onAutoPayClick}
-              className="text-sm text-gray-500 hover:text-[#00B948] transition-colors"
+              className="text-sm text-gray-500 hover:text-[#008a4b] transition-colors"
               style={{ fontWeight: 500 }}
             >
               Hate doing this manually?{" "}

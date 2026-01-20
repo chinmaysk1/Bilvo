@@ -17,8 +17,9 @@
   --card-foreground: #111827;
 
   /* Brand Colors - Official Bilvo Green */
-  --bilvo-green: #00b948;
-  --bilvo-green-hover: #00a040;
+  /* --bilvo-green: #00b948; */
+  --bilvo-green: #008a4b;
+  --bilvo-green-hover: #007b44;
   --bilvo-green-text: #00b948;
   --bilvo-green-bg: #e9f7ee;
   --bilvo-green-gradient: linear-gradient(180deg, #00b948 0%, #00a040 100%);
@@ -137,7 +138,11 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

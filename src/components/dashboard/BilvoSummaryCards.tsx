@@ -12,11 +12,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { Bill } from "@/interfaces/bills";
 import { BillStatus } from "@prisma/client";
 import { formatMonthDay } from "@/utils/common/formatMonthYear";
+import { useBillsSummary } from "@/hooks/bills/useBillsSummary";
 
 interface BilvoSummaryCardsProps {
   household: {
@@ -73,7 +74,7 @@ const getInitials = (name: string) => {
 };
 
 // Color palette for avatars
-const avatarColors = ["#F2C94C", "#00B948", "#BB6BD9", "#3B82F6", "#EF4444"];
+const avatarColors = ["#F2C94C", "#008a4b", "#BB6BD9", "#3B82F6", "#EF4444"];
 
 export default function BilvoSummaryCards({
   household,
@@ -83,34 +84,21 @@ export default function BilvoSummaryCards({
 }: BilvoSummaryCardsProps) {
   const router = useRouter();
 
-  // Find next autopay bill (earliest scheduled)
-  const nextAutoPayBill = bills
-    .filter((bill) => bill.status === BillStatus.SCHEDULED)
-    .sort((a, b) => {
-      const dateA = new Date(a.scheduledCharge || a.dueDate);
-      const dateB = new Date(b.scheduledCharge || b.dueDate);
-      return dateA.getTime() - dateB.getTime();
-    })[0];
+  // shared “bills summary” logic from hook
+  const {
+    totalBillsCount,
+    paidBillsCount,
+    remainingBalance,
+    nextAutoPayBill,
+    nextAutopayAmount,
+    nextAutopayDate,
+    nextAutopayBiller,
+  } = useBillsSummary(bills, { yourShare });
 
-  const nextAutopayAmount = nextAutoPayBill?.yourShare || 0;
-  const nextAutopayDate = formatMonthDay(nextAutoPayBill?.dueDate) || "";
-  const nextAutopayBiller = nextAutoPayBill?.biller || "";
-
-  // Count paid bills
-  const paidBillsCount = bills.filter(
-    (bill) => bill.myStatus === BillStatus.PAID
-  ).length;
-  const totalBillsCount = bills.length;
-
-  // Calculate remaining balance (unpaid bills only)
-  const paidAmount = bills
-    .filter((bill) => bill.status === BillStatus.PAID)
-    .reduce((sum, bill) => sum + bill.yourShare, 0);
-  const remainingBalance = yourShare - paidAmount;
-
-  const householdCount = useCountUp(totalHousehold, 600, 0);
+  // Count-up animations
+  const householdCount = useCountUp(Number(totalHousehold || 0), 600, 0);
   const autopayCount = useCountUp(nextAutopayAmount, 600, 100);
-  const yourShareCount = useCountUp(yourShare, 600, 200);
+  const yourShareCount = useCountUp(Number(yourShare || 0), 600, 200);
 
   const memberCount = household.members.length;
 
@@ -245,7 +233,7 @@ export default function BilvoSummaryCards({
             style={{
               fontSize: "12px",
               fontWeight: 500,
-              color: "#00B948",
+              color: "#008a4b",
               fontFamily: "Inter, sans-serif",
             }}
           >
@@ -253,7 +241,7 @@ export default function BilvoSummaryCards({
           </span>
           <ArrowRight
             className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
-            style={{ color: "#00B948" }}
+            style={{ color: "#008a4b" }}
           />
         </div>
       </div>
@@ -389,7 +377,7 @@ export default function BilvoSummaryCards({
             style={{
               fontSize: "12px",
               fontWeight: 500,
-              color: "#00B948",
+              color: "#008a4b",
               fontFamily: "Inter, sans-serif",
             }}
           >
@@ -397,7 +385,7 @@ export default function BilvoSummaryCards({
           </span>
           <ArrowRight
             className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
-            style={{ color: "#00B948" }}
+            style={{ color: "#008a4b" }}
           />
         </div>
       </div>
@@ -505,6 +493,7 @@ export default function BilvoSummaryCards({
                 {paidBillsCount} paid
               </span>
             </div>
+
             {remainingBalance > 0 && (
               <>
                 <span style={{ color: "#D1D5DB", fontSize: "12px" }}>•</span>
@@ -521,6 +510,10 @@ export default function BilvoSummaryCards({
               </>
             )}
           </div>
+
+          {/* optional: use nextDueBill from hook somewhere if you want */}
+          {/* Example: “Next due {formatMonthDay(nextDueBill.dueDate)}” */}
+          {/* nextDueBill is available now via hook */}
         </div>
 
         <div
@@ -531,7 +524,7 @@ export default function BilvoSummaryCards({
             style={{
               fontSize: "12px",
               fontWeight: 500,
-              color: "#00B948",
+              color: "#008a4b",
               fontFamily: "Inter, sans-serif",
             }}
           >
@@ -539,7 +532,7 @@ export default function BilvoSummaryCards({
           </span>
           <ArrowRight
             className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
-            style={{ color: "#00B948" }}
+            style={{ color: "#008a4b" }}
           />
         </div>
       </div>

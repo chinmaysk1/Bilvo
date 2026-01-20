@@ -79,7 +79,7 @@ export function PaymentConfirmationBanner({
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-full flex-shrink-0"
                 style={{
-                  backgroundColor: "#00B948",
+                  backgroundColor: "#008a4b",
                   color: "white",
                   fontSize: "12px",
                   fontWeight: 600,
@@ -144,7 +144,7 @@ export function PaymentConfirmationBanner({
                 onClick={() => handleConfirm(payment)}
                 className="rounded-lg text-white hover:opacity-90 transition-opacity"
                 style={{
-                  backgroundColor: "#00B948",
+                  backgroundColor: "#008a4b",
                   fontWeight: 600,
                   fontSize: "12px",
                   height: "32px",

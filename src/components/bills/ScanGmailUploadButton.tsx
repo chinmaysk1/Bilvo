@@ -53,7 +53,7 @@ export default function ScanGmailUploadButton({
           dueDate: b.dueDate,
           subject: b.subject,
           from: b.from,
-        })
+        }),
       );
 
       if (!potentials.length) {
@@ -84,7 +84,7 @@ export default function ScanGmailUploadButton({
         style={{
           fontWeight: 600,
           fontSize: "13px",
-          backgroundColor: "#00B948",
+          backgroundColor: "#008a4b",
           color: "#FFFFFF",
           border: "none",
           height: "36px",
@@ -147,7 +147,7 @@ export default function ScanGmailUploadButton({
                 {
                   description:
                     "Your new bills have been added. You can now review and pay them.",
-                }
+                },
               );
             }
           }}

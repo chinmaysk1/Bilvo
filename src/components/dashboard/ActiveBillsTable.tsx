@@ -34,6 +34,7 @@ import { Bill } from "@/interfaces/bills";
 import { Household } from "@/interfaces/household";
 import { StatusBadge } from "../bills/BillStatusConfig";
 import { BillStatus } from "@prisma/client";
+import { getBillerIcon } from "@/utils/bills/getBillerIcon";
 
 interface ActiveBillsTableProps {
   bills: Bill[];
@@ -42,28 +43,8 @@ interface ActiveBillsTableProps {
   onBillsImported: (bills: Bill[]) => void;
 }
 
-const getBillerIcon = (biller: string) => {
-  const billerLower = biller.toLowerCase();
-
-  if (billerLower.includes("spectrum") || billerLower.includes("internet")) {
-    return { icon: Wifi, bgColor: "#EDE9FE", iconColor: "#8B5CF6" };
-  } else if (billerLower.includes("socalgas") || billerLower.includes("gas")) {
-    return { icon: Flame, bgColor: "#FEE2E2", iconColor: "#EF4444" };
-  } else if (billerLower.includes("water")) {
-    return { icon: Droplets, bgColor: "#DBEAFE", iconColor: "#3B82F6" };
-  } else if (
-    billerLower.includes("pacific") ||
-    billerLower.includes("electric")
-  ) {
-    return { icon: Zap, bgColor: "#FEF3C7", iconColor: "#F59E0B" };
-  } else if (billerLower.includes("waste")) {
-    return { icon: Recycle, bgColor: "#D1FAE5", iconColor: "#10B981" };
-  }
-  return { icon: Wifi, bgColor: "#F3F4F6", iconColor: "#6B7280" };
-};
-
 // Roommate data for split visualization
-const avatarColors = ["#F2C94C", "#00B948", "#BB6BD9", "#3B82F6", "#EF4444"];
+const avatarColors = ["#F2C94C", "#008a4b", "#BB6BD9", "#3B82F6", "#EF4444"];
 
 function AutopayToggleCell({
   billId,
@@ -93,7 +74,7 @@ function AutopayToggleCell({
                 checked={isEnabled}
                 disabled={isLoading}
                 onCheckedChange={() => {}}
-                className="data-[state=checked]:bg-[#00B948]"
+                className="data-[state=checked]:bg-[#008a4b]"
               />
             </div>
           </TooltipTrigger>
@@ -102,8 +83,8 @@ function AutopayToggleCell({
               {isEnabled
                 ? "Autopay enabled — your share will be charged automatically."
                 : hasPaymentMethod
-                ? "Enable autopay to charge your share automatically."
-                : "Add a payment method to enable autopay."}
+                  ? "Enable autopay to charge your share automatically."
+                  : "Add a payment method to enable autopay."}
             </p>
           </TooltipContent>
         </Tooltip>
@@ -184,7 +165,7 @@ export default function ActiveBillsTable({
           style={{
             fontWeight: 500,
             fontSize: "13px",
-            backgroundColor: "#00B948",
+            backgroundColor: "#008a4b",
             color: "#FFFFFF",
             border: "none",
             height: "32px",
@@ -281,7 +262,7 @@ export default function ActiveBillsTable({
             {bills.map((bill, index) => {
               const {
                 icon: Icon,
-                bgColor,
+                iconBg: bgColor,
                 iconColor,
               } = getBillerIcon(bill.biller);
               const isLast = index === bills.length - 1;
@@ -298,7 +279,7 @@ export default function ActiveBillsTable({
 
                   // match member with BillParticipant
                   const participant = bill.participants?.find(
-                    (p) => p.userId === member.id
+                    (p) => p.userId === member.id,
                   );
 
                   return {
@@ -310,7 +291,7 @@ export default function ActiveBillsTable({
                       participant?.shareAmount ??
                       bill.amount / (household.members.length || 1),
                   };
-                }
+                },
               );
 
               return (

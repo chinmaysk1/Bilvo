@@ -1,25 +1,37 @@
 // pages/protected/dashboard/index.tsx
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+import { useMemo } from "react";
+
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import BilvoSummaryCards from "@/components/dashboard/BilvoSummaryCards";
-import ActiveBillsTable from "@/components/dashboard/ActiveBillsTable";
 import RecentActivity from "@/components/dashboard/RecentActivity";
+
 import { AlertCircle } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Bill } from "@/interfaces/bills";
-import { Activity } from "@/interfaces/activity";
-import { Household } from "@/interfaces/household";
 import { ActionBanner } from "@/components/common/ActionBanner";
 
-import {
-  PaymentConfirmationBanner,
-  PendingPayment,
-} from "@/components/bills/PaymentConfirmationBanner";
-import { formatMonthDay } from "@/utils/common/formatMonthYear";
+import { PaymentConfirmationBanner } from "@/components/bills/PaymentConfirmationBanner";
+
+import { BillStatus } from "@prisma/client";
+import type { Bill } from "@/interfaces/bills";
+import type { Activity } from "@/interfaces/activity";
+import type { Household } from "@/interfaces/household";
+import type { HouseholdApiMember as HouseholdMember } from "@/interfaces/household";
+
+import { BatchedBillsTable } from "@/components/bills/BatchedBillsTable";
+import { PaymentMethodModal } from "@/components/bills/PaymentMethodModal";
+import { PaymentConfirmationModal } from "@/components/bills/PaymentConfirmationModal";
+import { PayWithStripeModal } from "@/components/bills/PayWithStripeModal";
+
+import { useBillsStore } from "@/hooks/bills/useBillsStore";
+import { usePendingApprovals } from "@/hooks/bills/usePendingApprovals";
+import { useBillsSummary } from "@/hooks/bills/useBillsSummary";
+import { usePayFlow } from "@/hooks/bills/usePayFlow";
+import { useAutopayToggle } from "@/hooks/bills/useAutopayToggle";
 
 interface DashboardProps {
   household: Household;
+  householdMembers: HouseholdMember[];
   bills: Bill[];
   recentActivity: Activity[];
   totalHousehold: number;
@@ -34,122 +46,65 @@ interface DashboardProps {
 
 export default function DashboardPage({
   household,
-  bills,
+  householdMembers,
+  bills: initialBills,
   recentActivity,
-  totalHousehold,
-  yourShare,
   hasPaymentMethod,
   currentUserId,
 }: DashboardProps) {
-  const [dashboardBills, setDashboardBills] = useState<Bill[]>(bills);
+  // -------------------------
+  // shared store
+  // -------------------------
+  const { bills, setBills, patchBill, upsertBills } =
+    useBillsStore(initialBills);
 
-  const computedTotalHousehold = dashboardBills.reduce(
-    (sum, bill) => sum + (bill.amount || 0),
-    0
+  // -------------------------
+  // banner approvals
+  // -------------------------
+  const { pendingApprovals, approve, reject } = usePendingApprovals({
+    bills,
+    currentUserId,
+    setBills,
+  });
+
+  // -------------------------
+  // summary metrics
+  // -------------------------
+  const { pendingBills } = useBillsSummary(bills);
+
+  const computedTotalHousehold = useMemo(
+    () => bills.reduce((sum, b) => sum + (b.amount || 0), 0),
+    [bills],
   );
-  const computedYourShare = dashboardBills.reduce(
-    (sum, bill) => sum + (bill.yourShare || 0),
-    0
+  const computedYourShare = useMemo(
+    () => bills.reduce((sum, b) => sum + (b.yourShare || 0), 0),
+    [bills],
   );
 
-  const pendingApprovals = useMemo(() => {
-    const initialsFor = (name: string) =>
-      name
-        .split(" ")
-        .filter(Boolean)
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2) || "U";
+  // -------------------------
+  // autopay toggles (for expanded bill rows)
+  // -------------------------
+  const { toggleAutopay } = useAutopayToggle({ bills, patchBill });
 
-    const list: PendingPayment[] = [];
-
-    for (const b of dashboardBills as any[]) {
-      if (b.ownerUserId !== currentUserId) continue;
-
-      const approvals = (b.pendingVenmoApprovals || []) as any[];
-      for (const a of approvals) {
-        const payerName = a.payerName || "Unknown";
-        list.push({
-          id: a.id,
-          billName: a.billName || b.biller,
-          amount: Number(a.amount || 0),
-          payerName,
-          payerInitials: initialsFor(payerName),
-          paymentMethod: a.paymentMethod, // "venmo" | "zelle"
-          dueDate: a.dueDate,
-          submittedDate: formatMonthDay(a.submittedDate),
-        });
-      }
-    }
-
-    return list;
-  }, [dashboardBills, currentUserId]);
+  // -------------------------
+  // pay flow (modals + handlers)
+  // -------------------------
+  const payFlow = usePayFlow({
+    bills,
+    householdMembers,
+    currentUserId,
+    patchBill,
+  });
 
   return (
     <DashboardLayout>
-      {/* ✅ Payment Confirmation Banner */}
+      {/* Payment Confirmation Banner */}
       <div className="mb-4">
         <PaymentConfirmationBanner
           pendingPayments={pendingApprovals}
           currentRole={pendingApprovals.length > 0 ? "admin" : "member"}
-          onConfirmPayment={async (paymentId) => {
-            const res = await fetch(
-              `/api/payments/payment-attempts/${paymentId}`,
-              {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "approve" }),
-              }
-            );
-            if (!res.ok) throw new Error("Failed to approve");
-
-            // Update UI without full reload: remove that approval
-            setDashboardBills((prev: any[]) =>
-              prev.map((bill: any) => {
-                if (
-                  !bill.pendingVenmoApprovals?.some(
-                    (a: any) => a.id === paymentId
-                  )
-                )
-                  return bill;
-                return {
-                  ...bill,
-                  pendingVenmoApprovals: bill.pendingVenmoApprovals.filter(
-                    (a: any) => a.id !== paymentId
-                  ),
-                };
-              })
-            );
-          }}
-          onDisputePayment={async (paymentId) => {
-            const res = await fetch(
-              `/api/payments/payment-attempts/${paymentId}`,
-              {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "reject" }),
-              }
-            );
-            if (!res.ok) throw new Error("Failed to deny");
-
-            setDashboardBills((prev: any[]) =>
-              prev.map((bill: any) => {
-                if (
-                  !bill.pendingVenmoApprovals?.some(
-                    (a: any) => a.id === paymentId
-                  )
-                )
-                  return bill;
-                return {
-                  ...bill,
-                  pendingVenmoApprovals: bill.pendingVenmoApprovals.filter(
-                    (a: any) => a.id !== paymentId
-                  ),
-                };
-              })
-            );
-          }}
+          onConfirmPayment={approve}
+          onDisputePayment={reject}
         />
       </div>
 
@@ -168,21 +123,37 @@ export default function DashboardPage({
       <div className="mb-6">
         <BilvoSummaryCards
           household={household}
-          bills={dashboardBills}
+          bills={bills}
           totalHousehold={computedTotalHousehold}
           yourShare={computedYourShare}
         />
       </div>
 
-      {/* Active Bills */}
+      {/* Active Bills using shared BatchedBillsTable */}
       <div className="mb-6">
-        <ActiveBillsTable
-          bills={dashboardBills}
-          hasPaymentMethod={hasPaymentMethod}
-          household={household}
-          onBillsImported={(importedBills) => {
-            setDashboardBills((prev) => [...prev, ...importedBills]);
+        <BatchedBillsTable
+          title="This Month’s Bills"
+          bills={bills}
+          householdMembers={householdMembers}
+          currentUserId={currentUserId}
+          onPayBill={(bill, e) => payFlow.startPayFlow(bill, e)}
+          onPayGroup={(groupPayload, e) => {
+            const syntheticBill: any = {
+              id: `group-${groupPayload.ownerUserId}-${new Date().toISOString()}`,
+              ownerUserId: groupPayload.ownerUserId,
+              biller: `${groupPayload.bills.map((b) => b.biller).join(", ")}`,
+              billerType: "group",
+              yourShare: groupPayload.amount,
+              dueDate: groupPayload.dueDateISO,
+              myStatus: BillStatus.PENDING,
+              myHasPaid: false,
+              myAutopayEnabled: false,
+              participants: [],
+            };
+            payFlow.startPayFlow(syntheticBill, e);
           }}
+          onToggleAutopay={(billId) => toggleAutopay(billId)}
+          hideDelete
         />
       </div>
 
@@ -190,6 +161,47 @@ export default function DashboardPage({
       <div className="mb-6">
         <RecentActivity activities={recentActivity} />
       </div>
+
+      {/* Pay flow modals */}
+      {payFlow.selectedBillForPayment && (
+        <PaymentMethodModal
+          open={payFlow.paymentMethodModalOpen}
+          onOpenChange={payFlow.setPaymentMethodModalOpen}
+          billName={payFlow.selectedBillForPayment.biller}
+          amount={payFlow.selectedBillForPayment.yourShare.toFixed(2)}
+          onVenmoClick={payFlow.handleVenmoClick}
+          onZelleClick={payFlow.handleZelleClick}
+          onAutoPayClick={payFlow.handleAutoPayClick}
+          onBankAccountClick={payFlow.handleBankAccountClick}
+          onCreditCardClick={payFlow.handleCreditCardClick}
+          bankLabel="Pay with Bank Account"
+          cardLabel="Pay with Credit Card"
+        />
+      )}
+
+      {payFlow.selectedBillForPayment && (
+        <PaymentConfirmationModal
+          open={payFlow.paymentConfirmationOpen}
+          onOpenChange={payFlow.setPaymentConfirmationOpen}
+          amount={payFlow.selectedBillForPayment.yourShare.toFixed(2)}
+          recipientName={payFlow.selectedBillForPayment.recipientName}
+          onConfirm={payFlow.handlePaymentConfirmed}
+          onCancel={payFlow.handlePaymentCancelled}
+        />
+      )}
+
+      {payFlow.selectedPaymentMethod && payFlow.selectedBillForPayment && (
+        <PayWithStripeModal
+          open={payFlow.stripePayOpen}
+          onOpenChange={payFlow.setStripePayOpen}
+          billParticipantId={payFlow.stripeBillParticipantId}
+          biller={payFlow.selectedBillForPayment.biller}
+          amountDisplay={payFlow.selectedBillForPayment.yourShare.toFixed(2)}
+          recipientName={payFlow.selectedBillForPayment.recipientName}
+          paymentType={payFlow.stripePaymentType}
+          onSucceeded={payFlow.onStripeSucceeded}
+        />
+      )}
     </DashboardLayout>
   );
 }
@@ -199,10 +211,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   if (!session?.user?.email) {
     return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
+      redirect: { destination: "/login", permanent: false },
     };
   }
 
@@ -218,18 +227,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const householdJson = await householdRes.json();
 
     const household = householdJson?.household || null;
+    const householdMembers = householdJson?.household?.members || [];
     const currentUserId = householdJson?.currentUserId || "";
 
     if (!household || !currentUserId) {
       return {
-        redirect: {
-          destination: "/onboarding",
-          permanent: false,
-        },
+        redirect: { destination: "/onboarding", permanent: false },
       };
     }
 
-    // 2) bills (includes pendingVenmoApprovals for bills you own)
+    // 2) bills
     const billsRes = await fetch(`${baseUrl}/api/bills`, {
       headers: { Cookie: cookie },
     });
@@ -256,16 +263,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         hasPaymentMethod = (pmJson?.paymentMethods || []).length > 0;
       }
     } catch {
-      // ignore — keep default
+      // ignore
     }
 
-    // compute summary values (same as you do client-side)
+    // compute summary values
     const totalHousehold = bills.reduce((sum, b) => sum + (b.amount || 0), 0);
     const yourShare = bills.reduce((sum, b) => sum + (b.yourShare || 0), 0);
 
     return {
       props: {
         household,
+        householdMembers,
         bills,
         recentActivity,
         totalHousehold,
@@ -281,10 +289,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } catch (error) {
     console.error("Error loading dashboard:", error);
     return {
-      redirect: {
-        destination: "/error",
-        permanent: false,
-      },
+      redirect: { destination: "/error", permanent: false },
     };
   }
 };

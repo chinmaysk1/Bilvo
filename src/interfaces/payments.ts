@@ -23,3 +23,25 @@ export type PriorityItem = {
   iconBg: string;
   iconColor: string;
 };
+
+export interface PaymentAttemptRow {
+  id: string;
+  status: string;
+  provider: string;
+  amount: number;
+  amountCents?: number | null;
+  currency?: string | null;
+  createdAt: string;
+  processedAt: string | null;
+  failureCode: string | null;
+  failureMessage: string | null;
+  payer: { id: string | null; name: string; email: string | null };
+  bill: {
+    id: string;
+    biller: string;
+    billerType: string;
+    dueDate: string;
+    owner: { id: string; name: string; email: string | null } | null;
+  } | null;
+  billParticipantId: string | null;
+}

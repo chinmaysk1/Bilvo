@@ -92,7 +92,7 @@ export default function PaymentsPage({
 
         const utilities = utilData.utilityAccounts ?? [];
         const owns = utilities.some(
-          (u: { ownerUserId: string | null }) => u.ownerUserId === me.id
+          (u: { ownerUserId: string | null }) => u.ownerUserId === me.id,
         );
         setUserOwnsAnyUtility(owns);
 
@@ -136,13 +136,13 @@ export default function PaymentsPage({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleRemove = async (id: string) => {
     if (
       !confirm(
-        "Are you sure you want to remove this payment method? This cannot be undone."
+        "Are you sure you want to remove this payment method? This cannot be undone.",
       )
     ) {
       return;
@@ -235,7 +235,7 @@ export default function PaymentsPage({
         : `${(m.brand || "Card").toUpperCase()} Card`;
       const details = isBank
         ? `•••• ${m.last4} · Free transfers · Added ${new Date(
-            m.createdAt
+            m.createdAt,
           ).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -312,7 +312,7 @@ export default function PaymentsPage({
                     <div
                       className="flex items-center justify-center h-5 w-5 rounded-full flex-shrink-0"
                       style={{
-                        backgroundColor: index === 0 ? "#00B948" : "#E5E7EB",
+                        backgroundColor: index === 0 ? "#008a4b" : "#E5E7EB",
                         color: index === 0 ? "#FFFFFF" : "#6B7280",
                         fontWeight: 600,
                         fontSize: "11px",
@@ -544,7 +544,7 @@ export default function PaymentsPage({
                   <div className="flex-1 flex items-center gap-2">
                     <input
                       placeholder="@username"
-                      className="flex-1 h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#00B948] focus:border-transparent"
+                      className="flex-1 h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#008a4b] focus:border-transparent"
                       value={venmoHandle}
                       onChange={(e) => setVenmoHandle(e.target.value)}
                       disabled={
@@ -603,7 +603,7 @@ export default function PaymentsPage({
                                     "Content-Type": "application/json",
                                   },
                                   body: JSON.stringify({ venmoHandle }),
-                                }
+                                },
                               );
                               if (!res.ok)
                                 throw new Error("Failed to save Venmo");
@@ -662,7 +662,7 @@ export default function PaymentsPage({
 
               <button
                 type="button"
-                className="rounded-lg bg-[#00B948] hover:bg-[#00A03C] text-white h-9 px-3 text-[13px]"
+                className="rounded-lg bg-[#008a4b] hover:bg-[#00A03C] text-white h-9 px-3 text-[13px]"
                 style={{ fontWeight: 600 }}
                 onClick={() => alert("Invite payer (coming soon)")}
               >
@@ -721,7 +721,7 @@ export default function PaymentsPage({
                   </button>
                   <button
                     type="button"
-                    className="rounded-lg h-8 px-3 border border-[#00B948] text-[#00B948] hover:bg-[#ECFDF5] text-[12px]"
+                    className="rounded-lg h-8 px-3 border border-[#008a4b] text-[#008a4b] hover:bg-[#ECFDF5] text-[12px]"
                     style={{ fontWeight: 600 }}
                     onClick={() => alert("Resend invite (coming soon)")}
                   >
@@ -805,7 +805,7 @@ function SortablePaymentMethodRow({
       <div
         className="flex items-center justify-center h-7 w-7 rounded-full flex-shrink-0"
         style={{
-          backgroundColor: index === 0 ? "#00B948" : "#E5E7EB",
+          backgroundColor: index === 0 ? "#008a4b" : "#E5E7EB",
           color: index === 0 ? "#FFFFFF" : "#6B7280",
           fontWeight: 600,
           fontSize: "13px",
@@ -998,11 +998,11 @@ function AddPaymentMethodModal({
                   onSaved={async () => {
                     const syncRes = await fetch(
                       "/api/payments/payment-methods/sync",
-                      { method: "POST" }
+                      { method: "POST" },
                     );
                     if (!syncRes.ok) {
                       alert(
-                        "Card saved in Stripe, but failed to sync to your database."
+                        "Card saved in Stripe, but failed to sync to your database.",
                       );
                       return;
                     }
@@ -1083,7 +1083,7 @@ function AddPaymentMethodModal({
                   type="button"
                   onClick={() => {
                     const form = document.getElementById(
-                      "bank-form"
+                      "bank-form",
                     ) as HTMLFormElement | null;
                     form?.requestSubmit();
                   }}

@@ -92,14 +92,14 @@ export default function RecentActivity({ activities }: RecentActivityProps) {
           style={{
             fontSize: "12px",
             fontWeight: 500,
-            color: "#00B948",
+            color: "#008a4b",
             lineHeight: 1.5,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = "#00A040";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "#00B948";
+            e.currentTarget.style.color = "#008a4b";
           }}
         >
           View All

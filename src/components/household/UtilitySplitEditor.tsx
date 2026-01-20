@@ -52,7 +52,7 @@ function includedCount(splits: UtilitySplit["memberSplits"]) {
 function calcTotal(split: UtilitySplit) {
   return split.memberSplits.reduce(
     (sum, ms) => sum + (ms.included ? ms.value : 0),
-    0
+    0,
   );
 }
 
@@ -97,7 +97,7 @@ export function UtilitySplitEditor({
 
   const equalCount = useMemo(
     () => includedCount(split.memberSplits),
-    [split.memberSplits]
+    [split.memberSplits],
   );
 
   const handleCustomizeToggle = (enabled: boolean) => {
@@ -136,7 +136,7 @@ export function UtilitySplitEditor({
 
     const includedSplits = split.memberSplits.filter((ms) => ms.included);
     const otherMembers = includedSplits.filter(
-      (ms) => ms.memberId !== memberId
+      (ms) => ms.memberId !== memberId,
     );
 
     if (otherMembers.length === 0) return;
@@ -163,7 +163,7 @@ export function UtilitySplitEditor({
     const updatedSplits = split.memberSplits.map((ms) =>
       ms.memberId === memberId
         ? { ...ms, included, value: included ? ms.value : 0 }
-        : ms
+        : ms,
     );
 
     // If equal mode, recalc distribution
@@ -330,15 +330,15 @@ export function UtilitySplitEditor({
                             disabled={!isAdmin}
                             className={`${
                               split.isCustom
-                                ? "data-[state=checked]:bg-[#00B948]"
+                                ? "data-[state=checked]:bg-[#008a4b]"
                                 : ""
-                            } focus-visible:ring-2 focus-visible:ring-[#00B948] focus-visible:ring-offset-2`}
+                            } focus-visible:ring-2 focus-visible:ring-[#008a4b] focus-visible:ring-offset-2`}
                           />
                           <span
                             className="text-xs"
                             style={{
                               fontWeight: 700,
-                              color: split.isCustom ? "#00B948" : "#6B7280",
+                              color: split.isCustom ? "#008a4b" : "#6B7280",
                             }}
                           >
                             {split.isCustom ? "ON" : "OFF"}
@@ -402,7 +402,7 @@ export function UtilitySplitEditor({
                             disabled={!isAdmin}
                           >
                             <SelectTrigger
-                              className="w-40 h-8 border-gray-300 focus:ring-2 focus:ring-[#00B948] focus:border-[#00B948]"
+                              className="w-40 h-8 border-gray-300 focus:ring-2 focus:ring-[#008a4b] focus:border-[#008a4b]"
                               style={{
                                 fontSize: "12px",
                                 fontWeight: 600,
@@ -436,7 +436,7 @@ export function UtilitySplitEditor({
               </div>
 
               {showSaved && (
-                <div className="flex items-center gap-1.5 text-[#00B948] flex-shrink-0">
+                <div className="flex items-center gap-1.5 text-[#008a4b] flex-shrink-0">
                   <Check className="h-3.5 w-3.5" />
                   <span className="text-xs" style={{ fontWeight: 700 }}>
                     Saved
@@ -451,7 +451,7 @@ export function UtilitySplitEditor({
               <div className="space-y-1.5 min-w-0">
                 {split.memberSplits.map((memberSplit) => {
                   const member = members.find(
-                    (m) => m.id === memberSplit.memberId
+                    (m) => m.id === memberSplit.memberId,
                   );
                   if (!member) return null;
 
@@ -479,11 +479,11 @@ export function UtilitySplitEditor({
                                   onCheckedChange={(checked) =>
                                     handleInclusionChange(
                                       member.id,
-                                      checked as boolean
+                                      checked as boolean,
                                     )
                                   }
                                   disabled={!isAdmin}
-                                  className="data-[state=checked]:bg-[#00B948] data-[state=checked]:border-[#00B948] border-gray-400 focus-visible:ring-2 focus-visible:ring-[#00B948] focus-visible:ring-offset-2"
+                                  className="data-[state=checked]:bg-[#008a4b] data-[state=checked]:border-[#008a4b] border-gray-400 focus-visible:ring-2 focus-visible:ring-[#008a4b] focus-visible:ring-offset-2"
                                 />
                               </div>
                             </TooltipTrigger>
@@ -576,13 +576,13 @@ export function UtilitySplitEditor({
                                     onChange={(e) =>
                                       handleLegendPercentageChange(
                                         member.id,
-                                        parseFloat(e.target.value)
+                                        parseFloat(e.target.value),
                                       )
                                     }
                                     disabled={
                                       !isAdmin || rowDisabled || !split.isCustom
                                     }
-                                    className="h-8 pr-7 text-right border-gray-400 focus-visible:ring-2 focus-visible:ring-[#00B948] focus-visible:border-[#00B948]"
+                                    className="h-8 pr-7 text-right border-gray-400 focus-visible:ring-2 focus-visible:ring-[#008a4b] focus-visible:border-[#008a4b]"
                                     style={{
                                       fontSize: "12px",
                                       fontWeight: 600,
@@ -714,7 +714,7 @@ export function UtilitySplitEditor({
               <Button
                 onClick={onClose}
                 variant="ghost"
-                className="h-9 px-4 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#00B948] focus-visible:ring-offset-2"
+                className="h-9 px-4 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-[#008a4b] focus-visible:ring-offset-2"
                 style={{ fontWeight: 600, fontSize: "13px", color: "#4B5563" }}
               >
                 Cancel
@@ -728,9 +728,9 @@ export function UtilitySplitEditor({
                     toast.success("Split configuration saved");
                     onClose();
                   }}
-                  className="h-9 px-5 rounded-lg hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#00B948] focus-visible:ring-offset-2"
+                  className="h-9 px-5 rounded-lg hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#008a4b] focus-visible:ring-offset-2"
                   style={{
-                    backgroundColor: "#00B948",
+                    backgroundColor: "#008a4b",
                     color: "white",
                     fontWeight: 700,
                     fontSize: "13px",

@@ -40,7 +40,7 @@ export function PaymentConfirmationModal({
             >
               <ThumbsUp
                 className="h-10 w-10"
-                style={{ color: "#00B948" }}
+                style={{ color: "#008a4b" }}
                 strokeWidth={2.5}
               />
             </div>
@@ -64,7 +64,7 @@ export function PaymentConfirmationModal({
               onClick={onConfirm}
               className="w-full h-14 rounded-xl text-white border-0"
               style={{
-                backgroundColor: "#00B948",
+                backgroundColor: "#008a4b",
                 fontWeight: 600,
                 fontSize: "16px",
               }}
