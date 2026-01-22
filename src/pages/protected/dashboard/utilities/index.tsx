@@ -1956,7 +1956,8 @@ function UtilitiesContent() {
                 onClick={handleSyncAllUtilities}
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-6 sm:px-8 h-12 sm:h-auto text-base"
+                className="w-full sm:w-auto border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-6 sm:px-8 text-base"
+                // className="border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-8"
                 style={{ fontWeight: 600 }}
                 disabled={isSyncing || linkedUtilitiesCount === 0}
               >

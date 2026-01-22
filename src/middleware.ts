@@ -9,7 +9,7 @@ const PUBLIC_PATHS = new Set<string>([
   "/login", // login
 ]);
 
-// Onboarding paths that require auth but shouldn't check for completed onboarding
+// Onboarding paths that require auth but should be accessible when NOT in a household
 const ONBOARDING_PATHS = new Set<string>([
   "/onboarding",
   "/onboarding/create",
@@ -19,7 +19,7 @@ const ONBOARDING_PATHS = new Set<string>([
 function isSystemPath(pathname: string) {
   return (
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") || // keep API & NextAuth untouched
+    pathname.startsWith("/api") ||
     pathname.startsWith("/static") ||
     pathname.startsWith("/public") ||
     pathname === "/favicon.ico" ||
@@ -39,7 +39,7 @@ export async function middleware(req: NextRequest) {
     ? pathname.replace(/^\/protected/, "") || "/"
     : pathname;
 
-  // Skip public paths (based on clean path)
+  // Skip public paths
   if (PUBLIC_PATHS.has(cleanPath)) return NextResponse.next();
 
   const token = await getToken({ req });
@@ -52,27 +52,26 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Onboarding gating checks must use cleanPath (IMPORTANT)
   const isOnboardingPath = ONBOARDING_PATHS.has(cleanPath);
-  const hasCompletedOnboarding = token.hasCompletedOnboarding === true;
+  const inHousehold = !!token.householdId;
 
-  // User hasn't completed onboarding: allow onboarding pages; otherwise redirect to onboarding
-  if (!hasCompletedOnboarding && !isOnboardingPath) {
+  // If NOT in a household: allow onboarding pages; otherwise redirect to onboarding
+  if (!inHousehold && !isOnboardingPath) {
     const onboardingUrl = req.nextUrl.clone();
     onboardingUrl.pathname = "/onboarding";
     onboardingUrl.search = "";
     return NextResponse.redirect(onboardingUrl);
   }
 
-  // User completed onboarding: block onboarding pages
-  if (hasCompletedOnboarding && isOnboardingPath) {
+  // If IN a household: block onboarding pages
+  if (inHousehold && isOnboardingPath) {
     const dashboardUrl = req.nextUrl.clone();
     dashboardUrl.pathname = "/dashboard";
     dashboardUrl.search = "";
     return NextResponse.redirect(dashboardUrl);
   }
 
-  // If request is already internal, let it render (don't redirect)
+  // If request is already internal, let it render
   if (pathname.startsWith("/protected")) {
     return NextResponse.next();
   }
@@ -83,7 +82,7 @@ export async function middleware(req: NextRequest) {
   return NextResponse.rewrite(rewriteUrl);
 }
 
-// Run on page requests; exclude assets by extension for performance
+// Run on page requests; exclude assets by extension
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.[^/]+$).*)"],
 };

@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 declare module "next-auth/jwt" {
   interface JWT {
     userId?: string;
-    hasCompletedOnboarding?: boolean;
+    householdId?: string | null;
     accessToken?: string;
     refreshToken?: string;
   }
@@ -15,7 +15,7 @@ declare module "next-auth/jwt" {
 
 declare module "next-auth" {
   interface Session {
-    hasCompletedOnboarding?: boolean;
+    householdId?: string | null;
     accessToken?: string;
   }
 }
@@ -30,44 +30,36 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          scope: [
-            "openid",
-            "email",
-            "profile",
-            "https://www.googleapis.com/auth/gmail.readonly",
-          ].join(" "),
-          access_type: "offline",
-          prompt: "consent",
+          // standard OpenID scopes only
+          scope: "openid email profile",
         },
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account, trigger, session }) {
-      // Always keep userId on token
+    async jwt({ token, user, account, trigger }) {
+      // Keep userId on token
       if (user?.id) token.userId = user.id;
 
-      // If client calls `update({ hasCompletedOnboarding: true })`
-      if (
-        trigger === "update" &&
-        session?.hasCompletedOnboarding !== undefined
-      ) {
-        token.hasCompletedOnboarding = session.hasCompletedOnboarding;
+      // Hydrate householdId from DB:
+      // - on sign-in (user exists)
+      // - on client-triggered update()
+      // - if missing on an old token
+      const shouldHydrate =
+        !!user?.id || trigger === "update" || token.householdId === undefined;
+
+      if (shouldHydrate) {
+        const id = (user?.id ?? token.userId) as string | undefined;
+        if (id) {
+          const dbUser = await prisma.user.findUnique({
+            where: { id },
+            select: { householdId: true },
+          });
+          token.householdId = dbUser?.householdId ?? null;
+        }
       }
 
-      // On sign-in (user exists) OR if token is missing the field, hydrate from DB
-      // This is the part your middleware needs.
-      if (
-        (user?.id && token.hasCompletedOnboarding === undefined) ||
-        (token.userId && token.hasCompletedOnboarding === undefined)
-      ) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: (user?.id ?? token.userId)! },
-          select: { hasCompletedOnboarding: true },
-        });
-        token.hasCompletedOnboarding = dbUser?.hasCompletedOnboarding ?? false;
-      }
-
+      // Persist OAuth tokens if you’re using them elsewhere
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -93,12 +85,11 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.userId;
       }
 
-      // expose these to client if you want
-      if (token.accessToken) (session as any).accessToken = token.accessToken;
-      (session as any).hasCompletedOnboarding =
-        token.hasCompletedOnboarding ?? false;
+      (session as any).householdId = token.householdId ?? null;
 
-      // Optional: keep your name lookup if you want, but it's not required for onboarding gating
+      if (token.accessToken) (session as any).accessToken = token.accessToken;
+
+      // Optional: name lookup (kept from your version)
       if (token?.userId) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.userId },

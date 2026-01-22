@@ -8,7 +8,7 @@ import { determineMyStatus } from "@/components/bills/BillStatusConfig";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.email) {
@@ -33,13 +33,16 @@ export default async function handler(
     // -----------------------
     if (req.method === "GET") {
       const { status } = req.query;
+      // If client explicitly wants all raw bills, pass fetchAll=true
+      const fetchAll = req.query.fetchAll === "true";
 
       const whereClause: any = { householdId };
       if (status && typeof status === "string") {
         whereClause.status = status;
       }
 
-      const bills = await prisma.bill.findMany({
+      // Fetch raw bills from DB (we'll dedupe below unless fetchAll)
+      const rawBills = await prisma.bill.findMany({
         where: whereClause,
         orderBy: { dueDate: "asc" },
         include: {
@@ -48,6 +51,32 @@ export default async function handler(
           createdBy: { select: { id: true, name: true, email: true } },
         },
       });
+
+      // Dedupe server-side unless fetchAll requested
+      let bills = rawBills;
+      if (!fetchAll) {
+        const uniqueMap: Record<string, (typeof rawBills)[number]> = {};
+        for (const b of rawBills) {
+          const ownerUserId = b.ownerUserId;
+          const billerType = b.billerType;
+          const key = ownerUserId + ":" + billerType;
+
+          const existing = uniqueMap[key];
+          if (!existing) {
+            uniqueMap[key] = b;
+          } else {
+            const existingTime = new Date(existing.dueDate).getTime();
+            const bTime = new Date(b.dueDate).getTime();
+            // KEEP the LATEST dueDate
+            if (bTime > existingTime) uniqueMap[key] = b;
+          }
+        }
+
+        bills = Object.values(uniqueMap).sort(
+          (a, b) =>
+            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+        );
+      }
 
       const myOwnedBillIds = bills
         .filter((b) => b.ownerUserId === myUserId)
@@ -87,41 +116,47 @@ export default async function handler(
         pendingByBillId.set(a.billId, arr);
       }
 
-      // 1) collect my participant ids
+      // 1) collect my participant ids from deduped bills
       const myParticipantIds = bills
         .map((b) => b.participants.find((p) => p.userId === myUserId)?.id)
         .filter((id): id is string => !!id);
 
       // 2) load all SUCCEEDED attempts for those participants
-      const succeeded = await prisma.paymentAttempt.findMany({
-        where: {
-          billParticipantId: { in: myParticipantIds },
-          status: "SUCCEEDED",
-        },
-        select: { billParticipantId: true },
-      });
+      const succeeded = myParticipantIds.length
+        ? await prisma.paymentAttempt.findMany({
+            where: {
+              billParticipantId: { in: myParticipantIds },
+              status: "SUCCEEDED",
+            },
+            select: { billParticipantId: true },
+          })
+        : [];
 
       // 3) build set for quick lookup
       const paidSet = new Set(succeeded.map((a) => a.billParticipantId));
 
       // Same for FAILED attempts
-      const failed = await prisma.paymentAttempt.findMany({
-        where: {
-          billParticipantId: { in: myParticipantIds },
-          status: "FAILED",
-        },
-        select: { billParticipantId: true },
-      });
+      const failed = myParticipantIds.length
+        ? await prisma.paymentAttempt.findMany({
+            where: {
+              billParticipantId: { in: myParticipantIds },
+              status: "FAILED",
+            },
+            select: { billParticipantId: true },
+          })
+        : [];
       const failedSet = new Set(failed.map((a) => a.billParticipantId));
 
       // Same for PROCESSING attempts (used for Pending Approval UI)
-      const processing = await prisma.paymentAttempt.findMany({
-        where: {
-          billParticipantId: { in: myParticipantIds },
-          status: "PROCESSING",
-        },
-        select: { billParticipantId: true },
-      });
+      const processing = myParticipantIds.length
+        ? await prisma.paymentAttempt.findMany({
+            where: {
+              billParticipantId: { in: myParticipantIds },
+              status: "PROCESSING",
+            },
+            select: { billParticipantId: true },
+          })
+        : [];
       const processingSet = new Set(processing.map((a) => a.billParticipantId));
 
       const shaped = bills.map((b) => {

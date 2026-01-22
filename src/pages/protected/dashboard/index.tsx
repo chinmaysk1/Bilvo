@@ -243,6 +243,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (!billsRes.ok) throw new Error("Failed to fetch bills");
     const billsJson = await billsRes.json();
     const bills: Bill[] = billsJson?.bills || [];
+    console.log(bills);
 
     // 3) recent activities
     const activityRes = await fetch(`${baseUrl}/api/activities`, {

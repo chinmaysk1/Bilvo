@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { Activity as DashboardActivity } from "@/interfaces/activity";
@@ -158,6 +158,7 @@ export default function HouseholdPage(_props: HouseholdPageProps) {
 
 function HouseholdContent() {
   const router = useRouter();
+  const { update } = useSession();
 
   // backend-driven state
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -561,20 +562,20 @@ function HouseholdContent() {
 
   const handleLeaveHousehold = async () => {
     try {
-      const res = await fetch("/api/household/leave", {
-        method: "POST",
-      });
+      const res = await fetch("/api/household/leave", { method: "POST" });
 
       const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        throw new Error(data?.error || "Failed to leave household");
-      }
+      if (!res.ok) throw new Error(data?.error || "Failed to leave household");
+
+      // Refresh JWT cookie so middleware sees householdId=null
+      await update();
 
       toast.success("Left household", {
         description: "You have left the household successfully.",
       });
 
-      router.push("/protected/dashboard").catch(() => {});
+      // after update(), go to onboarding (or any non-onboarding route will redirect there)
+      router.push("/onboarding").catch(() => {});
     } catch (err: any) {
       console.error(err);
       toast.error("Failed to leave household", {
