@@ -233,7 +233,7 @@ export default function BillsPage({
   return (
     <DashboardLayout>
       {/* Payment Confirmation Banner */}
-      <div className="mb-7">
+      <div className="mb-4 sm:mb-7">
         <PaymentConfirmationBanner
           pendingPayments={pendingApprovals}
           currentRole={pendingApprovals.length > 0 ? "admin" : "member"}
@@ -243,11 +243,11 @@ export default function BillsPage({
       </div>
 
       {/* Header */}
-      <div style={{ marginBottom: 16 }}>
+      <div className="mb-4 sm:mb-4">
         <div className="flex items-baseline justify-between">
           <h1
+            className="text-xl sm:text-lg"
             style={{
-              fontSize: 18,
               fontWeight: 600,
               color: "#111827",
               fontFamily: "Inter, sans-serif",
@@ -260,16 +260,25 @@ export default function BillsPage({
           <button
             onClick={() => setHistoryDrawerOpen(true)}
             className="hover:underline"
-            style={{ color: "#008a4b", fontWeight: 600, fontSize: 13 }}
+            style={{
+              color: "#008a4b",
+              fontWeight: 600,
+              fontSize: 13,
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "center",
+            }}
           >
             View History
           </button>
         </div>
       </div>
 
-      {/* Search + Filters + Scan */}
-      <div style={{ marginBottom: 20 }}>
-        <div className="flex items-center gap-3">
+      {/* Search + Filters + Scan - Mobile Responsive */}
+      <div className="mb-4 sm:mb-5">
+        {/* Mobile: Stack vertically */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          {/* Search bar - full width on mobile */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
@@ -279,87 +288,94 @@ export default function BillsPage({
               className="rounded-lg border-gray-300"
               style={{
                 paddingLeft: 36,
-                height: 36,
-                fontSize: 13,
+                height: 44, // CHANGED: from 36 for better mobile touch
+                fontSize: 14, // CHANGED: from 13 for readability
                 backgroundColor: "#FFFFFF",
                 borderColor: "#E5E7EB",
               }}
             />
           </div>
 
-          <Select
-            value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as any)}
-          >
-            <SelectTrigger
-              style={{
-                width: 140,
-                height: 36,
-                fontSize: 13,
-                backgroundColor: "#FFFFFF",
-                borderColor: "#E5E7EB",
-              }}
+          {/* Filters row - responsive layout */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => setStatusFilter(v as any)}
             >
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value={BillStatus.PENDING}>Unpaid</SelectItem>
-              <SelectItem value={BillStatus.PENDING_APPROVAL}>
-                Pending Approval
-              </SelectItem>
-              <SelectItem value={BillStatus.SCHEDULED}>Scheduled</SelectItem>
-              <SelectItem value={BillStatus.PAID}>Paid</SelectItem>
-            </SelectContent>
-          </Select>
+              <SelectTrigger
+                className="flex-1 sm:flex-initial"
+                style={{
+                  width: "auto",
+                  minWidth: 120,
+                  height: 44, // CHANGED: from 36
+                  fontSize: 14, // CHANGED: from 13
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#E5E7EB",
+                }}
+              >
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value={BillStatus.PENDING}>Unpaid</SelectItem>
+                <SelectItem value={BillStatus.PENDING_APPROVAL}>
+                  Pending Approval
+                </SelectItem>
+                <SelectItem value={BillStatus.SCHEDULED}>Scheduled</SelectItem>
+                <SelectItem value={BillStatus.PAID}>Paid</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-            <SelectTrigger
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+              <SelectTrigger
+                className="flex-1 sm:flex-initial"
+                style={{
+                  width: "auto",
+                  minWidth: 120,
+                  height: 44, // CHANGED: from 36
+                  fontSize: 14, // CHANGED: from 13
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#E5E7EB",
+                }}
+              >
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="due-date">Due Date</SelectItem>
+                <SelectItem value="amount">Amount</SelectItem>
+                <SelectItem value="biller">Biller</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <ScanGmailUploadButton
+              householdMemberCount={householdMembers.length || 1}
+              onBillsImported={(imported: Bill[]) => upsertBills(imported)}
+              className="rounded-lg cursor-pointer flex-shrink-0"
               style={{
-                width: 140,
-                height: 36,
                 fontSize: 13,
-                backgroundColor: "#FFFFFF",
-                borderColor: "#E5E7EB",
+                fontWeight: 600,
+                backgroundColor: "#008a4b",
+                height: 44, // CHANGED: from 36
+                paddingLeft: 14,
+                paddingRight: 14,
               }}
-            >
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="due-date">Due Date</SelectItem>
-              <SelectItem value="amount">Amount</SelectItem>
-              <SelectItem value="biller">Biller</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <ScanGmailUploadButton
-            householdMemberCount={householdMembers.length || 1}
-            onBillsImported={(imported: Bill[]) => upsertBills(imported)}
-            className="rounded-lg cursor-pointer"
-            style={{
-              fontSize: 13,
-              fontWeight: 600,
-              backgroundColor: "#008a4b",
-              height: 36,
-              paddingLeft: 14,
-              paddingRight: 14,
-            }}
-          />
+            />
+          </div>
         </div>
       </div>
 
-      {/* Summary bar */}
+      {/* Summary bar - Mobile Responsive Grid */}
       <Card
-        className="border bg-white"
+        className="border bg-white mb-4 sm:mb-4"
         style={{
           borderColor: "#E5E7EB",
           borderRadius: 8,
           boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-          marginBottom: 16,
-          padding: "16px 24px",
+          padding: "16px",
         }}
       >
-        <div className="flex items-center justify-center gap-10">
+        {/* Desktop: Horizontal layout */}
+        <div className="hidden sm:flex items-center justify-center gap-10">
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center gap-1.5 mb-0.5">
               <DollarSign
@@ -522,19 +538,83 @@ export default function BillsPage({
             </p>
           </div>
         </div>
+
+        {/* Mobile: 2x2 Grid */}
+        <div className="grid grid-cols-2 gap-4 sm:hidden">
+          <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-1.5 mb-1">
+              <DollarSign
+                className="flex-shrink-0 w-4 h-4"
+                style={{ color: "#008a4b" }}
+              />
+              <p className="text-base font-semibold text-gray-900">
+                ${totalDueThisMonth.toFixed(2)}
+              </p>
+            </div>
+            <p className="text-xs font-medium text-gray-600">Total Due</p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Clock
+                className="flex-shrink-0 w-4 h-4"
+                style={{ color: "#008a4b" }}
+              />
+              <p className="text-base font-semibold text-gray-900">
+                {nextDueBill ? formatDate(nextDueBill.dueDate) : "—"}
+              </p>
+            </div>
+            <p className="text-xs font-medium text-gray-600">Next Due</p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-1.5 mb-1">
+              <CheckCircle2
+                className="flex-shrink-0 w-4 h-4"
+                style={{ color: "#008a4b" }}
+              />
+              <p className="text-base font-semibold text-gray-900">
+                {autopayCount} of {bills.length}
+              </p>
+            </div>
+            <p className="text-xs font-medium text-gray-600">On Autopay</p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              {unpaidBills === 0 ? (
+                <CheckCircle2
+                  className="flex-shrink-0 w-4 h-4"
+                  style={{ color: "#008a4b" }}
+                />
+              ) : (
+                <AlertCircle
+                  className="flex-shrink-0 w-4 h-4"
+                  style={{ color: "#DC2626" }}
+                />
+              )}
+              <p className="text-base font-semibold text-gray-900">
+                {unpaidBills}
+              </p>
+            </div>
+            <p className="text-xs font-medium text-gray-600">
+              {unpaidBills === 0 ? "All Paid Up" : "Unpaid"}
+            </p>
+          </div>
+        </div>
       </Card>
 
-      {/* Tab toggle */}
+      {/* Tab toggle - Mobile responsive */}
       <div className="flex items-center justify-end mb-4">
         <div
-          className="flex items-center gap-2 rounded-lg p-1"
+          className="flex items-center gap-1 sm:gap-2 rounded-lg p-1"
           style={{ backgroundColor: "#E5E7EB" }}
         >
           <button
             onClick={() => setActiveTab("active")}
-            className="px-4 py-2 rounded-md transition-all"
+            className="px-3 sm:px-4 py-2 rounded-md transition-all"
             style={{
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: 600,
               fontFamily: "Inter, sans-serif",
               backgroundColor:
@@ -542,15 +622,16 @@ export default function BillsPage({
               color: activeTab === "active" ? "#111827" : "#6B7280",
               boxShadow:
                 activeTab === "active" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+              minHeight: "40px",
             }}
           >
             Active
           </button>
           <button
             onClick={() => setActiveTab("history")}
-            className="px-4 py-2 rounded-md transition-all"
+            className="px-3 sm:px-4 py-2 rounded-md transition-all"
             style={{
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: 600,
               fontFamily: "Inter, sans-serif",
               backgroundColor:
@@ -558,6 +639,7 @@ export default function BillsPage({
               color: activeTab === "history" ? "#111827" : "#6B7280",
               boxShadow:
                 activeTab === "history" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+              minHeight: "40px",
             }}
           >
             History
@@ -569,16 +651,16 @@ export default function BillsPage({
       {activeTab === "active" &&
         (filteredBills.length === 0 ? (
           <Card
-            className="rounded-lg border bg-white p-16 text-center"
+            className="rounded-lg border bg-white p-8 sm:p-16 text-center"
             style={{
               borderColor: "#E5E7EB",
               boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
             }}
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="text-6xl">🎉</div>
+              <div className="text-5xl sm:text-6xl">🎉</div>
               <h3
-                className="text-2xl text-gray-900"
+                className="text-xl sm:text-2xl text-gray-900"
                 style={{ fontWeight: 600 }}
               >
                 All bills are up to date!
@@ -590,7 +672,7 @@ export default function BillsPage({
           </Card>
         ) : (
           <BatchedBillsTable
-            title="This Month’s Bills"
+            title="This Month's Bills"
             bills={filteredBills}
             householdMembers={householdMembers}
             currentUserId={currentUserId}
@@ -603,21 +685,21 @@ export default function BillsPage({
           />
         ))}
 
-      {/* History tab */}
+      {/* History tab - Mobile responsive */}
       {activeTab === "history" && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {groupedHistory.map(([month, list]) => (
             <div key={month}>
               <div
-                className="sticky top-0 z-10 px-6 py-3 rounded-t-lg"
+                className="sticky top-0 z-10 px-4 sm:px-6 py-2 sm:py-3 rounded-t-lg"
                 style={{
                   backgroundColor: "#F9FAFB",
                   borderBottom: "2px solid #E5E7EB",
                 }}
               >
                 <h3
+                  className="text-sm sm:text-base"
                   style={{
-                    fontSize: 16,
                     fontWeight: 600,
                     color: "#111827",
                     fontFamily: "Inter, sans-serif",
@@ -644,12 +726,13 @@ export default function BillsPage({
                     return (
                       <div
                         key={a.id}
-                        className="w-full px-6 py-4 flex items-center gap-4"
+                        className="w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4"
                       >
-                        <div className="flex-1">
+                        {/* Bill info */}
+                        <div className="flex-1 min-w-0 w-full sm:w-auto">
                           <div
+                            className="text-sm sm:text-base truncate"
                             style={{
-                              fontSize: 14,
                               fontWeight: 500,
                               color: "#111827",
                               fontFamily: "Inter, sans-serif",
@@ -658,8 +741,8 @@ export default function BillsPage({
                             {a.bill?.biller || "Bill"}
                           </div>
                           <div
+                            className="text-xs sm:text-sm"
                             style={{
-                              fontSize: 12,
                               color: "#6B7280",
                               fontFamily: "Inter, sans-serif",
                             }}
@@ -668,46 +751,50 @@ export default function BillsPage({
                           </div>
                         </div>
 
-                        <div className="text-right">
-                          <div
-                            style={{
-                              fontSize: 16,
-                              fontWeight: 600,
-                              color: "#111827",
-                              fontFamily: "Inter, sans-serif",
-                            }}
-                          >
-                            ${Number(a.amount || 0).toFixed(2)}
+                        {/* Amount and payer - row on mobile */}
+                        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                          <div className="text-left sm:text-right">
+                            <div
+                              className="text-base sm:text-lg"
+                              style={{
+                                fontWeight: 600,
+                                color: "#111827",
+                                fontFamily: "Inter, sans-serif",
+                              }}
+                            >
+                              ${Number(a.amount || 0).toFixed(2)}
+                            </div>
+                            <div
+                              className="text-xs"
+                              style={{
+                                color: "#6B7280",
+                                fontFamily: "Inter, sans-serif",
+                              }}
+                            >
+                              {a.payer?.name || "Unknown payer"}
+                            </div>
                           </div>
-                          <div
-                            style={{
-                              fontSize: 12,
-                              color: "#6B7280",
-                              fontFamily: "Inter, sans-serif",
-                            }}
-                          >
-                            {a.payer?.name || "Unknown payer"}
-                          </div>
-                        </div>
 
-                        <div
-                          className="flex items-center gap-1.5 px-3 py-1 rounded-md"
-                          style={{ backgroundColor: "#ECFDF5" }}
-                        >
-                          <CheckCircle2
-                            className="h-3.5 w-3.5"
-                            style={{ color: "#16A34A" }}
-                          />
-                          <span
-                            style={{
-                              fontSize: 12,
-                              fontWeight: 600,
-                              color: "#16A34A",
-                              fontFamily: "Inter, sans-serif",
-                            }}
+                          {/* Status badge */}
+                          <div
+                            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md flex-shrink-0"
+                            style={{ backgroundColor: "#ECFDF5" }}
                           >
-                            Paid
-                          </span>
+                            <CheckCircle2
+                              className="h-3 w-3 sm:h-3.5 sm:w-3.5"
+                              style={{ color: "#16A34A" }}
+                            />
+                            <span
+                              className="text-xs"
+                              style={{
+                                fontWeight: 600,
+                                color: "#16A34A",
+                                fontFamily: "Inter, sans-serif",
+                              }}
+                            >
+                              Paid
+                            </span>
+                          </div>
                         </div>
                       </div>
                     );
@@ -766,35 +853,40 @@ export default function BillsPage({
         />
       )}
 
-      {/* Delete confirm */}
+      {/* Delete confirm - Mobile responsive */}
       <Dialog open={deleteBillModalOpen} onOpenChange={setDeleteBillModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] mx-4 rounded-2xl">
           <DialogHeader>
             <DialogTitle
-              style={{ fontSize: 18, fontWeight: 600, color: "#111827" }}
+              className="text-base sm:text-lg"
+              style={{ fontWeight: 600, color: "#111827" }}
             >
               Delete Bill?
             </DialogTitle>
             <DialogDescription
-              style={{ fontSize: 14, color: "#6B7280", marginTop: 8 }}
+              className="text-sm"
+              style={{ color: "#6B7280", marginTop: 8 }}
             >
               Are you sure you want to delete this bill? This action cannot be
               undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter style={{ marginTop: 24 }}>
+          <DialogFooter
+            className="flex-col sm:flex-row gap-2 sm:gap-0"
+            style={{ marginTop: 24 }}
+          >
             <Button
               variant="outline"
               onClick={() => setDeleteBillModalOpen(false)}
-              className="rounded-lg"
-              style={{ fontSize: 14, fontWeight: 600 }}
+              className="rounded-lg w-full sm:w-auto"
+              style={{ fontSize: 14, fontWeight: 600, minHeight: "44px" }}
             >
               Cancel
             </Button>
             <Button
               onClick={handleDeleteBillConfirm}
-              className="rounded-lg bg-red-600 hover:bg-red-700"
-              style={{ fontSize: 14, fontWeight: 600 }}
+              className="rounded-lg bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+              style={{ fontSize: 14, fontWeight: 600, minHeight: "44px" }}
             >
               Confirm & Delete
             </Button>

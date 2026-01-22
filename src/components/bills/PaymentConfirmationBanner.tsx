@@ -27,7 +27,6 @@ export function PaymentConfirmationBanner({
   onDisputePayment,
   currentRole = "admin",
 }: PaymentConfirmationBannerProps) {
-  // Only show to bill owners (admins)
   if (currentRole !== "admin" || pendingPayments.length === 0) {
     return null;
   }
@@ -73,15 +72,16 @@ export function PaymentConfirmationBanner({
             boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
           }}
         >
-          <div className="px-4 py-3 flex items-center justify-between gap-4">
+          {/* CHANGED: Made layout responsive with flex-col on mobile, flex-row on desktop */}
+          <div className="px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             {/* Left Side: Avatar + Payment Info */}
-            <div className="flex items-center gap-3 flex-1">
+            <div className="flex items-center gap-3 flex-1 w-full sm:w-auto">
               <div
-                className="flex h-8 w-8 items-center justify-center rounded-full flex-shrink-0"
+                className="flex h-10 w-10 items-center justify-center rounded-full flex-shrink-0" // CHANGED: from h-8 w-8 for better mobile touch
                 style={{
                   backgroundColor: "#008a4b",
                   color: "white",
-                  fontSize: "12px",
+                  fontSize: "14px", // CHANGED: from 12px
                   fontWeight: 600,
                   fontFamily: "Inter, sans-serif",
                 }}
@@ -89,26 +89,27 @@ export function PaymentConfirmationBanner({
                 {payment.payerInitials}
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
+                {" "}
+                {/* CHANGED: Added min-w-0 for text truncation */}
                 <p
                   className="text-gray-900"
                   style={{
-                    fontSize: "13px",
+                    fontSize: "14px", // CHANGED: from 13px for mobile readability
                     fontWeight: 600,
-                    lineHeight: 1.3,
+                    lineHeight: 1.4,
                     fontFamily: "Inter, sans-serif",
                   }}
                 >
                   {payment.payerName} sent ${payment.amount.toFixed(2)} for{" "}
                   {payment.billName}
                 </p>
-
                 <div
-                  className="flex items-center gap-2"
-                  style={{ marginTop: "3px" }}
+                  className="flex items-center gap-2 flex-wrap" // CHANGED: Added flex-wrap
+                  style={{ marginTop: "4px" }}
                 >
                   <Badge
-                    className="rounded px-1.5 py-0.5"
+                    className="rounded px-2 py-0.5" // CHANGED: Increased padding slightly
                     style={{
                       backgroundColor:
                         payment.paymentMethod === "venmo"
@@ -116,7 +117,7 @@ export function PaymentConfirmationBanner({
                           : "#6D1ED4",
                       color: "#FFFFFF",
                       fontWeight: 600,
-                      fontSize: "10px",
+                      fontSize: "11px", // CHANGED: from 10px
                       fontFamily: "Inter, sans-serif",
                     }}
                   >
@@ -126,7 +127,7 @@ export function PaymentConfirmationBanner({
                   <p
                     className="text-gray-500"
                     style={{
-                      fontSize: "11px",
+                      fontSize: "12px", // CHANGED: from 11px
                       fontWeight: 500,
                       lineHeight: 1.3,
                       fontFamily: "Inter, sans-serif",
@@ -139,17 +140,18 @@ export function PaymentConfirmationBanner({
             </div>
 
             {/* Right Side: Action Buttons */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            {/* CHANGED: Made buttons full width on mobile, auto on desktop */}
+            <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
               <Button
                 onClick={() => handleConfirm(payment)}
-                className="rounded-lg text-white hover:opacity-90 transition-opacity"
+                className="flex-1 sm:flex-initial rounded-lg text-white hover:opacity-90 transition-opacity"
                 style={{
                   backgroundColor: "#008a4b",
                   fontWeight: 600,
-                  fontSize: "12px",
-                  height: "32px",
-                  paddingLeft: "12px",
-                  paddingRight: "12px",
+                  fontSize: "14px", // CHANGED: from 12px
+                  height: "44px", // CHANGED: from 32px for better touch target
+                  paddingLeft: "16px", // CHANGED: from 12px
+                  paddingRight: "16px",
                   fontFamily: "Inter, sans-serif",
                 }}
               >
@@ -159,13 +161,13 @@ export function PaymentConfirmationBanner({
               <Button
                 onClick={() => handleDispute(payment)}
                 variant="outline"
-                className="rounded-lg border-red-300 text-red-600 hover:bg-red-50 transition-colors"
+                className="flex-1 sm:flex-initial rounded-lg border-red-300 text-red-600 hover:bg-red-50 transition-colors"
                 style={{
                   fontWeight: 600,
-                  fontSize: "12px",
-                  height: "32px",
-                  paddingLeft: "12px",
-                  paddingRight: "12px",
+                  fontSize: "14px", // CHANGED: from 12px
+                  height: "44px", // CHANGED: from 32px
+                  paddingLeft: "16px", // CHANGED: from 12px
+                  paddingRight: "16px",
                   fontFamily: "Inter, sans-serif",
                 }}
               >

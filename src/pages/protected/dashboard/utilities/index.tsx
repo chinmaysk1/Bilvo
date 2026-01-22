@@ -85,11 +85,7 @@ interface PhaseInfo {
 }
 
 const PHASE_INFO: Record<LinkingPhase, PhaseInfo> = {
-  IDLE: {
-    label: "Ready",
-    description: "Ready to begin linking",
-    icon: Link2,
-  },
+  IDLE: { label: "Ready", description: "Ready to begin linking", icon: Link2 },
   PENDING: {
     label: "Queued",
     description: "Your request is queued and waiting for an available worker",
@@ -164,7 +160,6 @@ function parseBackendStatus(
   status: string,
   lastError: string | null,
 ): LinkingPhase {
-  // Terminal states
   if (status === "SUCCESS") return "SUCCESS";
   if (status === "FAILED") return "FAILED";
   if (status === "NEEDS_2FA") return "NEEDS_2FA";
@@ -178,27 +173,24 @@ function parseBackendStatus(
     console.log("lastError: ", msg);
 
     // Check for progress indicators
-    if (msg.includes("[progress]")) {
-      if (msg.includes("initializing")) return "INITIALIZING";
-      if (msg.includes("starting secure browser")) return "BROWSER_STARTING";
-      if (msg.includes("navigating")) return "NAVIGATING";
-      if (
-        msg.includes("submitting login") ||
-        msg.includes("submitting credentials")
-      )
-        return "AUTHENTICATING";
-      if (msg.includes("checking authentication")) return "AUTH_CHECKING";
-      if (msg.includes("verifying security code")) return "VERIFYING_2FA";
-      if (msg.includes("authenticated") || msg.includes("accessing dashboard"))
-        return "AUTHENTICATED";
-      if (msg.includes("extracting") || msg.includes("reading bill"))
-        return "SCRAPING";
-      if (msg.includes("syncing") || msg.includes("saving")) return "SYNCING";
-      if (msg.includes("complete")) return "SUCCESS";
-    }
+    if (msg.includes("initializing")) return "INITIALIZING";
+    if (msg.includes("starting secure browser")) return "BROWSER_STARTING";
+    if (msg.includes("navigating")) return "NAVIGATING";
+    if (
+      msg.includes("submitting login") ||
+      msg.includes("submitting credentials")
+    )
+      return "AUTHENTICATING";
+    if (msg.includes("checking authentication")) return "AUTH_CHECKING";
+    if (msg.includes("verifying security code")) return "VERIFYING_2FA";
+    if (msg.includes("authenticated") || msg.includes("accessing dashboard"))
+      return "AUTHENTICATED";
+    if (msg.includes("extracting") || msg.includes("reading bill"))
+      return "SCRAPING";
+    if (msg.includes("syncing") || msg.includes("saving")) return "SYNCING";
+    if (msg.includes("complete")) return "SUCCESS";
   }
 
-  // Default RUNNING state
   return "INITIALIZING";
 }
 
@@ -207,8 +199,6 @@ function parseBackendStatus(
  */
 function extractProgressMessage(lastError: string | null): string | null {
   if (!lastError) return null;
-
-  // Remove [PROGRESS] prefix if present
   const cleaned = lastError.replace(/^\[PROGRESS\]\s*/i, "");
   return cleaned || null;
 }
@@ -264,9 +254,8 @@ function LinkingSession({
   const isTerminal = ["SUCCESS", "FAILED"].includes(phase);
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 px-6 border-2 border-dashed border-blue-100 rounded-2xl bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-md w-full space-y-6">
-        {/* Progress Bar */}
+    <div className="flex flex-col items-center justify-center py-6 sm:py-8 px-4 sm:px-6 border-2 border-dashed border-blue-100 rounded-2xl bg-gradient-to-b from-slate-50 to-white">
+      <div className="max-w-md w-full space-y-4 sm:space-y-6">
         {isActive && (
           <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
             <div
@@ -276,18 +265,17 @@ function LinkingSession({
           </div>
         )}
 
-        {/* Status Icon */}
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">
             {isActive && !isWaitingForUser && (
               <>
-                <div className="absolute inset-0 rounded-full border-4 border-blue-50 w-20 h-20" />
-                <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin w-20 h-20" />
+                <div className="absolute inset-0 rounded-full border-4 border-blue-50 w-16 sm:w-20 h-16 sm:h-20" />
+                <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin w-16 sm:w-20 h-16 sm:h-20" />
               </>
             )}
 
             <div
-              className={`relative flex items-center justify-center w-20 h-20 rounded-full transition-colors ${
+              className={`relative flex items-center justify-center w-16 sm:w-20 h-16 sm:h-20 rounded-full transition-colors ${
                 phase === "SUCCESS"
                   ? "bg-green-100"
                   : phase === "FAILED"
@@ -298,7 +286,7 @@ function LinkingSession({
               }`}
             >
               <Icon
-                className={`w-10 h-10 ${
+                className={`w-8 sm:w-10 h-8 sm:h-10 ${
                   phase === "SUCCESS"
                     ? "text-green-600"
                     : phase === "FAILED"
@@ -309,16 +297,13 @@ function LinkingSession({
             </div>
           </div>
 
-          {/* Phase Title */}
           <div className="text-center space-y-2">
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900">
               {info.label}
             </h3>
-            <p className="text-sm text-slate-600 max-w-xs">
+            <p className="text-sm text-slate-600 max-w-xs px-2">
               {progressMessage || info.description}
             </p>
-
-            {/* Elapsed Time */}
             {isActive && !isTerminal && (
               <p className="text-xs text-slate-400 font-mono">
                 Elapsed: {Math.floor(elapsedTime / 1000)}s
@@ -327,10 +312,9 @@ function LinkingSession({
           </div>
         </div>
 
-        {/* 2FA Input Section */}
         {phase === "NEEDS_2FA" && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 space-y-2">
               <div className="flex items-start gap-2">
                 <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-slate-700">
@@ -344,33 +328,32 @@ function LinkingSession({
             </div>
 
             <div className="flex flex-col items-center gap-3">
-              <div className="flex gap-2 w-full">
+              <div className="flex flex-col sm:flex-row gap-2 w-full">
                 <Input
                   value={twoFactorCode}
                   onChange={(e) => onTwoFactorChange(e.target.value)}
                   placeholder="000000"
-                  className="h-12 text-center text-xl tracking-[0.5em] font-mono border-2 focus:border-blue-500"
+                  className="h-12 sm:h-12 text-center text-xl tracking-[0.5em] font-mono border-2 focus:border-blue-500"
                   maxLength={6}
                   autoFocus
                 />
                 <Button
                   onClick={onTwoFactorSubmit}
                   disabled={twoFactorCode.length < 6}
-                  className="h-12 px-6 bg-blue-600 hover:bg-blue-700 shadow-md transition-all active:scale-95 min-w-[100px]"
+                  className="h-12 sm:h-12 w-full sm:w-auto px-6 bg-blue-600 hover:bg-blue-700 shadow-md transition-all active:scale-95 sm:min-w-[100px]"
                 >
                   Verify
                 </Button>
               </div>
-              <p className="text-xs text-slate-400 text-center">
+              <p className="text-xs text-slate-400 text-center px-4">
                 Enter the code to continue linking your account
               </p>
             </div>
           </div>
         )}
 
-        {/* Processing 2FA Feedback */}
         {phase === "VERIFYING_2FA" && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
             <div className="flex items-center gap-3">
               <div className="h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
               <p className="text-sm text-slate-700">
@@ -380,7 +363,6 @@ function LinkingSession({
           </div>
         )}
 
-        {/* Active Progress Indicator */}
         {isActive &&
           !isWaitingForUser &&
           !isTerminal &&
@@ -390,17 +372,14 @@ function LinkingSession({
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                 <span>Active session in progress</span>
               </div>
-
-              {/* Progress details */}
               <div className="text-xs text-slate-400 bg-slate-50 rounded p-2 border border-slate-200">
                 {progressMessage || "Processing..."}
               </div>
             </div>
           )}
 
-        {/* Error Message */}
         {phase === "FAILED" && lastError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
             <div className="flex items-start gap-2">
               <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
@@ -421,9 +400,8 @@ function LinkingSession({
           </div>
         )}
 
-        {/* Success Message */}
         {phase === "SUCCESS" && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4">
             <div className="flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
@@ -451,10 +429,8 @@ export async function ensureOwnerConnectOnboarding() {
     throw new Error(body?.error || "Failed to check Stripe Connect status");
   }
   const st = await stRes.json();
+  if (st?.isReadyToReceive) return;
 
-  if (st?.isReadyToReceive) return; // already good
-
-  // 2) Ensure connected account exists
   const ensureRes = await fetch("/api/payments/stripe/connect/ensure-account", {
     method: "POST",
   });
@@ -463,7 +439,6 @@ export async function ensureOwnerConnectOnboarding() {
     throw new Error(body?.error || "Failed to create Stripe connected account");
   }
 
-  // 3) Create account link and redirect to Stripe-hosted onboarding
   const linkRes = await fetch("/api/payments/stripe/connect/account-link", {
     method: "POST",
   });
@@ -473,7 +448,6 @@ export async function ensureOwnerConnectOnboarding() {
   }
   const link = await linkRes.json();
   if (!link?.url) throw new Error("Stripe onboarding link missing url");
-
   window.location.href = link.url;
 }
 
@@ -484,7 +458,7 @@ export async function ensureOwnerConnectOnboarding() {
 export default function UtilitiesPage() {
   return (
     <DashboardLayout>
-      <main className="mx-auto space-y-8">
+      <main className="mx-auto space-y-6 sm:space-y-8">
         <UtilitiesContent />
       </main>
     </DashboardLayout>
@@ -614,6 +588,7 @@ function UtilitiesContent() {
     (u) => u.isLinked && u.ownerUserId === currentUserId,
   ).length;
 
+  // [Keep all useCallback and useEffect hooks - unchanged except for spacing adjustments]
   const fetchData = useCallback(async () => {
     try {
       const userRes = await fetch("/api/user/me");
@@ -637,14 +612,10 @@ function UtilitiesContent() {
   }, []);
 
   useEffect(() => {
-    refreshStripeConnectStatus(); // initial load
-
+    refreshStripeConnectStatus();
     const onFocus = () => refreshStripeConnectStatus();
     window.addEventListener("focus", onFocus);
-
-    return () => {
-      window.removeEventListener("focus", onFocus);
-    };
+    return () => window.removeEventListener("focus", onFocus);
   }, []);
 
   useEffect(() => {
@@ -656,7 +627,6 @@ function UtilitiesContent() {
     const activeUtilities = Object.entries(utilityStates).filter(
       ([_, state]) => state.phase !== "IDLE",
     );
-
     if (activeUtilities.length === 0) return;
 
     const interval = setInterval(() => {
@@ -714,9 +684,7 @@ function UtilitiesContent() {
               return next;
             });
             toast.success(
-              `${
-                utilities.find((u) => u.id === utilityId)?.type
-              } synced successfully!`,
+              `${utilities.find((u) => u.id === utilityId)?.type} synced successfully!`,
             );
             await fetchData();
             await refreshStripeConnectStatus();
@@ -732,9 +700,7 @@ function UtilitiesContent() {
             const errorMessage =
               error?.replace(/^\[PROGRESS\]\s*/i, "") || "Linking failed";
             toast.error(
-              `${
-                utilities.find((u) => u.id === utilityId)?.type
-              }: ${errorMessage}`,
+              `${utilities.find((u) => u.id === utilityId)?.type}: ${errorMessage}`,
             );
             return;
           }
@@ -799,7 +765,6 @@ function UtilitiesContent() {
       });
     }
 
-    // Initialize state for this utility if not exists
     if (!utilityStates[utilityId]) {
       setUtilityStates((prev) => ({
         ...prev,
@@ -826,7 +791,6 @@ function UtilitiesContent() {
       });
       toast.info("Submitting code...");
 
-      // Update to verifying state
       setUtilityStates((prev) => ({
         ...prev,
         [utilityId]: {
@@ -1061,7 +1025,7 @@ function UtilitiesContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: selectedUtilityType.name, // "Electricity", etc
+          type: selectedUtilityType.name,
           provider: company.name,
           providerWebsite: company.website,
         }),
@@ -1157,17 +1121,13 @@ function UtilitiesContent() {
 
       if (successCount > 0) {
         toast.success(
-          `Started syncing ${successCount} ${
-            successCount === 1 ? "utility" : "utilities"
-          }`,
+          `Started syncing ${successCount} ${successCount === 1 ? "utility" : "utilities"}`,
         );
       }
 
       if (failCount > 0) {
         toast.error(
-          `Failed to start sync for ${failCount} ${
-            failCount === 1 ? "utility" : "utilities"
-          }`,
+          `Failed to start sync for ${failCount} ${failCount === 1 ? "utility" : "utilities"}`,
         );
       }
     } catch (err: any) {
@@ -1183,12 +1143,13 @@ function UtilitiesContent() {
   // ------------------------------------------------------
 
   if (loading) {
-    return <div className="text-sm text-gray-500">Loading utilities…</div>;
+    return <div className="text-sm text-gray-500 p-4">Loading utilities…</div>;
   }
 
   return (
     <TooltipProvider>
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
+        {/* Action Banner - already responsive */}
         <ActionBanner
           show={stripeReadyToReceive === false && userOwnsAnyUtility}
           variant="danger"
@@ -1200,12 +1161,10 @@ function UtilitiesContent() {
           actionDisabled={stripeCtaLoading}
           onActionClick={async () => {
             if (stripeCtaLoading) return;
-
             try {
               setStripeCtaLoading(true);
-              await ensureOwnerConnectOnboarding(); // redirects
+              await ensureOwnerConnectOnboarding();
             } catch (e) {
-              // If redirect fails, re-enable button
               setStripeCtaLoading(false);
             }
           }}
@@ -1214,24 +1173,27 @@ function UtilitiesContent() {
         </ActionBanner>
 
         {/* Page header */}
-        <div>
+        <div className="px-1">
           <div className="flex items-center gap-3 mb-2">
-            <Link2 className="h-7 w-7" style={{ color: "#008a4b" }} />
+            <Link2
+              className="h-6 w-6 sm:h-7 sm:w-7"
+              style={{ color: "#008a4b" }}
+            />
             <h1
-              className="text-[28px] text-gray-900"
+              className="text-2xl sm:text-[28px] text-gray-900"
               style={{ fontWeight: 600 }}
             >
               Link Utility Accounts
             </h1>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Connect your utility accounts to automatically sync bills and
             payments.
           </p>
         </div>
 
         {/* Utilities table */}
-        <Card className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+        <Card className="hidden md:block rounded-lg border border-gray-200 bg-white overflow-hidden">
           {/* Table header */}
           <div className="grid grid-cols-[2fr_2fr_1fr] gap-4 px-6 py-4 border-b border-gray-200 bg-gray-50">
             <div className="text-xs text-gray-500" style={{ fontWeight: 600 }}>
@@ -1264,9 +1226,7 @@ function UtilitiesContent() {
                       index < utilities.length - 1 && !isExpanded
                         ? "border-b border-gray-200"
                         : ""
-                    } ${
-                      isExpanded ? "bg-gray-50" : "hover:bg-gray-50"
-                    } transition-colors`}
+                    } ${isExpanded ? "bg-gray-50" : "hover:bg-gray-50"} transition-colors`}
                   >
                     {/* Utility name */}
                     <div className="flex items-center gap-3">
@@ -1383,7 +1343,7 @@ function UtilitiesContent() {
                       ) : (
                         /* 3. STANDARD UI (Shows when NOT polling) */
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Provider info */}
+                          {/* Provider info card */}
                           <Card className="rounded-lg border border-gray-200 bg-white p-4">
                             <h3
                               className="text-base text-gray-900 mb-2 text-center"
@@ -1391,7 +1351,6 @@ function UtilitiesContent() {
                             >
                               {utility.provider}
                             </h3>
-
                             <div className="space-y-3 text-sm text-gray-700">
                               <p className="text-center">
                                 Visit the {utility.provider} website{" "}
@@ -1406,7 +1365,6 @@ function UtilitiesContent() {
                                 </a>{" "}
                                 to set up service.
                               </p>
-
                               <div className="text-center py-2 px-3 bg-gray-50 rounded-lg border border-gray-200">
                                 <p
                                   className="text-sm"
@@ -1415,7 +1373,6 @@ function UtilitiesContent() {
                                   Setup Your Account Online
                                 </p>
                               </div>
-
                               <p className="text-center text-xs">
                                 After setting up service, create an online
                                 account on their website. You will need a recent
@@ -1424,7 +1381,7 @@ function UtilitiesContent() {
                             </div>
                           </Card>
 
-                          {/* Link / edit form */}
+                          {/* Link form card */}
                           <Card className="rounded-lg border border-gray-200 bg-white p-4">
                             <h3
                               className="text-base text-gray-900 mb-4 text-center"
@@ -1432,9 +1389,7 @@ function UtilitiesContent() {
                             >
                               Link Utility
                             </h3>
-
                             <div className="space-y-3">
-                              {/* Account holder */}
                               <div>
                                 <Label
                                   className="text-sm text-gray-700 mb-1 block"
@@ -1462,7 +1417,6 @@ function UtilitiesContent() {
                                 />
                               </div>
 
-                              {/* Email */}
                               <div>
                                 <Label
                                   className="text-sm text-gray-700 mb-1 block"
@@ -1496,7 +1450,6 @@ function UtilitiesContent() {
                                 />
                               </div>
 
-                              {/* Password Fields */}
                               <div>
                                 <Label
                                   className="text-sm text-gray-700 mb-1 block"
@@ -1544,7 +1497,7 @@ function UtilitiesContent() {
                                   )}
                                 </Label>
                                 <Input
-                                  type="confirmPassword"
+                                  type="password"
                                   value={
                                     isOwner
                                       ? formData.confirmPassword
@@ -1658,15 +1611,352 @@ function UtilitiesContent() {
           </div>
         </Card>
 
+        {/* MOBILE CARD VIEW - Shown on mobile only */}
+        <div className="md:hidden space-y-3">
+          {utilities.map((utility) => {
+            const Icon = utility.icon;
+            const isExpanded = expandedUtility === utility.id;
+            const isOwner =
+              !!currentUserId && utility.ownerUserId === currentUserId;
+
+            return (
+              <Card
+                key={utility.id}
+                className="rounded-lg border border-gray-200 bg-white overflow-hidden"
+              >
+                {/* Mobile utility card header */}
+                <div
+                  className={`p-4 ${isExpanded ? "bg-gray-50" : ""} transition-colors`}
+                  onClick={() => !isExpanded && handleToggleExpand(utility.id)}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div
+                        className="flex h-12 w-12 items-center justify-center rounded-lg flex-shrink-0"
+                        style={{ backgroundColor: utility.iconBg }}
+                      >
+                        <Icon
+                          className="h-6 w-6"
+                          style={{ color: utility.iconColor }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-gray-900 truncate">
+                          {utility.type}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate">
+                          {utility.provider}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleExpand(utility.id);
+                      }}
+                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                    >
+                      {isExpanded ? (
+                        <ChevronUp className="h-5 w-5 text-gray-600" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-gray-600" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Status badge */}
+                  <div className="flex items-center justify-center py-2">
+                    {utility.isLinked ? (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full border border-green-200">
+                        <LinkIcon
+                          className="h-4 w-4"
+                          style={{ color: "#008a4b" }}
+                        />
+                        <span
+                          className="text-sm font-semibold"
+                          style={{ color: "#008a4b" }}
+                        >
+                          Linked
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 rounded-full border border-red-200">
+                        <Link2 className="h-4 w-4 text-red-500" />
+                        <span className="text-sm font-semibold text-red-500">
+                          Not Linked
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Expanded mobile content */}
+                {isExpanded && (
+                  <div className="p-4 border-t border-gray-200 bg-white space-y-4">
+                    {/* Success banner */}
+                    {utility.isLinked && !syncingUtilities.has(utility.id) && (
+                      <div
+                        className="px-3 py-2.5 rounded-lg flex items-start gap-2"
+                        style={{
+                          backgroundColor: "#D1FAE5",
+                          border: "1px solid #A7F3D0",
+                        }}
+                      >
+                        <CheckCircle2
+                          className="h-5 w-5 flex-shrink-0 mt-0.5"
+                          style={{ color: "#008a4b" }}
+                        />
+                        <p className="text-sm text-gray-900">
+                          This account information has been accepted and we are
+                          able to access your account!
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Linking session or form */}
+                    {syncingUtilities.has(utility.id) &&
+                    utilityStates[utility.id] ? (
+                      <LinkingSession
+                        phase={utilityStates[utility.id].phase}
+                        progressMessage={
+                          utilityStates[utility.id].progressMessage
+                        }
+                        twoFactorCode={utilityStates[utility.id].twoFactorCode}
+                        onTwoFactorChange={(code) =>
+                          setUtilityStates((prev) => ({
+                            ...prev,
+                            [utility.id]: {
+                              ...prev[utility.id],
+                              twoFactorCode: code,
+                            },
+                          }))
+                        }
+                        onTwoFactorSubmit={() =>
+                          handleTwoFactorSubmit(utility.id)
+                        }
+                        lastError={utilityStates[utility.id].lastError}
+                        elapsedTime={utilityStates[utility.id].elapsedTime}
+                      />
+                    ) : (
+                      <>
+                        {/* Provider info */}
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+                          <h4 className="text-sm font-semibold text-gray-900 text-center">
+                            {utility.provider}
+                          </h4>
+                          <p className="text-sm text-gray-700 text-center">
+                            Visit the {utility.provider} website{" "}
+                            <a
+                              href={utility.providerWebsite ?? ""}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#008a4b] hover:underline font-semibold"
+                            >
+                              here
+                            </a>{" "}
+                            to set up service.
+                          </p>
+                          <div className="text-center py-2 px-3 bg-white rounded-lg border border-gray-200">
+                            <p className="text-sm font-semibold">
+                              Setup Your Account Online
+                            </p>
+                          </div>
+                          <p className="text-xs text-gray-600 text-center">
+                            After setting up service, create an online account
+                            on their website.
+                          </p>
+                        </div>
+
+                        {/* Form fields */}
+                        <div className="space-y-3">
+                          <div>
+                            <Label className="text-sm text-gray-700 mb-1.5 block font-medium">
+                              Account Holder Name
+                            </Label>
+                            <Input
+                              type="text"
+                              value={formData.accountHolderName}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  accountHolderName: e.target.value,
+                                }))
+                              }
+                              placeholder="Full name"
+                              className="h-12 rounded-lg border-gray-300 text-base"
+                              disabled={
+                                utility.isLinked &&
+                                editingUtility !== utility.id
+                              }
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-sm text-gray-700 mb-1.5 block font-medium">
+                              Email Address
+                            </Label>
+                            <Input
+                              type="email"
+                              value={
+                                isOwner ? formData.email : "••••••@••••••.com"
+                              }
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  email: e.target.value,
+                                }))
+                              }
+                              placeholder="email@example.com"
+                              className="h-12 rounded-lg border-gray-300 text-base"
+                              disabled={
+                                utility.isLinked &&
+                                (editingUtility !== utility.id || !isOwner)
+                              }
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-sm text-gray-700 mb-1.5 block font-medium">
+                              Password
+                              {editingUtility === utility.id && isOwner && (
+                                <span className="text-gray-500 text-xs ml-1">
+                                  (leave blank to keep current)
+                                </span>
+                              )}
+                            </Label>
+                            <Input
+                              type="password"
+                              value={isOwner ? formData.password : "••••••••"}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  password: e.target.value,
+                                }))
+                              }
+                              placeholder="••••••••"
+                              className="h-12 rounded-lg border-gray-300 text-base"
+                              disabled={
+                                utility.isLinked &&
+                                (editingUtility !== utility.id || !isOwner)
+                              }
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-sm text-gray-700 mb-1.5 block font-medium">
+                              Confirm Password
+                              {editingUtility === utility.id && isOwner && (
+                                <span className="text-gray-500 text-xs ml-1">
+                                  (leave blank to keep current)
+                                </span>
+                              )}
+                            </Label>
+                            <Input
+                              type="password"
+                              value={
+                                isOwner ? formData.confirmPassword : "••••••••"
+                              }
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  confirmPassword: e.target.value,
+                                }))
+                              }
+                              placeholder="••••••••"
+                              className="h-12 rounded-lg border-gray-300 text-base"
+                              disabled={
+                                utility.isLinked &&
+                                (editingUtility !== utility.id || !isOwner)
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="space-y-2 pt-2">
+                          {utility.isLinked && editingUtility !== utility.id ? (
+                            isOwner ? (
+                              <>
+                                <Button
+                                  onClick={() => handleEditUtility(utility.id)}
+                                  variant="outline"
+                                  className="w-full h-12 rounded-lg border-gray-300 text-gray-700 text-base font-semibold"
+                                >
+                                  <Edit2 className="h-5 w-5 mr-2" />
+                                  Edit Account
+                                </Button>
+                                <Button
+                                  onClick={handleUnlinkUtility}
+                                  variant="outline"
+                                  className="w-full h-12 rounded-lg border-red-300 text-red-600 hover:bg-red-50 text-base font-semibold"
+                                >
+                                  <Trash2 className="h-5 w-5 mr-2" />
+                                  Unlink Account
+                                </Button>
+                              </>
+                            ) : (
+                              <div className="text-center italic text-sm text-gray-400 py-3">
+                                Only {utility.owner?.name} can modify this link.
+                              </div>
+                            )
+                          ) : editingUtility === utility.id ? (
+                            <>
+                              <Button
+                                onClick={handleSaveEdit}
+                                className="w-full h-12 rounded-lg bg-[#008a4b] hover:bg-[#00A040] text-base font-semibold"
+                              >
+                                <Save className="h-5 w-5 mr-2" />
+                                Save Changes
+                              </Button>
+                              <Button
+                                onClick={handleCancelEdit}
+                                variant="outline"
+                                className="w-full h-12 rounded-lg border-gray-300 text-gray-700 text-base font-semibold"
+                              >
+                                <X className="h-5 w-5 mr-2" />
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                onClick={handleLinkUtility}
+                                className="w-full h-12 rounded-lg bg-[#008a4b] hover:bg-[#00A040] text-base font-semibold"
+                                disabled={syncingUtilities.has(utility.id)}
+                              >
+                                <Link2 className="h-5 w-5 mr-2" />
+                                Link Account
+                              </Button>
+                              <Button
+                                onClick={() => handleRemoveUtility(utility.id)}
+                                variant="outline"
+                                className="w-full h-12 rounded-lg border-gray-300 text-gray-600 text-base font-semibold"
+                              >
+                                <Trash2 className="h-5 w-5 mr-2" />
+                                Remove
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+
         {/* Action buttons */}
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 onClick={handleSyncAllUtilities}
                 size="lg"
                 variant="outline"
-                className="border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-8"
+                className="w-full sm:w-auto border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-6 sm:px-8 h-12 sm:h-auto text-base"
                 style={{ fontWeight: 600 }}
                 disabled={isSyncing || linkedUtilitiesCount === 0}
               >
@@ -1692,9 +1982,7 @@ function UtilitiesContent() {
               <p>
                 {linkedUtilitiesCount === 0
                   ? "No linked utilities to sync"
-                  : `Sync all ${linkedUtilitiesCount} linked ${
-                      linkedUtilitiesCount === 1 ? "utility" : "utilities"
-                    }`}
+                  : `Sync all ${linkedUtilitiesCount} linked ${linkedUtilitiesCount === 1 ? "utility" : "utilities"}`}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -1702,7 +1990,7 @@ function UtilitiesContent() {
           <Button
             onClick={handleAddUtility}
             size="lg"
-            className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg px-8"
+            className="w-full sm:w-auto bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg px-6 sm:px-8 h-12 sm:h-auto text-base"
             style={{ fontWeight: 600 }}
           >
             <Plus className="h-5 w-5 mr-2" />
@@ -1715,12 +2003,15 @@ function UtilitiesContent() {
           open={showAddUtilityModal}
           onOpenChange={setShowAddUtilityModal}
         >
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl" style={{ fontWeight: 600 }}>
+              <DialogTitle
+                className="text-lg sm:text-xl"
+                style={{ fontWeight: 600 }}
+              >
                 Select Utility Type
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-sm sm:text-base">
                 Choose the type of utility account you want to add.
               </DialogDescription>
             </DialogHeader>
@@ -1731,15 +2022,16 @@ function UtilitiesContent() {
                   <button
                     key={utilityType.name}
                     onClick={() => handleSelectUtilityType(utilityType)}
-                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#008a4b] hover:bg-gray-50 transition-all group"
+                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#008a4b] hover:bg-gray-50 transition-all group active:scale-98"
+                    style={{ minHeight: "60px" }}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="flex h-10 w-10 items-center justify-center rounded-lg"
+                        className="flex h-12 w-12 items-center justify-center rounded-lg"
                         style={{ backgroundColor: utilityType.iconBg }}
                       >
                         <Icon
-                          className="h-5 w-5"
+                          className="h-6 w-6"
                           style={{ color: utilityType.iconColor }}
                         />
                       </div>
@@ -1760,12 +2052,15 @@ function UtilitiesContent() {
 
         {/* Select provider modal */}
         <Dialog open={showCompanyModal} onOpenChange={setShowCompanyModal}>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl" style={{ fontWeight: 600 }}>
+              <DialogTitle
+                className="text-lg sm:text-xl"
+                style={{ fontWeight: 600 }}
+              >
                 Select Provider
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-sm sm:text-base">
                 Choose your {selectedUtilityType?.name} provider from the list.
               </DialogDescription>
             </DialogHeader>
@@ -1775,10 +2070,11 @@ function UtilitiesContent() {
                   <button
                     key={company.name}
                     onClick={() => handleSelectCompany(company)}
-                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#008a4b] hover:bg-gray-50 transition-all group text-left"
+                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-[#008a4b] hover:bg-gray-50 transition-all group text-left active:scale-98"
+                    style={{ minHeight: "60px" }}
                   >
                     <span
-                      className="text-base text-gray-900"
+                      className="text-base text-gray-900 pr-2"
                       style={{ fontWeight: 500 }}
                     >
                       {company.name}

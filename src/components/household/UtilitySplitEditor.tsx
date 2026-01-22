@@ -223,7 +223,7 @@ export function UtilitySplitEditor({
 
   return (
     // ✅ key: min-w-0 + overflow-hidden so nothing can “push” wider than the dialog
-    <div className="flex flex-col w-full h-full min-w-0 overflow-hidden">
+    <div className="flex flex-col w-full h-full min-w-0 overflow-x-hidden">
       {/* Title row */}
       <div className="mb-3 flex-shrink-0">
         <p className="text-sm text-[#111827]" style={{ fontWeight: 700 }}>
@@ -235,7 +235,7 @@ export function UtilitySplitEditor({
       </div>
 
       {/* ✅ main content takes remaining height; NO horizontal overflow */}
-      <div className="flex-1 min-h-0 min-w-0 overflow-hidden">
+      <div className="flex-1 min-h-0 min-w-0 overflow-x-hidden">
         {/* ✅ fixed left column, right column can shrink (minmax(0,1fr)) */}
         <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-6 h-full min-w-0">
           {/* LEFT COLUMN */}

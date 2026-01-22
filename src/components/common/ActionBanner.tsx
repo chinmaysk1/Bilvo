@@ -83,23 +83,23 @@ export function ActionBanner({
         s.container,
         "border-l-4",
         s.border,
-        "p-4 mb-6 flex items-start justify-between rounded-lg",
+        "p-4 mb-6 flex flex-col sm:flex-row items-start justify-between rounded-lg gap-3", // CHANGED: flex-col on mobile
         className,
       ].join(" ")}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 flex-1">
         <Icon className={["w-5 h-5 mt-0.5", s.icon].join(" ")} />
         <p className={s.text}>
           <span className="font-semibold">{title}</span> — {children}
         </p>
       </div>
-
       {isLink ? (
         <a
           href={href}
           className={[
             s.action,
-            "font-medium whitespace-nowrap",
+            "font-medium whitespace-nowrap flex-shrink-0", // CHANGED: Added flex-shrink-0
+            "min-h-[44px] flex items-center", // CHANGED: Added for touch target
             actionDisabled ? "pointer-events-none opacity-50" : "",
           ].join(" ")}
           aria-disabled={actionDisabled}
@@ -113,7 +113,8 @@ export function ActionBanner({
           disabled={actionDisabled}
           className={[
             s.action,
-            "font-medium whitespace-nowrap",
+            "font-medium whitespace-nowrap flex-shrink-0",
+            "min-h-[44px]", // CHANGED: Added for touch target
             actionDisabled ? "opacity-50 cursor-not-allowed" : "",
           ].join(" ")}
         >

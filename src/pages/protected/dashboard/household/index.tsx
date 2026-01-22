@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -61,7 +60,6 @@ import {
   Trash2,
   DollarSign,
   Calendar,
-  CheckCircle2,
   Pencil,
   Droplets,
   Flame,
@@ -147,7 +145,7 @@ type HouseholdPageProps = {}; // still empty props from SSR
 export default function HouseholdPage(_props: HouseholdPageProps) {
   return (
     <DashboardLayout>
-      <main className="mx-auto space-y-8">
+      <main className="mx-auto space-y-6 md:space-y-8">
         <HouseholdContent />
       </main>
     </DashboardLayout>
@@ -174,12 +172,6 @@ function HouseholdContent() {
   const [isParentView] = useState(false); // keep feature-flag for later
   const sponsoredMemberName = "Alex Chen"; // placeholder for parent view
 
-  const [splitRule, setSplitRule] = useState<"equal" | "custom" | "itemized">(
-    "equal",
-  );
-  const [autopayEnabled, setAutopayEnabled] = useState(false);
-  const [defaultPayment] = useState("Bank of America Checking ••••1234"); // still stub for now
-
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [inviteMode, setInviteMode] = useState<"email" | "sms">("email");
@@ -205,13 +197,17 @@ function HouseholdContent() {
   const [activities, setActivities] = useState<DashboardActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Bill Configuration (Figma) – hook “Customize” to show the split editor for that utility
+  // ✅ Bill Configuration (Figma) – hook "Customize" to show the split editor for that utility
   const [editingSplitUtilityId, setEditingSplitUtilityId] = useState<
     string | null
   >(null);
   const editingUtility =
     utilities.find((u) => u.id === editingSplitUtilityId) || null;
   const editingSplit = editingUtility ? utilitySplits[editingUtility.id] : null;
+
+  // billing summary
+  const [nextDueBill, setNextDueBill] = useState<any | null>(null);
+  const [totalOutstanding, setTotalOutstanding] = useState<number>(0);
 
   useEffect(() => {
     const load = async () => {
@@ -246,8 +242,6 @@ function HouseholdContent() {
         setisAdmin(
           householdJson.household.adminId === householdJson.currentUserId,
         );
-
-        setAutopayEnabled(userJson.autopayEnabled ?? false);
 
         // map members from API -> UI members
         const colors = [
@@ -348,6 +342,39 @@ function HouseholdContent() {
           return splits;
         });
 
+        // --- after you set utilities / members etc. in load() ---
+        try {
+          // fetch bills summary (same pattern as bills page)
+          const billsRes = await fetch("/api/bills");
+          const billsJson = await billsRes.json().catch(() => ({ bills: [] }));
+
+          if (billsRes.ok) {
+            const bills: any[] = billsJson.bills || [];
+
+            // compute total outstanding for current user (yourShare)
+            const total = bills
+              .filter((b) => b.myStatus !== "PAID") // treat non-paid as outstanding
+              .reduce((sum, b) => sum + (Number(b.yourShare || 0) || 0), 0);
+
+            // find next due unpaid bill
+            const unpaid = bills
+              .filter((b) => b.myStatus !== "PAID")
+              .filter((b) => b.dueDate)
+              .sort(
+                (a, b) =>
+                  new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+              );
+
+            setTotalOutstanding(total);
+            setNextDueBill(unpaid.length > 0 ? unpaid[0] : null);
+          } else {
+            // tolerate failure silently — leave values as defaults
+            console.warn("Failed to load bills for household page");
+          }
+        } catch (err) {
+          console.error("Error loading bills:", err);
+        }
+
         if (activityRes.ok) {
           setActivities(
             (activitiesJson.activities || []) as DashboardActivity[],
@@ -368,11 +395,57 @@ function HouseholdContent() {
 
   // --- Handlers ---
 
-  const handleSplitChange = (utilityId: string, newSplit: UtilitySplit) => {
-    setUtilitySplits((prev) => ({
-      ...prev,
-      [utilityId]: newSplit,
-    }));
+  // TODO: wire to backend
+  const handleSaveUtilitySplit = async (
+    utilityId: string,
+    newSplit: UtilitySplit,
+  ) => {
+    // optimistic UI update
+    setUtilitySplits((prev) => ({ ...prev, [utilityId]: newSplit }));
+
+    try {
+      const res = await fetch(`/api/utilities/${utilityId}/split`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSplit),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to save split");
+      }
+
+      toast.success("Split saved");
+
+      // after split saved server-side, re-fetch bills to reflect changed shares
+      const billsRes = await fetch("/api/bills");
+      const billsJson = await billsRes.json().catch(() => ({ bills: [] }));
+      if (billsRes.ok) {
+        const bills: any[] = billsJson.bills || [];
+        const total = bills
+          .filter((b) => b.myStatus !== "PAID")
+          .reduce((sum, b) => sum + (Number(b.yourShare || 0) || 0), 0);
+        const unpaid = bills
+          .filter((b) => b.myStatus !== "PAID")
+          .filter((b) => b.dueDate)
+          .sort(
+            (a, b) =>
+              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+          );
+
+        setTotalOutstanding(total);
+        setNextDueBill(unpaid.length > 0 ? unpaid[0] : null);
+
+        // optional: if you store bills in state elsewhere, update there too
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to save split", {
+        description: err.message ?? "Please try again.",
+      });
+
+      // rollback could be implemented here if you keep copies of previous splits
+    }
   };
 
   const handleInviteMember = async () => {
@@ -605,14 +678,14 @@ function HouseholdContent() {
         <DialogContent
           className="
           w-[95vw] max-w-[980px]
-          h-[65vh] max-h-[65vh]
+          h-[90vh] sm:h-[80vh] md:h-[65vh] max-h-[90vh] sm:max-h-[80vh] md:max-h-[65vh]
           overflow-hidden
           overflow-x-hidden
           p-0
           min-w-0
         "
         >
-          <div className="h-full w-full overflow-y-auto p-6 min-w-0">
+          <div className="h-full w-full overflow-y-auto p-4 sm:p-6 min-w-0">
             {editingUtility && editingSplit ? (
               <UtilitySplitEditor
                 utilityId={editingUtility.id}
@@ -626,12 +699,9 @@ function HouseholdContent() {
                   email: m.email,
                 }))}
                 split={editingSplit}
-                onSplitChange={(newSplit) => {
-                  setUtilitySplits((prev) => ({
-                    ...prev,
-                    [editingUtility.id]: newSplit,
-                  }));
-                }}
+                onSplitChange={(newSplit) =>
+                  handleSaveUtilitySplit(editingUtility.id, newSplit)
+                }
                 isAdmin={isAdmin || editingUtility.ownerId === currentUserId}
                 totalBillAmount={100}
                 onClose={() => setEditingSplitUtilityId(null)}
@@ -645,16 +715,19 @@ function HouseholdContent() {
 
       {/* Invite Member Modal */}
       <Dialog open={inviteModalOpen} onOpenChange={setInviteModalOpen}>
-        <DialogContent className="max-w-[480px] rounded-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-[480px] rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-xl" style={{ fontWeight: 600 }}>
+            <DialogTitle
+              className="text-lg sm:text-xl"
+              style={{ fontWeight: 600 }}
+            >
               Invite New Member
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-600">
               Send an invitation to join this household.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-3 sm:py-4">
             <Label
               className="text-sm text-gray-900 mb-2 block"
               style={{ fontWeight: 600 }}
@@ -666,10 +739,10 @@ function HouseholdContent() {
               placeholder="roommate@email.com"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
-              className="h-11 rounded-lg border-gray-300"
+              className="h-10 sm:h-11 rounded-lg border-gray-300"
             />
           </div>
-          <div className="py-4">
+          <div className="py-3 sm:py-4">
             <Label
               className="text-sm text-gray-900 mb-2 block"
               style={{ fontWeight: 600 }}
@@ -681,10 +754,10 @@ function HouseholdContent() {
               placeholder="Full Name"
               value={inviteName}
               onChange={(e) => setInviteName(e.target.value)}
-              className="h-11 rounded-lg border-gray-300"
+              className="h-10 sm:h-11 rounded-lg border-gray-300"
             />
           </div>
-          <div className="py-4">
+          <div className="py-3 sm:py-4">
             <Label
               className="text-sm text-gray-900 mb-2 block"
               style={{ fontWeight: 600 }}
@@ -696,10 +769,10 @@ function HouseholdContent() {
               placeholder="+1 (555) 123-4567"
               value={invitePhone}
               onChange={(e) => setInvitePhone(e.target.value)}
-              className="h-11 rounded-lg border-gray-300"
+              className="h-10 sm:h-11 rounded-lg border-gray-300"
             />
           </div>
-          <div className="py-4">
+          <div className="py-3 sm:py-4">
             <Label
               className="text-sm text-gray-900 mb-2 block"
               style={{ fontWeight: 600 }}
@@ -710,7 +783,10 @@ function HouseholdContent() {
               value={inviteMode}
               onValueChange={(value) => setInviteMode(value as "email" | "sms")}
             >
-              <SelectTrigger className="w-48 h-9" style={{ fontSize: "14px" }}>
+              <SelectTrigger
+                className="w-full sm:w-48 h-9"
+                style={{ fontSize: "14px" }}
+              >
                 <SelectValue placeholder="Invite mode" />
               </SelectTrigger>
               <SelectContent>
@@ -719,11 +795,11 @@ function HouseholdContent() {
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               onClick={() => setInviteModalOpen(false)}
-              className="rounded-lg"
+              className="rounded-lg w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -734,7 +810,7 @@ function HouseholdContent() {
                   ? !inviteEmail
                   : !(inviteName && invitePhone)
               }
-              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
+              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg w-full sm:w-auto"
               style={{ fontWeight: 600 }}
             >
               Send Invitation
@@ -745,16 +821,19 @@ function HouseholdContent() {
 
       {/* Edit Household Info Modal */}
       <Dialog open={editInfoModalOpen} onOpenChange={setEditInfoModalOpen}>
-        <DialogContent className="max-w-[520px] rounded-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-[520px] rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-xl" style={{ fontWeight: 600 }}>
+            <DialogTitle
+              className="text-lg sm:text-xl"
+              style={{ fontWeight: 600 }}
+            >
               Edit Household Info
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-600">
               Update your household name and address.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-3 sm:py-4">
             <div>
               <Label
                 className="text-sm text-gray-900 mb-2 block"
@@ -766,7 +845,7 @@ function HouseholdContent() {
                 type="text"
                 value={householdName}
                 onChange={(e) => setHouseholdName(e.target.value)}
-                className="h-11 rounded-lg border-gray-300"
+                className="h-10 sm:h-11 rounded-lg border-gray-300"
               />
             </div>
             <div>
@@ -780,15 +859,15 @@ function HouseholdContent() {
                 type="text"
                 value={householdAddress}
                 onChange={(e) => setHouseholdAddress(e.target.value)}
-                className="h-11 rounded-lg border-gray-300"
+                className="h-10 sm:h-11 rounded-lg border-gray-300"
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               onClick={() => setEditInfoModalOpen(false)}
-              className="rounded-lg"
+              className="rounded-lg w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -820,7 +899,7 @@ function HouseholdContent() {
                   });
                 }
               }}
-              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
+              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg w-full sm:w-auto"
               style={{ fontWeight: 600 }}
             >
               Save Changes
@@ -834,16 +913,19 @@ function HouseholdContent() {
         open={transferOwnershipModalOpen}
         onOpenChange={setTransferOwnershipModalOpen}
       >
-        <DialogContent className="max-w-[520px] rounded-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-[520px] rounded-lg">
           <DialogHeader>
-            <DialogTitle className="text-xl" style={{ fontWeight: 600 }}>
+            <DialogTitle
+              className="text-lg sm:text-xl"
+              style={{ fontWeight: 600 }}
+            >
               Transfer Household Ownership
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-600">
               Choose a new admin for this household.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-3 sm:py-4">
             {transferStep === "select" && (
               <div>
                 <Label
@@ -858,7 +940,7 @@ function HouseholdContent() {
                   disabled={!isAdmin}
                 >
                   <SelectTrigger
-                    className="w-48 h-9"
+                    className="w-full h-9"
                     style={{ fontSize: "14px" }}
                   >
                     <SelectValue placeholder="Select a member" />
@@ -900,7 +982,7 @@ function HouseholdContent() {
                   placeholder="Type TRANSFER to confirm"
                   value={confirmationText}
                   onChange={(e) => setConfirmationText(e.target.value)}
-                  className="h-11 rounded-lg border-gray-300"
+                  className="h-10 sm:h-11 rounded-lg border-gray-300"
                 />
               </div>
             )}
@@ -919,11 +1001,11 @@ function HouseholdContent() {
               </div>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               onClick={() => setTransferOwnershipModalOpen(false)}
-              className="rounded-lg"
+              className="rounded-lg w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -931,7 +1013,7 @@ function HouseholdContent() {
               <Button
                 onClick={() => setTransferStep("confirm")}
                 disabled={!selectedNewOwner}
-                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg w-full sm:w-auto"
                 style={{ fontWeight: 600 }}
               >
                 Next
@@ -941,7 +1023,7 @@ function HouseholdContent() {
               <Button
                 onClick={handleTransferOwnership}
                 disabled={confirmationText.toUpperCase() !== "TRANSFER"}
-                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg w-full sm:w-auto"
                 style={{ fontWeight: 600 }}
               >
                 Transfer Ownership
@@ -950,7 +1032,7 @@ function HouseholdContent() {
             {transferStep === "success" && (
               <Button
                 onClick={() => setTransferOwnershipModalOpen(false)}
-                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg w-full sm:w-auto"
                 style={{ fontWeight: 600 }}
               >
                 Close
@@ -968,10 +1050,10 @@ function HouseholdContent() {
             borderColor: "#E5E7EB",
           }}
         >
-          <div className="px-4 py-3 flex items-center gap-3">
+          <div className="px-3 sm:px-4 py-3 flex items-center gap-3">
             <ActivityIcon className="h-5 w-5 text-[#6B7280] flex-shrink-0" />
             <p
-              className="text-[13px] text-[#374151]"
+              className="text-xs sm:text-[13px] text-[#374151]"
               style={{ fontWeight: 500 }}
             >
               You are viewing household settings for{" "}
@@ -983,10 +1065,16 @@ function HouseholdContent() {
       )}
 
       {/* Header */}
-      <div className="mt-4">
-        <div className="flex items-center gap-3 mb-2">
-          <Home className="h-7 w-7" style={{ color: "#008a4b" }} />
-          <h1 className="text-[28px] text-gray-900" style={{ fontWeight: 600 }}>
+      <div className="mt-4 px-4 sm:px-0">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+          <Home
+            className="h-6 w-6 sm:h-7 sm:w-7"
+            style={{ color: "#008a4b" }}
+          />
+          <h1
+            className="text-2xl sm:text-[28px] text-gray-900"
+            style={{ fontWeight: 600 }}
+          >
             Household
           </h1>
           {isAdmin && (
@@ -1004,22 +1092,25 @@ function HouseholdContent() {
         </p>
         <div className="flex items-start gap-2 text-sm text-gray-700">
           <MapPin className="h-4 w-4 mt-0.5 text-gray-500 flex-shrink-0" />
-          <span>{householdAddress}</span>
+          <span className="break-words">{householdAddress}</span>
         </div>
       </div>
 
       {/* Household Summary Card */}
-      <Card className="rounded-lg border border-gray-200 bg-white p-6">
-        <div className="flex items-center justify-between mb-6">
+      <Card className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 mx-4 sm:mx-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
               <ActivityIcon className="h-5 w-5 text-indigo-600" />
             </div>
             <div>
-              <h2 className="text-lg text-gray-900" style={{ fontWeight: 600 }}>
+              <h2
+                className="text-base sm:text-lg text-gray-900"
+                style={{ fontWeight: 600 }}
+              >
                 Household Summary
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs sm:text-sm text-gray-500">
                 Overview of your household activity
               </p>
             </div>
@@ -1030,7 +1121,7 @@ function HouseholdContent() {
               size="sm"
               onClick={() => setEditInfoModalOpen(true)}
               disabled={!isAdmin}
-              className="rounded-lg text-sm"
+              className="rounded-lg text-sm w-full sm:w-auto"
               style={{ fontWeight: 600 }}
             >
               <Pencil className="h-3.5 w-3.5 mr-1.5" />
@@ -1039,8 +1130,8 @@ function HouseholdContent() {
           )}
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-4">
+        {/* Stats Grid - responsive from 1 column on mobile to 2 on tablet to 4 on desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Household Invite Code */}
           <div className="p-4 rounded-xl bg-gray-50 border border-gray-200">
             <div className="flex items-center gap-2 mb-2">
@@ -1049,12 +1140,14 @@ function HouseholdContent() {
               </div>
             </div>
             <p
-              className="text-2xl text-gray-900 mb-1"
+              className="text-xl sm:text-2xl text-gray-900 mb-1"
               style={{ fontWeight: 600 }}
             >
               {inviteCode}
             </p>
-            <p className="text-sm text-gray-500">Household Invite Code</p>
+            <p className="text-xs sm:text-sm text-gray-500">
+              Household Invite Code
+            </p>
           </div>
 
           {/* Members */}
@@ -1065,12 +1158,12 @@ function HouseholdContent() {
               </div>
             </div>
             <p
-              className="text-2xl text-gray-900 mb-1"
+              className="text-xl sm:text-2xl text-gray-900 mb-1"
               style={{ fontWeight: 600 }}
             >
               {totalMembers}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500">
               {adminCount} Admin{adminCount !== 1 ? "s" : ""}, {memberCount}{" "}
               Member{memberCount !== 1 ? "s" : ""}
             </p>
@@ -1084,12 +1177,12 @@ function HouseholdContent() {
               </div>
             </div>
             <p
-              className="text-2xl text-gray-900 mb-1"
+              className="text-xl sm:text-2xl text-gray-900 mb-1"
               style={{ fontWeight: 600 }}
             >
               {utilities.length}
             </p>
-            <p className="text-sm text-gray-500">Linked Utilities</p>
+            <p className="text-xs sm:text-sm text-gray-500">Linked Utilities</p>
           </div>
 
           {/* Created Date */}
@@ -1100,22 +1193,24 @@ function HouseholdContent() {
               </div>
             </div>
             <p
-              className="text-2xl text-gray-900 mb-1"
+              className="text-xl sm:text-2xl text-gray-900 mb-1"
               style={{ fontWeight: 600 }}
             >
               {createdAt ? formatMonthYear(createdAt) : "—"}
             </p>
-            <p className="text-sm text-gray-500">Household Created</p>
+            <p className="text-xs sm:text-sm text-gray-500">
+              Household Created
+            </p>
           </div>
         </div>
 
-        <div className="border-t border-gray-200 my-6" />
+        <div className="border-t border-gray-200 my-4 sm:my-6" />
 
         {/* Quick Info */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between py-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 gap-3">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-purple-100 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
                 <CreditCard className="h-4 w-4 text-purple-600" />
               </div>
               <div>
@@ -1123,9 +1218,19 @@ function HouseholdContent() {
                   className="text-sm text-gray-900 mb-1"
                   style={{ fontWeight: 600 }}
                 >
-                  Next Bill Due
+                  Next Due
                 </p>
-                <p className="text-sm text-gray-500">Dec 15, 2024</p>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {nextDueBill
+                    ? `${new Date(nextDueBill.dueDate).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                        },
+                      )} • ${nextDueBill.biller || "Bill"}`
+                    : "—"}
+                </p>
               </div>
             </div>
             <Button
@@ -1133,16 +1238,16 @@ function HouseholdContent() {
               onClick={() =>
                 router.push("/protected/dashboard/bills").catch(() => {})
               }
-              className="text-[#008a4b] hover:text-[#00A040] hover:bg-green-50 text-sm"
+              className="text-[#008a4b] hover:text-[#00A040] hover:bg-green-50 text-sm w-full sm:w-auto justify-start sm:justify-center"
               style={{ fontWeight: 500 }}
             >
               View Bills
             </Button>
           </div>
 
-          <div className="flex items-center justify-between py-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 gap-3">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-green-100 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
                 <DollarSign className="h-4 w-4 text-green-600" />
               </div>
               <div>
@@ -1152,7 +1257,9 @@ function HouseholdContent() {
                 >
                   Total Outstanding
                 </p>
-                <p className="text-sm text-gray-500">$487.32</p>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  ${totalOutstanding.toFixed(2)}
+                </p>
               </div>
             </div>
             <Button
@@ -1160,7 +1267,7 @@ function HouseholdContent() {
               onClick={() =>
                 router.push("/protected/dashboard/payments").catch(() => {})
               }
-              className="text-[#008a4b] hover:text-[#00A040] hover:bg-green-50 text-sm"
+              className="text-[#008a4b] hover:text-[#00A040] hover:bg-green-50 text-sm w-full sm:w-auto justify-start sm:justify-center"
               style={{ fontWeight: 500 }}
             >
               View Payments
@@ -1169,19 +1276,229 @@ function HouseholdContent() {
         </div>
       </Card>
 
+      {/* Members */}
+      <Card className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 mx-4 sm:mx-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <h2
+              className="text-base sm:text-lg text-gray-900"
+              style={{ fontWeight: 600 }}
+            >
+              Members
+            </h2>
+            {!isParentView && smsOnlyCount > 0 && (
+              <Badge
+                className="bg-blue-50 text-blue-700 border-blue-200"
+                style={{ fontWeight: 600 }}
+              >
+                {smsOnlyCount} SMS-Only
+              </Badge>
+            )}
+          </div>
+          {!isParentView && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {isAdmin && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        onClick={handleOpenTransferModal}
+                        className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg text-xs sm:text-sm"
+                        style={{ fontWeight: 600 }}
+                      >
+                        <Repeat className="h-3.5 w-3.5 mr-1.5" />
+                        <span className="hidden sm:inline">
+                          Transfer Ownership
+                        </span>
+                        <span className="sm:hidden">Transfer</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">
+                        Reassign the household admin role to another member
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              <Button
+                size="sm"
+                onClick={() => setInviteModalOpen(true)}
+                disabled={!isAdmin}
+                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg text-xs sm:text-sm"
+                style={{ fontWeight: 600 }}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                Add Member
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          {members.map((member) => (
+            <div
+              key={member.id}
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-lg border border-gray-200 gap-3"
+            >
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <Avatar className="h-10 w-10 flex-shrink-0">
+                  <AvatarFallback
+                    style={{ backgroundColor: member.color, color: "#FFFFFF" }}
+                  >
+                    {member.initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                    <p
+                      className="text-sm text-gray-900 truncate"
+                      style={{ fontWeight: 600 }}
+                    >
+                      {member.name}
+                    </p>
+                    <Badge
+                      variant="secondary"
+                      className="text-xs border-gray-300 flex-shrink-0"
+                      style={{ fontWeight: 600 }}
+                    >
+                      {member.role}
+                    </Badge>
+                    {member.hasAccount ? (
+                      <Badge
+                        variant="default"
+                        className="text-[#008a4b] border-0 text-xs flex-shrink-0"
+                        style={{ fontWeight: 600 }}
+                      >
+                        <UserCheck className="h-3 w-3 mr-1" />
+                        <span className="hidden sm:inline">Account Active</span>
+                        <span className="sm:hidden">Active</span>
+                      </Badge>
+                    ) : (
+                      <Badge
+                        className="bg-blue-50 text-blue-700 border-0 text-xs flex-shrink-0"
+                        style={{ fontWeight: 600 }}
+                      >
+                        <MessageSquare className="h-3 w-3 mr-1" />
+                        SMS Only
+                      </Badge>
+                    )}
+                    {member.autopay && member.hasAccount && (
+                      <Badge
+                        className="bg-[#E9F7EE] text-[#008a4b] border-0 text-xs flex-shrink-0"
+                        style={{ fontWeight: 600 }}
+                      >
+                        Autopay On
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                    {member.hasAccount ? (
+                      <>
+                        <Mail className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">{member.email}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Phone className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">{member.phone}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                {!member.hasAccount && member.phone && !isParentView && (
+                  <div className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg flex-shrink-0">
+                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                    <span
+                      className="text-xs text-blue-700"
+                      style={{ fontWeight: 600 }}
+                    >
+                      Auto SMS Active
+                    </span>
+                  </div>
+                )}
+
+                {isAdmin && !isParentView && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
+                                style={{ fontWeight: 600 }}
+                              >
+                                <Trash2 className="h-4 w-4 sm:mr-1.5" />
+                                <span className="hidden sm:inline">Remove</span>
+                              </Button>
+                            </div>
+                          </TooltipTrigger>
+                          {!isAdmin && (
+                            <TooltipContent>
+                              <p className="text-xs">
+                                Only the household admin can edit or remove
+                                members
+                              </p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      </TooltipProvider>
+                    </AlertDialogTrigger>
+
+                    <AlertDialogContent className="max-w-[95vw] sm:max-w-lg">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Remove Member?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This member will be removed from your household and
+                          will no longer have access to shared bills, payments,
+                          or utilities.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+
+                      <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                        <AlertDialogCancel className="w-full sm:w-auto">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+                          onClick={() => handleRemoveMember(member.id)}
+                        >
+                          Remove Member
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
       {/* ------------------------------------------------------ */}
       {/* ✅ Bill Configuration (Figma) – replaces Utility Accounts */}
       {/* ------------------------------------------------------ */}
-      <Card className="rounded-lg border border-gray-200 bg-white p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg text-gray-900" style={{ fontWeight: 600 }}>
+      <Card className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 mx-4 sm:mx-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
+          <h2
+            className="text-base sm:text-lg text-gray-900"
+            style={{ fontWeight: 600 }}
+          >
             Bill Configuration
           </h2>
 
           {!isParentView && (
             <Button
               size="sm"
-              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
+              className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg w-full sm:w-auto"
               style={{ fontWeight: 600 }}
               onClick={() =>
                 router.push("/protected/dashboard/utilities").catch(() => {})
@@ -1194,7 +1511,7 @@ function HouseholdContent() {
         </div>
 
         {utilities.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
+          <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 sm:p-6 text-sm text-gray-600">
             No services linked yet. Click{" "}
             <span className="font-semibold">Add Service</span> to connect a
             utility.
@@ -1220,10 +1537,10 @@ function HouseholdContent() {
                   key={utility.id}
                   className="rounded-xl border border-gray-200 bg-white shadow-sm"
                 >
-                  <div className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className="flex h-10 w-10 items-center justify-center rounded-lg"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0"
                         style={{ backgroundColor: utility.iconBg }}
                       >
                         <Icon
@@ -1231,23 +1548,23 @@ function HouseholdContent() {
                           style={{ color: utility.iconColor }}
                         />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p
-                          className="text-sm text-gray-900"
+                          className="text-sm text-gray-900 truncate"
                           style={{ fontWeight: 600 }}
                         >
                           {utility.provider}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 truncate">
                           {utility.type} · Account {utility.accountNumber}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-end gap-1.5">
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-200">
-                          <Avatar className="h-5 w-5">
+                    <div className="flex flex-col items-start sm:items-end gap-1.5 w-full sm:w-auto">
+                      <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+                        <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5 bg-gray-50 rounded-full border border-gray-200 flex-1 sm:flex-initial">
+                          <Avatar className="h-5 w-5 flex-shrink-0">
                             <AvatarFallback
                               style={{
                                 backgroundColor: owner?.color || "#9CA3AF",
@@ -1260,12 +1577,12 @@ function HouseholdContent() {
                             </AvatarFallback>
                           </Avatar>
                           <span
-                            className="text-sm text-gray-900"
+                            className="text-sm text-gray-900 truncate"
                             style={{ fontWeight: 600 }}
                           >
                             {owner?.name || "Unknown"}
                           </span>
-                          <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#008a4b]">
+                          <div className="flex items-center justify-center w-4 h-4 rounded-full bg-[#008a4b] flex-shrink-0">
                             <Check
                               className="h-3 w-3 text-white"
                               style={{ strokeWidth: 3 }}
@@ -1280,7 +1597,7 @@ function HouseholdContent() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-8 px-3 text-xs"
+                                  className="h-8 px-3 text-xs flex-shrink-0"
                                   style={{
                                     fontSize: "12px",
                                     fontWeight: 500,
@@ -1293,7 +1610,10 @@ function HouseholdContent() {
                                       .catch(() => {})
                                   }
                                 >
-                                  Manage / Unlink
+                                  <span className="hidden sm:inline">
+                                    Manage / Unlink
+                                  </span>
+                                  <span className="sm:hidden">Manage</span>
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -1307,7 +1627,7 @@ function HouseholdContent() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100">
+                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 flex-shrink-0">
                                   <Lock className="h-4 w-4 text-gray-400" />
                                 </div>
                               </TooltipTrigger>
@@ -1326,11 +1646,11 @@ function HouseholdContent() {
 
                   {split && (
                     <div
-                      className="px-4 pb-4 pt-3 border-t"
+                      className="px-3 sm:px-4 pb-3 sm:pb-4 pt-3 border-t"
                       style={{ borderColor: "#F3F4F6" }}
                     >
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span
                             className="text-sm"
                             style={{
@@ -1359,7 +1679,7 @@ function HouseholdContent() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 px-3 hover:bg-[#008a4b]/10 transition-all"
+                                className="h-8 px-3 hover:bg-[#008a4b]/10 transition-all w-full sm:w-auto"
                                 style={{
                                   fontSize: "12px",
                                   fontWeight: 500,
@@ -1407,9 +1727,9 @@ function HouseholdContent() {
                       </div>
 
                       {/* Pie Chart + Member Breakdown */}
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         {/* Pie Chart */}
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 mx-auto sm:mx-0">
                           <UtilitySplitPie
                             data={includedSplits.map((ms) => {
                               const m = members.find(
@@ -1425,7 +1745,7 @@ function HouseholdContent() {
                         </div>
 
                         {/* Member Breakdown */}
-                        <div className="flex-1 space-y-1.5">
+                        <div className="flex-1 space-y-1.5 w-full">
                           {includedSplits.map((ms) => {
                             const m = members.find(
                               (mm) => mm.id === ms.memberId,
@@ -1435,22 +1755,22 @@ function HouseholdContent() {
                                 key={`${utility.id}-${ms.memberId}`}
                                 className="flex items-center justify-between"
                               >
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
                                   <div
-                                    className="h-2.5 w-2.5 rounded-full"
+                                    className="h-2.5 w-2.5 rounded-full flex-shrink-0"
                                     style={{
                                       backgroundColor: m?.color || "#9CA3AF",
                                     }}
                                   />
                                   <span
-                                    className="text-xs text-gray-700"
+                                    className="text-xs text-gray-700 truncate"
                                     style={{ fontWeight: 500 }}
                                   >
                                     {m?.name || "Unknown"}
                                   </span>
                                 </div>
                                 <span
-                                  className="text-xs text-gray-500"
+                                  className="text-xs text-gray-500 flex-shrink-0 ml-2"
                                   style={{ fontWeight: 600 }}
                                 >
                                   {(ms.value || 0).toFixed(1)}%
@@ -1469,359 +1789,28 @@ function HouseholdContent() {
         )}
       </Card>
 
-      {/* Members */}
-      <Card className="rounded-lg border border-gray-200 bg-white p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg text-gray-900" style={{ fontWeight: 600 }}>
-              Members
-            </h2>
-            {!isParentView && smsOnlyCount > 0 && (
-              <Badge
-                className="bg-blue-50 text-blue-700 border-blue-200"
-                style={{ fontWeight: 600 }}
-              >
-                {smsOnlyCount} SMS-Only
-              </Badge>
-            )}
-          </div>
-          {!isParentView && (
-            <div className="flex items-center gap-2">
-              {isAdmin && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        onClick={handleOpenTransferModal}
-                        className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
-                        style={{ fontWeight: 600 }}
-                      >
-                        <Repeat className="h-3.5 w-3.5 mr-1.5" />
-                        Transfer Ownership
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">
-                        Reassign the household admin role to another member
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-              <Button
-                size="sm"
-                onClick={() => setInviteModalOpen(true)}
-                disabled={!isAdmin}
-                className="bg-[#008a4b] hover:bg-[#00A040] text-white rounded-lg"
-                style={{ fontWeight: 600 }}
-              >
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                Add Member
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-3">
-          {members.map((member) => (
-            <div
-              key={member.id}
-              className="flex items-center justify-between p-4 rounded-lg border border-gray-200"
-            >
-              <div className="flex items-center gap-3 flex-1">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback
-                    style={{ backgroundColor: member.color, color: "#FFFFFF" }}
-                  >
-                    {member.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <p
-                      className="text-sm text-gray-900"
-                      style={{ fontWeight: 600 }}
-                    >
-                      {member.name}
-                    </p>
-                    <Badge
-                      variant="outline"
-                      className="text-xs border-gray-300"
-                      style={{ fontWeight: 600 }}
-                    >
-                      {member.role}
-                    </Badge>
-                    {member.hasAccount ? (
-                      <Badge
-                        className="bg-[#E9F7EE] text-[#008a4b] border-0 text-xs"
-                        style={{ fontWeight: 600 }}
-                      >
-                        <UserCheck className="h-3 w-3 mr-1" />
-                        Account Active
-                      </Badge>
-                    ) : (
-                      <Badge
-                        className="bg-blue-50 text-blue-700 border-0 text-xs"
-                        style={{ fontWeight: 600 }}
-                      >
-                        <MessageSquare className="h-3 w-3 mr-1" />
-                        SMS Only
-                      </Badge>
-                    )}
-                    {member.autopay && member.hasAccount && (
-                      <Badge
-                        className="bg-[#E9F7EE] text-[#008a4b] border-0 text-xs"
-                        style={{ fontWeight: 600 }}
-                      >
-                        Autopay On
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                    {member.hasAccount ? (
-                      <>
-                        <Mail className="h-3 w-3" />
-                        <span>{member.email}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Phone className="h-3 w-3" />
-                        <span>{member.phone}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2">
-                {!member.hasAccount && member.phone && !isParentView && (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                    <span
-                      className="text-xs text-blue-700"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Auto SMS Active
-                    </span>
-                  </div>
-                )}
-
-                {isAdmin && !isParentView && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{ fontWeight: 600 }}
-                              >
-                                <Trash2 className="h-4 w-4 mr-1.5" />
-                                Remove
-                              </Button>
-                            </div>
-                          </TooltipTrigger>
-                          {!isAdmin && (
-                            <TooltipContent>
-                              <p className="text-xs">
-                                Only the household admin can edit or remove
-                                members
-                              </p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
-                    </AlertDialogTrigger>
-
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Remove Member?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This member will be removed from your household and
-                          will no longer have access to shared bills, payments,
-                          or utilities.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          className="bg-red-600 hover:bg-red-700"
-                          onClick={() => handleRemoveMember(member.id)}
-                        >
-                          Remove Member
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Payment Preferences */}
-      <Card className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-lg text-gray-900 mb-6" style={{ fontWeight: 600 }}>
-          Payment Preferences
-        </h2>
-
-        <div className="space-y-6">
-          {/* Default Payment Method */}
-          <div className="flex items-center justify-between pb-6 border-b border-gray-200">
-            <div>
-              <p
-                className="text-sm text-gray-900 mb-1"
-                style={{ fontWeight: 600 }}
-              >
-                Default Payment Method
-              </p>
-              <p className="text-sm text-gray-600">{defaultPayment}</p>
-            </div>
-            {!isParentView && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-lg"
-                style={{ fontWeight: 600 }}
-                onClick={() =>
-                  router.push("/protected/dashboard/payments").catch(() => {})
-                }
-              >
-                Change
-              </Button>
-            )}
-          </div>
-
-          {/* Autopay Toggle */}
-          <div className="flex items-center justify-between pb-6 border-b border-gray-200">
-            <div>
-              <p
-                className="text-sm text-gray-900 mb-1"
-                style={{ fontWeight: 600 }}
-              >
-                Automatic Payments
-              </p>
-              <p className="text-sm text-gray-600">
-                Pay bills automatically when they're due
-              </p>
-            </div>
-            <Switch
-              checked={autopayEnabled}
-              onCheckedChange={async (next) => {
-                // optimistic
-                setAutopayEnabled(next);
-                try {
-                  const res = await fetch("/api/user/me", {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ autopayEnabled: next }),
-                  });
-                  const data = await res.json().catch(() => null);
-                  if (!res.ok) {
-                    throw new Error(data?.error || "Failed to update autopay");
-                  }
-                  toast.success("Autopay updated", {
-                    description: next ? "Autopay enabled" : "Autopay disabled",
-                  });
-                } catch (err: any) {
-                  console.error(err);
-                  setAutopayEnabled(!next);
-                  toast.error("Failed to update autopay", {
-                    description: err.message ?? "Please try again.",
-                  });
-                }
-              }}
-              disabled={!isAdmin || isParentView}
-            />
-          </div>
-
-          {/* Split Rule */}
-          <div>
-            <p
-              className="text-sm text-gray-900 mb-3"
-              style={{ fontWeight: 600 }}
-            >
-              Split Rule
-            </p>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Select
-                      value={splitRule}
-                      onValueChange={(value) =>
-                        setSplitRule(value as "equal" | "custom" | "itemized")
-                      }
-                      disabled={!isAdmin || isParentView}
-                    >
-                      <SelectTrigger className="h-11 rounded-lg border-gray-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="equal">Equal Split</SelectItem>
-                        <SelectItem value="custom">
-                          Custom Percentages
-                        </SelectItem>
-                        <SelectItem value="itemized">
-                          Itemized by Bill
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </TooltipTrigger>
-                {(!isAdmin || isParentView) && (
-                  <TooltipContent>
-                    <p className="text-xs">
-                      {isParentView
-                        ? "Parents can only view payment settings"
-                        : "Only the admin can modify global split rules"}
-                    </p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
-
-            <p className="text-xs text-gray-500 mt-2">
-              Bills are split equally among all {totalMembers} members (
-              {totalMembers > 0 ? (100 / totalMembers).toFixed(1) : "—"}% each)
-            </p>
-          </div>
-
-          {isParentView && (
-            <div className="pt-4 border-t border-gray-200">
-              <p className="text-xs text-gray-600" style={{ lineHeight: 1.5 }}>
-                Parents can only view payment settings. Changes must be made by
-                the household admin.
-              </p>
-            </div>
-          )}
-        </div>
-      </Card>
-
       {/* Recent Activity */}
-      <RecentActivity activities={activities} />
+      <div className="mx-4 sm:mx-0">
+        <RecentActivity activities={activities} />
+      </div>
 
       {/* Danger Zone */}
       {!isParentView && (
-        <Card className="rounded-lg border-2 border-red-200 bg-red-50/30 p-6">
+        <Card className="rounded-lg border-2 border-red-200 bg-red-50/30 p-4 sm:p-6 mx-4 sm:mx-0">
           <div className="flex items-center gap-2 mb-4">
-            <AlertTriangle className="h-5 w-5 text-red-600" />
-            <h2 className="text-lg text-red-900" style={{ fontWeight: 600 }}>
+            <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
+            <h2
+              className="text-base sm:text-lg text-red-900"
+              style={{ fontWeight: 600 }}
+            >
               Danger Zone
             </h2>
           </div>
 
           <div className="space-y-4">
             {/* Leave Household */}
-            <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-red-200">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-lg bg-white border border-red-200 gap-3">
+              <div className="flex-1">
                 <p
                   className="text-sm text-gray-900 mb-1"
                   style={{ fontWeight: 600 }}
@@ -1838,13 +1827,13 @@ function HouseholdContent() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-red-300 text-red-700 hover:bg-red-50 rounded-lg ml-4"
+                    className="border-red-300 text-red-700 hover:bg-red-50 rounded-lg w-full sm:w-auto sm:ml-4"
                     style={{ fontWeight: 600 }}
                   >
                     Leave
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="max-w-[95vw] sm:max-w-lg">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Leave Household?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -1853,11 +1842,13 @@ function HouseholdContent() {
                       if invited.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                    <AlertDialogCancel className="w-full sm:w-auto">
+                      Cancel
+                    </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleLeaveHousehold}
-                      className="bg-red-600 hover:bg-red-700"
+                      className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
                     >
                       Leave Household
                     </AlertDialogAction>
@@ -1868,8 +1859,8 @@ function HouseholdContent() {
 
             {/* Delete Household - Only visible to Admin */}
             {isAdmin && (
-              <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-red-300">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-lg bg-white border border-red-300 gap-3">
+                <div className="flex-1">
                   <p
                     className="text-sm text-red-900 mb-1"
                     style={{ fontWeight: 600 }}
@@ -1886,14 +1877,14 @@ function HouseholdContent() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-red-600 text-red-700 hover:bg-red-100 rounded-lg ml-4"
+                      className="border-red-600 text-red-700 hover:bg-red-100 rounded-lg w-full sm:w-auto sm:ml-4"
                       style={{ fontWeight: 600 }}
                     >
                       <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                       Delete
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="max-w-[95vw] sm:max-w-lg">
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         Delete Household Permanently?
@@ -1904,11 +1895,13 @@ function HouseholdContent() {
                         will be permanently deleted.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                      <AlertDialogCancel className="w-full sm:w-auto">
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDeleteHousehold}
-                        className="bg-red-600 hover:bg-red-700"
+                        className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
                       >
                         Delete Permanently
                       </AlertDialogAction>
@@ -1923,7 +1916,7 @@ function HouseholdContent() {
 
       {/* Parent View Footer Note (hidden for now) */}
       {isParentView && (
-        <div className="bg-[#F9FAFB] border-t border-[#E5E7EB] rounded-lg px-4 py-3">
+        <div className="bg-[#F9FAFB] border-t border-[#E5E7EB] rounded-lg px-4 py-3 mx-4 sm:mx-0">
           <p
             className="text-[12px] text-[#6B7280] text-center"
             style={{ lineHeight: 1.5 }}

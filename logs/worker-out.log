@@ -5126,3 +5126,447 @@ Call log:
 [utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
 [utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmklqoirh0009kz047fgfo8dr → SUCCESS: Bill synced successfully
 [utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmklqoirh0009kz047fgfo8dr
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkm38il30001lh04jiekw0vp provider: Pacific Gas & Electric
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Navigating to PG&E login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.pge.com/myaccount/
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Sign In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for transition (MFA or Dashboard)...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Two-factor authentication required
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] SMS Button clicked. Waiting for code input field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Verifying security code
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Code received. Filling input...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for button to enable...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Confirming...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on Dashboard!
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $181.91 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38il30001lh04jiekw0vp → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkm38il30001lh04jiekw0vp
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkm38ium0003lh04grfuh5f9 provider: City of San Luis Obispo, CA
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → RUNNING: Navigating to SLO Water login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling username field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling password field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Clicking 'View My Bill' button...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on My Bill page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $170.12 | Due: 2/15/2026 | Acct: 055873-000
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38ium0003lh04grfuh5f9 → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkm38ium0003lh04grfuh5f9
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkm38j1c0005lh04b40skapn provider: AT&T Internet
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Navigating to AT&T sign-in
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Entering AT&T User ID
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Entering AT&T password
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] AT&T password filled, clicking Sign in...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=fFJVcDRpMklURSRWKERSNT9tPFZbT1tKIm44VUI2RCdqZ257IUhEenc-eENqNjF8ZD5aKmhlbDlUcTNd
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Navigating to AT&T billing center
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup detected. Dismissing...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup dismissed successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j1c0005lh04b40skapn → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmkm38j1c0005lh04b40skapn
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkm38j9o0007lh046yho5dww provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on dashboard page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Acct scraped: 4110-10159362
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $163.12 | Due: 1/20/2026
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38j9o0007lh046yho5dww → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkm38j9o0007lh046yho5dww
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkm38jjb0009lh04e3nre06q provider: SoCalGas
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $33.53 | Due: 2/9/2026 | Acct: 03871620021
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkm38jjb0009lh04e3nre06q → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkm38jjb0009lh04e3nre06q
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknidsab0001l804gyj5l5v0 provider: Pacific Gas & Electric
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Navigating to PG&E login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.pge.com/myaccount/
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Sign In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for transition (MFA or Dashboard)...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Two-factor authentication required
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] SMS Button clicked. Waiting for code input field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Verifying security code
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Code received. Filling input...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for button to enable...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Confirming...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on Dashboard!
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $0 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsab0001l804gyj5l5v0 → SUCCESS: No balance due - account linked successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmknidsab0001l804gyj5l5v0
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknidshm0003l804n62huyt3 provider: City of San Luis Obispo, CA
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → RUNNING: Navigating to SLO Water login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling username field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling password field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Clicking 'View My Bill' button...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on My Bill page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $170.12 | Due: 2/15/2026 | Acct: 055873-000
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidshm0003l804n62huyt3 → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknidshm0003l804n62huyt3
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknidsrn0005l804ulnridyd provider: AT&T Internet
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Navigating to AT&T sign-in
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Entering AT&T User ID
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Entering AT&T password
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] AT&T password filled, clicking Sign in...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=Ijk0TEcuME1vbUUwdzRkRVg1e1deQ3QxcDZRdklFaEkpNjw-Nzc2XFtyQ2owMit6NmVlT0VTfGJLX2ld
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Navigating to AT&T billing center
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup detected. Dismissing...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup detected. Dismissing...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup dismissed successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup dismissed successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsrn0005l804ulnridyd → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmknidsrn0005l804ulnridyd
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknidsyw0007l804k1z2h0e7 provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on dashboard page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Acct scraped: 4110-10159362
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $163.12 | Due: 1/20/2026
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidsyw0007l804k1z2h0e7 → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknidsyw0007l804k1z2h0e7
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknidt600009l804bi3x4e4z provider: SoCalGas
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $33.53 | Due: 2/9/2026 | Acct: 03871620021
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknidt600009l804bi3x4e4z → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknidt600009l804bi3x4e4z
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknih6wy0004l804lcleut6r provider: Pacific Gas & Electric
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Navigating to PG&E login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.pge.com/myaccount/
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Sign In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for transition (MFA or Dashboard)...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Two-factor authentication required
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] SMS Button clicked. Waiting for code input field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Verifying security code
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Code received. Filling input...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for button to enable...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Confirming...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on Dashboard!
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $0 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih6wy0004l804lcleut6r → SUCCESS: No balance due - account linked successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmknih6wy0004l804lcleut6r
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknih7440006l804t1xxdbj0 provider: City of San Luis Obispo, CA
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → RUNNING: Navigating to SLO Water login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling username field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling password field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Clicking 'View My Bill' button...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on My Bill page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $170.12 | Due: 2/15/2026 | Acct: 055873-000
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7440006l804t1xxdbj0 → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknih7440006l804t1xxdbj0
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknih7b30008l8042p29h8or provider: AT&T Internet
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Navigating to AT&T sign-in
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Entering AT&T User ID
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Entering AT&T password
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] AT&T password filled, clicking Sign in...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=KEpdNDpyRnd9N1dzbk5zKXljaENXKzdsbmhnZ0g5XmcxfC0wNlk1cS4-dVV7ez8zRF4xYF0kX2VYSyI-
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Navigating to AT&T billing center
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7b30008l8042p29h8or → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmknih7b30008l8042p29h8or
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknih7i6000al804g4k4coxs provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on dashboard page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Acct scraped: 4110-10159362
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $163.12 | Due: 1/20/2026
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7i6000al804g4k4coxs → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknih7i6000al804g4k4coxs
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknih7p2000cl804ytt2d87k provider: SoCalGas
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $33.53 | Due: 2/9/2026 | Acct: 03871620021
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknih7p2000cl804ytt2d87k → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknih7p2000cl804ytt2d87k
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknjj7690001i504yse8h10u provider: Pacific Gas & Electric
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Navigating to PG&E login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.pge.com/myaccount/
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Sign In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for transition (MFA or Dashboard)...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Two-factor authentication required
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] SMS Button clicked. Waiting for code input field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Verifying security code
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Code received. Filling input...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for button to enable...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Confirming...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on Dashboard!
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $0 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7690001i504yse8h10u → SUCCESS: No balance due - account linked successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmknjj7690001i504yse8h10u
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknjj7d00003i504fjqx4ati provider: City of San Luis Obispo, CA
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → RUNNING: Navigating to SLO Water login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling username field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling password field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Clicking 'View My Bill' button...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on My Bill page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $170.12 | Due: 2/15/2026 | Acct: 055873-000
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7d00003i504fjqx4ati → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknjj7d00003i504fjqx4ati
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknjj7jk0005i5048plr5uxq provider: AT&T Internet
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Navigating to AT&T sign-in
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Entering AT&T User ID
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Entering AT&T password
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] AT&T password filled, clicking Sign in...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=YUlUKHJKLj9TOEA_XVw_InwrX1NgR3o3R1A4MG53UV98RENvNzZKeXZqQzVIKms4YCpLeDpSNklvcmYp
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Navigating to AT&T billing center
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup detected. Dismissing...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Feedback popup dismissed successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7jk0005i5048plr5uxq → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmknjj7jk0005i5048plr5uxq
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknjj7qx0007i504nrmdahyn provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on dashboard page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Acct scraped: 4110-10159362
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $163.12 | Due: 1/20/2026
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7qx0007i504nrmdahyn → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknjj7qx0007i504nrmdahyn
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmknjj7yu0009i504qy9ubw1z provider: SoCalGas
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $33.53 | Due: 2/9/2026 | Acct: 03871620021
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmknjj7yu0009i504qy9ubw1z → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmknjj7yu0009i504qy9ubw1z
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.

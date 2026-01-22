@@ -84,7 +84,6 @@ export default function BilvoSummaryCards({
 }: BilvoSummaryCardsProps) {
   const router = useRouter();
 
-  // shared “bills summary” logic from hook
   const {
     totalBillsCount,
     paidBillsCount,
@@ -102,17 +101,22 @@ export default function BilvoSummaryCards({
 
   const memberCount = household.members.length;
 
+  // Shared card styles
+  const cardBaseClass =
+    "rounded-xl border flex flex-col cursor-pointer transition-all duration-300 group bg-white relative w-full z-0 hover:z-20";
+  const cardStyle = {
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+    padding: "16px",
+    borderColor: "#E5E7EB",
+  };
+
   return (
+    // CHANGED: Single column on mobile (grid-cols-1), 3 columns on md and up
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
       {/* Household Total Card */}
       <div
-        className="rounded-xl border flex flex-col cursor-pointer transition-all duration-300 group bg-white relative w-full z-0 hover:z-20"
-        style={{
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          padding: "16px",
-          height: "180px",
-          borderColor: "#E5E7EB",
-        }}
+        className={cardBaseClass}
+        style={{ ...cardStyle, minHeight: "160px" }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "translateY(-2px)";
           e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
@@ -136,7 +140,7 @@ export default function BilvoSummaryCards({
         >
           <h3
             style={{
-              fontSize: "13px",
+              fontSize: "14px", // CHANGED: from 13px for better mobile readability
               fontWeight: 600,
               color: "#6B7280",
               lineHeight: "1.4",
@@ -150,7 +154,7 @@ export default function BilvoSummaryCards({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info
-                  className="h-3.5 w-3.5 cursor-help"
+                  className="h-4 w-4 cursor-help" // CHANGED: from 3.5 to 4 for better touch target
                   style={{ color: "#9CA3AF" }}
                 />
               </TooltipTrigger>
@@ -178,7 +182,7 @@ export default function BilvoSummaryCards({
           >
             <span
               style={{
-                fontSize: "30px",
+                fontSize: "32px", // CHANGED: from 30px for better mobile visibility
                 fontWeight: 700,
                 color: "#111827",
                 lineHeight: "1.2",
@@ -196,14 +200,14 @@ export default function BilvoSummaryCards({
               {household.members.slice(0, 3).map((member, index) => (
                 <Avatar
                   key={member.id}
-                  className="h-5 w-5 border-2 border-white"
+                  className="h-6 w-6 border-2 border-white" // CHANGED: from h-5 w-5 for better mobile visibility
                 >
                   <AvatarFallback
                     style={{
                       backgroundColor:
                         avatarColors[index % avatarColors.length],
                       color: "white",
-                      fontSize: "9px",
+                      fontSize: "10px", // CHANGED: from 9px
                       fontWeight: 600,
                     }}
                   >
@@ -214,7 +218,7 @@ export default function BilvoSummaryCards({
             </div>
             <span
               style={{
-                fontSize: "12px",
+                fontSize: "13px", // CHANGED: from 12px
                 fontWeight: 500,
                 color: "#6B7280",
                 fontFamily: "Inter, sans-serif",
@@ -227,11 +231,11 @@ export default function BilvoSummaryCards({
 
         <div
           className="flex items-center justify-between mt-auto pt-2.5 group-hover:gap-2 transition-all"
-          style={{ borderTop: "1px solid #F3F4F6" }}
+          style={{ borderTop: "1px solid #F3F4F6", minHeight: "44px" }} // CHANGED: Added min height for touch target
         >
           <span
             style={{
-              fontSize: "12px",
+              fontSize: "13px", // CHANGED: from 12px
               fontWeight: 500,
               color: "#008a4b",
               fontFamily: "Inter, sans-serif",
@@ -240,7 +244,7 @@ export default function BilvoSummaryCards({
             View Household
           </span>
           <ArrowRight
-            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+            className="h-4 w-4 transition-transform group-hover:translate-x-1" // CHANGED: from 3.5
             style={{ color: "#008a4b" }}
           />
         </div>
@@ -248,13 +252,8 @@ export default function BilvoSummaryCards({
 
       {/* Next Autopay Card */}
       <div
-        className="rounded-xl border flex flex-col cursor-pointer transition-all duration-300 group bg-white relative w-full z-0 hover:z-20"
-        style={{
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          padding: "16px",
-          height: "180px",
-          borderColor: "#E5E7EB",
-        }}
+        className={cardBaseClass}
+        style={{ ...cardStyle, minHeight: "160px" }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "translateY(-2px)";
           e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
@@ -278,7 +277,7 @@ export default function BilvoSummaryCards({
         >
           <h3
             style={{
-              fontSize: "13px",
+              fontSize: "14px",
               fontWeight: 600,
               color: "#6B7280",
               lineHeight: "1.4",
@@ -292,7 +291,7 @@ export default function BilvoSummaryCards({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info
-                  className="h-3.5 w-3.5 cursor-help"
+                  className="h-4 w-4 cursor-help"
                   style={{ color: "#9CA3AF" }}
                 />
               </TooltipTrigger>
@@ -322,7 +321,7 @@ export default function BilvoSummaryCards({
               >
                 <span
                   style={{
-                    fontSize: "30px",
+                    fontSize: "32px",
                     fontWeight: 700,
                     color: "#111827",
                     lineHeight: "1.2",
@@ -336,10 +335,10 @@ export default function BilvoSummaryCards({
               </div>
 
               <div className="flex items-center gap-2">
-                <Clock className="h-3.5 w-3.5" style={{ color: "#1E40AF" }} />
+                <Clock className="h-4 w-4" style={{ color: "#1E40AF" }} />
                 <span
                   style={{
-                    fontSize: "12px",
+                    fontSize: "13px",
                     fontWeight: 500,
                     color: "#6B7280",
                     fontFamily: "Inter, sans-serif",
@@ -352,12 +351,12 @@ export default function BilvoSummaryCards({
           ) : (
             <div className="text-center py-3">
               <DollarSign
-                className="h-7 w-7 mx-auto mb-2"
+                className="h-8 w-8 mx-auto mb-2" // CHANGED: from h-7 w-7
                 style={{ color: "#D1D5DB" }}
               />
               <p
                 style={{
-                  fontSize: "12px",
+                  fontSize: "13px",
                   fontWeight: 500,
                   color: "#9CA3AF",
                   fontFamily: "Inter, sans-serif",
@@ -371,11 +370,11 @@ export default function BilvoSummaryCards({
 
         <div
           className="flex items-center justify-between mt-auto pt-2.5 group-hover:gap-2 transition-all"
-          style={{ borderTop: "1px solid #F3F4F6" }}
+          style={{ borderTop: "1px solid #F3F4F6", minHeight: "44px" }}
         >
           <span
             style={{
-              fontSize: "12px",
+              fontSize: "13px",
               fontWeight: 500,
               color: "#008a4b",
               fontFamily: "Inter, sans-serif",
@@ -384,7 +383,7 @@ export default function BilvoSummaryCards({
             Payment Settings
           </span>
           <ArrowRight
-            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+            className="h-4 w-4 transition-transform group-hover:translate-x-1"
             style={{ color: "#008a4b" }}
           />
         </div>
@@ -392,13 +391,8 @@ export default function BilvoSummaryCards({
 
       {/* Your Share Card */}
       <div
-        className="rounded-xl border flex flex-col cursor-pointer transition-all duration-300 group bg-white relative w-full z-0 hover:z-20"
-        style={{
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          padding: "16px",
-          height: "180px",
-          borderColor: "#E5E7EB",
-        }}
+        className={cardBaseClass}
+        style={{ ...cardStyle, minHeight: "160px" }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "translateY(-2px)";
           e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
@@ -422,7 +416,7 @@ export default function BilvoSummaryCards({
         >
           <h3
             style={{
-              fontSize: "13px",
+              fontSize: "14px",
               fontWeight: 600,
               color: "#6B7280",
               lineHeight: "1.4",
@@ -436,7 +430,7 @@ export default function BilvoSummaryCards({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info
-                  className="h-3.5 w-3.5 cursor-help"
+                  className="h-4 w-4 cursor-help"
                   style={{ color: "#9CA3AF" }}
                 />
               </TooltipTrigger>
@@ -463,7 +457,7 @@ export default function BilvoSummaryCards({
           >
             <span
               style={{
-                fontSize: "30px",
+                fontSize: "32px",
                 fontWeight: 700,
                 color: "#111827",
                 lineHeight: "1.2",
@@ -476,15 +470,14 @@ export default function BilvoSummaryCards({
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {" "}
+            {/* CHANGED: Added flex-wrap */}
             <div className="flex items-center gap-1.5">
-              <CheckCircle2
-                className="h-3.5 w-3.5"
-                style={{ color: "#059669" }}
-              />
+              <CheckCircle2 className="h-4 w-4" style={{ color: "#059669" }} />
               <span
                 style={{
-                  fontSize: "12px",
+                  fontSize: "13px",
                   fontWeight: 500,
                   color: "#6B7280",
                   fontFamily: "Inter, sans-serif",
@@ -493,13 +486,12 @@ export default function BilvoSummaryCards({
                 {paidBillsCount} paid
               </span>
             </div>
-
             {remainingBalance > 0 && (
               <>
                 <span style={{ color: "#D1D5DB", fontSize: "12px" }}>•</span>
                 <span
                   style={{
-                    fontSize: "12px",
+                    fontSize: "13px",
                     fontWeight: 500,
                     color: "#DC2626",
                     fontFamily: "Inter, sans-serif",
@@ -510,19 +502,15 @@ export default function BilvoSummaryCards({
               </>
             )}
           </div>
-
-          {/* optional: use nextDueBill from hook somewhere if you want */}
-          {/* Example: “Next due {formatMonthDay(nextDueBill.dueDate)}” */}
-          {/* nextDueBill is available now via hook */}
         </div>
 
         <div
           className="flex items-center justify-between mt-auto pt-2.5 group-hover:gap-2 transition-all"
-          style={{ borderTop: "1px solid #F3F4F6" }}
+          style={{ borderTop: "1px solid #F3F4F6", minHeight: "44px" }}
         >
           <span
             style={{
-              fontSize: "12px",
+              fontSize: "13px",
               fontWeight: 500,
               color: "#008a4b",
               fontFamily: "Inter, sans-serif",
@@ -531,7 +519,7 @@ export default function BilvoSummaryCards({
             View Details
           </span>
           <ArrowRight
-            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+            className="h-4 w-4 transition-transform group-hover:translate-x-1"
             style={{ color: "#008a4b" }}
           />
         </div>

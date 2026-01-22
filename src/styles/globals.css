@@ -25,7 +25,7 @@
   --bilvo-green-gradient: linear-gradient(180deg, #00b948 0%, #00a040 100%);
 
   /* Additional Brand Colors */
-  --success: #00b948;
+  --success: #008a4b;
   --error: #eb5757;
   --link: #2d9cdb;
   --panel-bg: #f9fafb;
@@ -45,7 +45,7 @@
   /* Semantic Colors */
   --popover: #ffffff;
   --popover-foreground: #111827;
-  --primary: #00b948;
+  --primary: #008a4b;
   --primary-foreground: #ffffff;
   --secondary: #f3f4f6;
   --secondary-foreground: #111827;

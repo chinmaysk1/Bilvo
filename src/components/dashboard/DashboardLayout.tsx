@@ -14,7 +14,6 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-
   const [household, setHousehold] = useState<HouseholdSummary | null>(null);
   const [householdLoading, setHouseholdLoading] = useState(true);
 
@@ -43,7 +42,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       setHouseholdLoading(false);
       return;
     }
-
     const loadHousehold = async () => {
       try {
         const res = await fetch("/api/household/data");
@@ -53,7 +51,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           return;
         }
         const data = await res.json();
-
         const { household: h, currentUserId } = data as {
           household: {
             id: string;
@@ -63,7 +60,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           };
           currentUserId: string;
         };
-
         setHousehold({
           id: h.id,
           name: h.name,
@@ -77,14 +73,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         setHouseholdLoading(false);
       }
     };
-
     loadHousehold();
   }, [status]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-row">
-      {/* MAIN CONTENT (left side) */}
-      <div className="order-1 flex-1 flex flex-col min-w-0">
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+      {/* MAIN CONTENT */}
+      <div className="flex-1 flex flex-col min-w-0 order-1">
         {/* Top Header */}
         <BilvoHeader
           userName={session?.user?.name}
@@ -97,7 +92,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         />
 
         {/* Page content (scrollable area) */}
-        <main className="flex-1 px-6 lg:px-8 py-6 lg:mr-[50px] lg:ml-[50px]">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:mr-[50px] lg:ml-[50px]">
           {children}
         </main>
 
@@ -105,8 +100,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <BilvoFooter />
       </div>
 
-      {/* SIDEBAR (right side) */}
-      <div className="w-[180px] shrink-0 order-2">
+      {/* SIDEBAR - Keep as is since it's already mobile friendly */}
+      <div className="w-full lg:w-[180px] shrink-0 order-2">
         <BilvoSidebar />
       </div>
     </div>

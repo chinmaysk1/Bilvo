@@ -72,8 +72,8 @@ export default function RecentActivity({ activities }: RecentActivityProps) {
 
       {/* Header */}
       <div
-        className="px-6 flex items-center justify-between"
-        style={{ backgroundColor: "#F9FAFB", height: "40px" }}
+        className="px-4 sm:px-6 flex items-center justify-between" // CHANGED: px-4 on mobile
+        style={{ backgroundColor: "#F9FAFB", height: "44px" }} // CHANGED: from 40px for touch target
       >
         <h2
           style={{
@@ -107,7 +107,8 @@ export default function RecentActivity({ activities }: RecentActivityProps) {
       </div>
 
       {/* Activity List */}
-      <div className="px-6 py-2">
+      <div className="px-4 sm:px-6 py-2">
+        {" "}
         {recentActivities.length === 0 ? (
           <div className="text-center py-8">
             <Clock
@@ -137,14 +138,14 @@ export default function RecentActivity({ activities }: RecentActivityProps) {
               return (
                 <div
                   key={activity.id}
-                  className="flex gap-2.5 py-2.5 transition-all duration-200"
+                  className="flex gap-2.5 py-3 transition-all duration-200" // CHANGED: py-3 from py-2.5
                   style={{
                     backgroundColor: "transparent",
                     borderBottom:
                       index < recentActivities.length - 1
                         ? "1px solid #F3F4F6"
                         : "none",
-                    minHeight: "36px",
+                    minHeight: "44px", // CHANGED: Added for touch target
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = "#F9FAFB";

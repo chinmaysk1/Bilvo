@@ -50,6 +50,7 @@ model User {
   stripeCustomerId                   String?           @unique
   name                               String?
   email                              String?           @unique
+  phone                              String?           @unique
   emailVerified                      DateTime?
   image                              String?
   householdId                        String?

@@ -25,19 +25,19 @@ export function BilvoHeader({
   onLogoClick,
   householdName,
   householdAddress,
-  isHouseholdAdmin,
 }: BilvoHeaderProps) {
   return (
     <header
       className="border-b bg-white"
       style={{ borderColor: "var(--border-light)" }}
     >
-      <div className="flex h-16 items-center justify-between px-8">
-        {/* Logo and Household */}
-        <div className="flex items-center gap-6">
+      <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8 gap-3">
+        {/* Left: Logo + Household */}
+        <div className="flex items-center gap-3 sm:gap-6 min-w-0">
+          {/* Logo */}
           <button
             onClick={onLogoClick}
-            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity cursor-pointer"
+            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity cursor-pointer shrink-0"
           >
             <div
               className="flex h-9 w-9 items-center justify-center rounded-lg"
@@ -50,7 +50,10 @@ export function BilvoHeader({
                 B
               </span>
             </div>
+
+            {/* Hide wordmark on very small screens */}
             <span
+              className="hidden xs:inline"
               style={{
                 fontSize: "20px",
                 fontWeight: 600,
@@ -62,10 +65,13 @@ export function BilvoHeader({
             </span>
           </button>
 
+          {/* Household dropdown - allow shrinking + truncation */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all hover:bg-gray-50">
+              <button className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all hover:bg-gray-50 min-w-0">
+                {/* Hide label on mobile */}
                 <span
+                  className="hidden sm:inline"
                   style={{
                     fontSize: "14px",
                     fontWeight: 500,
@@ -74,31 +80,36 @@ export function BilvoHeader({
                 >
                   Household:
                 </span>
+
                 <span
+                  className="truncate max-w-[120px] sm:max-w-[220px] md:max-w-[320px]"
                   style={{
                     fontSize: "14px",
                     fontWeight: 500,
                     color: "var(--gray-900)",
                   }}
+                  title={householdName}
                 >
-                  {householdName}
+                  {householdName || "—"}
                 </span>
+
                 <ChevronDown
-                  className="h-4 w-4"
+                  className="h-4 w-4 shrink-0"
                   style={{ color: "var(--gray-400)" }}
                 />
               </button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent className="w-72" align="start">
               <DropdownMenuItem className="flex items-center justify-between">
-                <span>
-                  {householdName}{" "}
+                <span className="min-w-0">
+                  <span className="font-medium">{householdName || "—"}</span>{" "}
                   <span className="text-xs text-gray-500">
-                    ({householdAddress})
+                    ({householdAddress || "—"})
                   </span>
                 </span>
                 <CheckCircle2
-                  className="h-4 w-4"
+                  className="h-4 w-4 shrink-0"
                   style={{ color: "var(--bilvo-green)" }}
                 />
               </DropdownMenuItem>
@@ -110,15 +121,12 @@ export function BilvoHeader({
           </DropdownMenu>
         </div>
 
-        {/* Right Side - Profile */}
-        <div className="flex items-center gap-4">
+        {/* Right: Profile */}
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors">
-                <Avatar
-                  className="h-9 w-9"
-                  style={{ backgroundColor: "#FBBF24" }}
-                >
+              <button className="flex items-center gap-2 sm:gap-3 px-4 sm:px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors ">
+                <Avatar className="h-9 w-9">
                   <AvatarFallback
                     className="text-white"
                     style={{
@@ -130,21 +138,27 @@ export function BilvoHeader({
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
+
+                {/* Hide user name on mobile to prevent overflow */}
                 <span
+                  className="hidden sm:inline max-w-[160px] truncate"
                   style={{
                     fontSize: "14px",
                     fontWeight: 500,
                     color: "var(--gray-900)",
                   }}
+                  title={userName || ""}
                 >
                   {userName}
                 </span>
+
                 <ChevronDown
                   className="h-4 w-4"
                   style={{ color: "var(--gray-400)" }}
                 />
               </button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuSeparator />

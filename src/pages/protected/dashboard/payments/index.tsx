@@ -258,11 +258,11 @@ export default function PaymentsPage({
 
   return (
     <DashboardLayout>
-      <main className="mx-auto px-8 py-3 space-y-3">
+      <main className="mx-auto px-4 sm:px-8 py-3 space-y-3">
         {/* Header */}
         <div className="pb-1 flex items-center justify-between">
           <h1
-            className="text-[18px] text-[#111827]"
+            className="text-xl sm:text-lg text-[#111827]"
             style={{ fontWeight: 600, lineHeight: 1.2 }}
           >
             Payment Settings
@@ -274,65 +274,64 @@ export default function PaymentsPage({
           className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
         >
-          <div className="px-6 py-4">
+          <div className="px-4 sm:px-6 py-4">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="h-4 w-4 text-[#6B7280]" />
+              <AlertCircle className="h-4 w-4 text-[#6B7280] flex-shrink-0" />
               <h3
-                className="text-[16px] text-[#111827]"
+                className="text-sm sm:text-base text-[#111827]"
                 style={{ fontWeight: 600, lineHeight: 1.3 }}
               >
                 Payment Priority Order
               </h3>
               {isSavingOrder && (
-                <span className="text-[12px] text-[#6B7280] ml-2">
-                  Saving...
-                </span>
+                <span className="text-xs text-[#6B7280] ml-2">Saving...</span>
               )}
             </div>
 
-            <p className="text-[14px] text-[#6B7280] mb-3">
+            <p className="text-sm text-[#6B7280] mb-3">
               Drag to reorder your payment methods. Bills will be charged in the
               following order:
             </p>
 
             {/* Priority Flow */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
               {priorityItems.map((method, index) => (
                 <div
                   key={method.id}
                   className="flex items-center gap-2 flex-shrink-0"
                 >
                   <div
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
                       index === 0
                         ? "bg-[#ECFDF5] border-[#BBF7D0]"
                         : "bg-[#F9FAFB] border-[#E5E7EB]"
                     }`}
+                    style={{ minHeight: "44px" }}
                   >
                     <div
-                      className="flex items-center justify-center h-5 w-5 rounded-full flex-shrink-0"
+                      className="flex items-center justify-center h-6 w-6 rounded-full flex-shrink-0"
                       style={{
                         backgroundColor: index === 0 ? "#008a4b" : "#E5E7EB",
                         color: index === 0 ? "#FFFFFF" : "#6B7280",
                         fontWeight: 600,
-                        fontSize: "11px",
+                        fontSize: "12px",
                       }}
                     >
                       {index + 1}
                     </div>
 
                     <div
-                      className="flex h-5 w-5 items-center justify-center rounded"
+                      className="flex h-6 w-6 items-center justify-center rounded flex-shrink-0"
                       style={{ backgroundColor: method.iconBg }}
                     >
                       <method.icon
-                        className="h-3 w-3"
+                        className="h-3.5 w-3.5"
                         style={{ color: method.iconColor }}
                       />
                     </div>
 
                     <span
-                      className={`text-[13px] ${
+                      className={`text-sm whitespace-nowrap ${
                         index === 0 ? "text-[#111827]" : "text-[#6B7280]"
                       }`}
                       style={{ fontWeight: index === 0 ? 600 : 500 }}
@@ -355,9 +354,9 @@ export default function PaymentsPage({
           className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
         >
-          <div className="px-6 py-4">
+          <div className="px-4 sm:px-6 py-4">
             <h2
-              className="text-[16px] text-[#111827] mb-4"
+              className="text-sm sm:text-base text-[#111827] mb-4"
               style={{ fontWeight: 600, lineHeight: 1.3 }}
             >
               Pay With
@@ -366,7 +365,7 @@ export default function PaymentsPage({
             <div className="space-y-3">
               {payWithRows.length === 0 ? (
                 <div className="py-8 text-center">
-                  <p className="text-[13px] text-[#6B7280]">
+                  <p className="text-sm text-[#6B7280]">
                     Add a payment method to enable payments.
                   </p>
                 </div>
@@ -396,19 +395,20 @@ export default function PaymentsPage({
               <button
                 onClick={() => setShowAddModal(true)}
                 className="w-full flex items-center justify-between p-4 rounded-lg border-2 border-dashed border-[#E5E7EB] bg-white hover:border-[#16A34A] hover:bg-[#ECFDF5]/30 transition-all group"
+                style={{ minHeight: "64px" }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F9FAFB] group-hover:bg-[#ECFDF5] transition-colors">
-                    <Plus className="h-4 w-4 text-[#9CA3AF] group-hover:text-[#16A34A] transition-colors" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#F9FAFB] group-hover:bg-[#ECFDF5] transition-colors">
+                    <Plus className="h-5 w-5 text-[#9CA3AF] group-hover:text-[#16A34A] transition-colors" />
                   </div>
                   <div className="text-left">
                     <h3
-                      className="text-[14px] text-[#111827] group-hover:text-[#16A34A] transition-colors mb-0.5"
+                      className="text-sm sm:text-base text-[#111827] group-hover:text-[#16A34A] transition-colors mb-0.5"
                       style={{ fontWeight: 600 }}
                     >
                       Add Payment Method
                     </h3>
-                    <p className="text-[12px] text-[#6B7280]">
+                    <p className="text-xs sm:text-sm text-[#6B7280]">
                       Link bank account or credit card
                     </p>
                   </div>
@@ -423,222 +423,230 @@ export default function PaymentsPage({
           className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
         >
-          <div className="px-6 py-4">
+          <div className="px-4 sm:px-6 py-4">
             <h2
-              className="text-[16px] text-[#111827] mb-2"
+              className="text-sm sm:text-base text-[#111827] mb-2"
               style={{ fontWeight: 600, lineHeight: 1.3 }}
             >
               Receiving Money (My Wallet)
             </h2>
-            <p className="text-[13px] text-[#6B7280] mb-4">
+            <p className="text-xs sm:text-sm text-[#6B7280] mb-4">
               Set up how you want to receive payments from roommates
             </p>
 
             <div className="space-y-3">
               {/* Bank Deposit row — UI-only placeholder */}
               <div
-                className="flex items-center gap-3 p-4 rounded-lg border border-[#FEF3C7] bg-[#FFFBEB]"
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 rounded-lg border border-[#FEF3C7] bg-[#FFFBEB]"
                 style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
               >
                 <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0"
                   style={{ backgroundColor: "#EFF6FF" }}
                 >
-                  <Building2 className="h-4 w-4" style={{ color: "#3B82F6" }} />
+                  <Building2 className="h-5 w-5" style={{ color: "#3B82F6" }} />
                 </div>
 
-                <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-shrink-0" style={{ width: "100px" }}>
-                    <h3
-                      className="text-[14px] text-[#111827]"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Bank Deposit
-                    </h3>
-                    <p className="text-[11px] text-[#6B7280]">(Stripe)</p>
-                  </div>
+                <div className="flex-1 w-full sm:w-auto">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div className="flex-shrink-0">
+                      <h3
+                        className="text-sm sm:text-base text-[#111827]"
+                        style={{ fontWeight: 600 }}
+                      >
+                        Bank Deposit
+                      </h3>
+                      <p className="text-xs text-[#6B7280]">(Stripe)</p>
+                    </div>
 
-                  <div className="flex-1 flex items-center gap-3">
-                    <div className="flex-1">
+                    <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-3">
                       <p
-                        className="text-[13px] text-[#92400E]"
+                        className="text-sm text-[#92400E] flex-1"
                         style={{ fontWeight: 500 }}
                       >
                         Verify identity to enable payouts
                       </p>
-                    </div>
 
-                    {stripeReadyToReceive === true ? (
-                      <VerifiedBadge />
-                    ) : (
-                      <button
-                        type="button"
-                        disabled={
-                          utilityOwnershipLoading ||
-                          stripeStatusLoading ||
-                          !userOwnsAnyUtility
-                        }
-                        className={[
-                          "h-9 px-4 text-[13px] rounded-lg",
-                          utilityOwnershipLoading ||
-                          stripeStatusLoading ||
-                          !userOwnsAnyUtility
-                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                            : "bg-[#3B82F6] hover:bg-[#2563EB] text-white",
-                        ].join(" ")}
-                        style={{ fontWeight: 600 }}
-                        onClick={async () => {
-                          if (
+                      {stripeReadyToReceive === true ? (
+                        <VerifiedBadge />
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={
                             utilityOwnershipLoading ||
                             stripeStatusLoading ||
                             !userOwnsAnyUtility
-                          )
-                            return;
-                          await ensureOwnerConnectOnboarding(); // redirect
-                        }}
-                        title={
-                          !userOwnsAnyUtility
-                            ? "Only utility owners can enable payouts."
-                            : "Verify your identity to enable payouts."
-                        }
-                      >
-                        {utilityOwnershipLoading || stripeStatusLoading
-                          ? "Checking..."
-                          : "Verify Now"}
-                      </button>
-                    )}
+                          }
+                          className={[
+                            "h-11 px-4 text-sm rounded-lg w-full sm:w-auto whitespace-nowrap",
+                            utilityOwnershipLoading ||
+                            stripeStatusLoading ||
+                            !userOwnsAnyUtility
+                              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                              : "bg-[#3B82F6] hover:bg-[#2563EB] text-white",
+                          ].join(" ")}
+                          style={{ fontWeight: 600 }}
+                          onClick={async () => {
+                            if (
+                              utilityOwnershipLoading ||
+                              stripeStatusLoading ||
+                              !userOwnsAnyUtility
+                            )
+                              return;
+                            await ensureOwnerConnectOnboarding(); // redirect
+                          }}
+                          title={
+                            !userOwnsAnyUtility
+                              ? "Only utility owners can enable payouts."
+                              : "Verify your identity to enable payouts."
+                          }
+                        >
+                          {utilityOwnershipLoading || stripeStatusLoading
+                            ? "Checking..."
+                            : "Verify Now"}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Venmo Row (UI only) */}
               <div
-                className="flex items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white"
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white"
                 style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}
               >
                 <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0"
                   style={{ backgroundColor: "#E5F3FF" }}
                 >
                   {/* simple venmo mark */}
                   <svg
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="h-4 w-4"
+                    className="h-5 w-5"
                     style={{ color: "#008CFF" }}
                   >
                     <path d="M20.48 2.73c.72 1.24 1.04 2.42 1.04 4.02 0 4.95-4.2 11.36-7.62 16.25H8.35L5.25 4.21l5.56-.51L12.42 16c1.72-2.61 3.64-6.28 3.64-9.09 0-1.49-.29-2.42-.76-3.18l4.18-.99z" />
                   </svg>
                 </div>
 
-                <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-shrink-0" style={{ width: "100px" }}>
-                    <h3
-                      className="text-[14px] text-[#111827]"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Venmo
-                    </h3>
-                  </div>
+                <div className="flex-1 w-full sm:w-auto">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div className="flex-shrink-0">
+                      <h3
+                        className="text-sm sm:text-base text-[#111827]"
+                        style={{ fontWeight: 600 }}
+                      >
+                        Venmo
+                      </h3>
+                    </div>
 
-                  <div className="flex-1 flex items-center gap-2">
-                    <input
-                      placeholder="@username"
-                      className="flex-1 h-9 px-3 rounded-lg border border-[#D1D5DB] bg-white text-[13px] text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#008a4b] focus:border-transparent"
-                      value={venmoHandle}
-                      onChange={(e) => setVenmoHandle(e.target.value)}
-                      disabled={
-                        venmoLoading ||
-                        venmoSaving ||
-                        (isVenmoSaved && !isEditingVenmo)
-                      }
-                    />
+                    <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                      <input
+                        placeholder="@username"
+                        className="flex-1 h-11 px-3 rounded-lg border border-[#D1D5DB] bg-white text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#008a4b] focus:border-transparent"
+                        value={venmoHandle}
+                        onChange={(e) => setVenmoHandle(e.target.value)}
+                        disabled={
+                          venmoLoading ||
+                          venmoSaving ||
+                          (isVenmoSaved && !isEditingVenmo)
+                        }
+                      />
 
-                    {isVenmoSaved && !isEditingVenmo ? (
-                      <>
-                        <div
-                          className="flex items-center gap-1 px-2 py-1 rounded-md"
-                          style={{ backgroundColor: "#ECFDF5" }}
-                        >
-                          <VerifiedBadge label="Saved" />
-                        </div>
+                      <div className="flex items-center gap-2">
+                        {isVenmoSaved && !isEditingVenmo ? (
+                          <>
+                            <div
+                              className="flex items-center gap-1 px-2 py-1 rounded-md"
+                              style={{ backgroundColor: "#ECFDF5" }}
+                            >
+                              <VerifiedBadge label="Saved" />
+                            </div>
 
-                        <button
-                          type="button"
-                          disabled={venmoLoading || venmoSaving}
-                          className={[
-                            "h-9 px-3 rounded-lg border text-[13px]",
-                            venmoLoading || venmoSaving
-                              ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
-                              : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
-                          ].join(" ")}
-                          style={{ fontWeight: 600 }}
-                          onClick={() => setIsEditingVenmo(true)}
-                        >
-                          <Edit size={16} />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          disabled={
-                            venmoLoading || venmoSaving || !venmoHandle.trim()
-                          }
-                          className={[
-                            "h-9 px-3 rounded-lg border text-[13px]",
-                            venmoLoading || venmoSaving || !venmoHandle.trim()
-                              ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
-                              : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
-                          ].join(" ")}
-                          style={{ fontWeight: 600 }}
-                          onClick={async () => {
-                            setVenmoSaving(true);
-                            try {
-                              const res = await fetch(
-                                "/api/payments/payment-methods/venmo",
-                                {
-                                  method: "PATCH",
-                                  headers: {
-                                    "Content-Type": "application/json",
-                                  },
-                                  body: JSON.stringify({ venmoHandle }),
-                                },
-                              );
-                              if (!res.ok)
-                                throw new Error("Failed to save Venmo");
-                              const data = await res.json();
-                              setVenmoHandle(data?.venmoHandle || "");
-                              setIsEditingVenmo(false); // lock it back down after save
-                            } catch (e) {
-                              console.error(e);
-                              alert("Failed to save Venmo handle");
-                            } finally {
-                              setVenmoSaving(false);
-                            }
-                          }}
-                        >
-                          {venmoSaving ? "Saving..." : "Save"}
-                        </button>
+                            <button
+                              type="button"
+                              disabled={venmoLoading || venmoSaving}
+                              className={[
+                                "h-11 px-3 rounded-lg border text-sm flex items-center justify-center flex-shrink-0",
+                                venmoLoading || venmoSaving
+                                  ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
+                              ].join(" ")}
+                              style={{ fontWeight: 600 }}
+                              onClick={() => setIsEditingVenmo(true)}
+                            >
+                              <Edit size={16} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              disabled={
+                                venmoLoading ||
+                                venmoSaving ||
+                                !venmoHandle.trim()
+                              }
+                              className={[
+                                "h-11 px-4 rounded-lg border text-sm flex-1 sm:flex-initial whitespace-nowrap",
+                                venmoLoading ||
+                                venmoSaving ||
+                                !venmoHandle.trim()
+                                  ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
+                                  : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
+                              ].join(" ")}
+                              style={{ fontWeight: 600 }}
+                              onClick={async () => {
+                                setVenmoSaving(true);
+                                try {
+                                  const res = await fetch(
+                                    "/api/payments/payment-methods/venmo",
+                                    {
+                                      method: "PATCH",
+                                      headers: {
+                                        "Content-Type": "application/json",
+                                      },
+                                      body: JSON.stringify({ venmoHandle }),
+                                    },
+                                  );
+                                  if (!res.ok)
+                                    throw new Error("Failed to save Venmo");
+                                  const data = await res.json();
+                                  setVenmoHandle(data?.venmoHandle || "");
+                                  setIsEditingVenmo(false); // lock it back down after save
+                                } catch (e) {
+                                  console.error(e);
+                                  alert("Failed to save Venmo handle");
+                                } finally {
+                                  setVenmoSaving(false);
+                                }
+                              }}
+                            >
+                              {venmoSaving ? "Saving..." : "Save"}
+                            </button>
 
-                        {isVenmoSaved && isEditingVenmo && (
-                          <button
-                            type="button"
-                            disabled={venmoLoading || venmoSaving}
-                            className={[
-                              "h-9 px-3 rounded-lg border text-[13px]",
-                              venmoLoading || venmoSaving
-                                ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
-                                : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
-                            ].join(" ")}
-                            style={{ fontWeight: 600 }}
-                            onClick={() => setIsEditingVenmo(false)}
-                          >
-                            Cancel
-                          </button>
+                            {isVenmoSaved && isEditingVenmo && (
+                              <button
+                                type="button"
+                                disabled={venmoLoading || venmoSaving}
+                                className={[
+                                  "h-11 px-4 rounded-lg border text-sm flex-1 sm:flex-initial whitespace-nowrap",
+                                  venmoLoading || venmoSaving
+                                    ? "border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
+                                    : "border-[#D1D5DB] bg-white text-[#111827] hover:bg-[#F9FAFB]",
+                                ].join(" ")}
+                                style={{ fontWeight: 600 }}
+                                onClick={() => setIsEditingVenmo(false)}
+                              >
+                                Cancel
+                              </button>
+                            )}
+                          </>
                         )}
-                      </>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -651,10 +659,10 @@ export default function PaymentsPage({
           className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
         >
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between mb-4">
+          <div className="px-4 sm:px-6 py-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
               <h2
-                className="text-[16px] text-[#111827]"
+                className="text-sm sm:text-base text-[#111827]"
                 style={{ fontWeight: 600, lineHeight: 1.3 }}
               >
                 Parent or External Payers (Coming Soon)
@@ -662,58 +670,58 @@ export default function PaymentsPage({
 
               <button
                 type="button"
-                className="rounded-lg bg-[#008a4b] hover:bg-[#00A03C] text-white h-9 px-3 text-[13px]"
+                className="rounded-lg bg-[#008a4b] hover:bg-[#00A03C] text-white h-11 px-4 text-sm w-full sm:w-auto whitespace-nowrap"
                 style={{ fontWeight: 600 }}
                 onClick={() => alert("Invite payer (coming soon)")}
               >
-                <Plus className="h-3.5 w-3.5 mr-1.5 inline-block" />
+                <Plus className="h-4 w-4 mr-1.5 inline-block" />
                 Invite Payer
               </button>
             </div>
 
-            <p className="text-[13px] text-[#6B7280] mb-4">
+            <p className="text-xs sm:text-sm text-[#6B7280] mb-4">
               Invite someone else to pay.
             </p>
 
             {/* Example active payer card (static for now) */}
             <div className="border border-[#E5E7EB] rounded-lg p-4 bg-gradient-to-r from-purple-50 to-white">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3 flex-1">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1 w-full sm:w-auto">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F3E8FF] flex-shrink-0">
                     <UserPlus className="h-5 w-5 text-[#9333EA]" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
                       <h3
-                        className="text-[15px] text-[#111827]"
+                        className="text-sm sm:text-base text-[#111827]"
                         style={{ fontWeight: 600 }}
                       >
                         Julia Mantel
                       </h3>
                       <span
-                        className="bg-[#F3E8FF] text-[#9333EA] border-[#E9D5FF] text-[10px] px-2 py-0 rounded border"
+                        className="bg-[#F3E8FF] text-[#9333EA] border-[#E9D5FF] text-xs px-2 py-0.5 rounded border whitespace-nowrap"
                         style={{ fontWeight: 600 }}
                       >
                         Mom
                       </span>
                       <span
-                        className="bg-[#ECFDF5] text-[#16A34A] border-[#BBF7D0] text-[10px] px-2 py-0 rounded border"
+                        className="bg-[#ECFDF5] text-[#16A34A] border-[#BBF7D0] text-xs px-2 py-0.5 rounded border whitespace-nowrap"
                         style={{ fontWeight: 600 }}
                       >
                         Active
                       </span>
                     </div>
 
-                    <p className="text-[12px] text-[#6B7280]">
+                    <p className="text-xs sm:text-sm text-[#6B7280]">
                       Checking ending in ••1234 · Can pay bills on your behalf
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
                   <button
                     type="button"
-                    className="rounded-lg h-8 px-3 border border-[#D1D5DB] bg-white hover:bg-[#F9FAFB] text-[12px]"
+                    className="flex-1 sm:flex-initial rounded-lg h-10 sm:h-9 px-3 border border-[#D1D5DB] bg-white hover:bg-[#F9FAFB] text-xs sm:text-sm whitespace-nowrap"
                     style={{ fontWeight: 600 }}
                     onClick={() => alert("Edit payer (coming soon)")}
                   >
@@ -721,7 +729,7 @@ export default function PaymentsPage({
                   </button>
                   <button
                     type="button"
-                    className="rounded-lg h-8 px-3 border border-[#008a4b] text-[#008a4b] hover:bg-[#ECFDF5] text-[12px]"
+                    className="flex-1 sm:flex-initial rounded-lg h-10 sm:h-9 px-3 border border-[#008a4b] text-[#008a4b] hover:bg-[#ECFDF5] text-xs sm:text-sm whitespace-nowrap"
                     style={{ fontWeight: 600 }}
                     onClick={() => alert("Resend invite (coming soon)")}
                   >
@@ -736,9 +744,9 @@ export default function PaymentsPage({
 
         {/* Security Note */}
         <div className="pt-3 pb-2">
-          <div className="flex items-center justify-center gap-2">
-            <Lock className="h-3.5 w-3.5 text-[#9CA3AF]" />
-            <p className="text-[12px] text-[#6B7280]">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-center sm:text-left">
+            <Lock className="h-4 w-4 text-[#9CA3AF] flex-shrink-0" />
+            <p className="text-xs sm:text-sm text-[#6B7280]">
               All payments are processed through Stripe. Bilvo never stores your
               banking credentials.
             </p>
@@ -799,16 +807,16 @@ function SortablePaymentMethodRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 p-4 rounded-lg border border-[#E5E7EB] bg-white hover:border-[#D1D5DB] transition-colors"
+      className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border border-[#E5E7EB] bg-white hover:border-[#D1D5DB] transition-colors"
     >
       {/* Priority Number */}
       <div
-        className="flex items-center justify-center h-7 w-7 rounded-full flex-shrink-0"
+        className="flex items-center justify-center h-8 w-8 rounded-full flex-shrink-0"
         style={{
           backgroundColor: index === 0 ? "#008a4b" : "#E5E7EB",
           color: index === 0 ? "#FFFFFF" : "#6B7280",
           fontWeight: 600,
-          fontSize: "13px",
+          fontSize: "14px",
         }}
       >
         {index + 1}
@@ -818,24 +826,27 @@ function SortablePaymentMethodRow({
       <div
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing touch-none"
+        className="cursor-grab active:cursor-grabbing touch-none hidden sm:block"
       >
         <GripVertical className="h-5 w-5 text-gray-400 hover:text-gray-600" />
       </div>
 
       {/* Icon */}
       <div
-        className="flex h-9 w-9 items-center justify-center rounded-lg flex-shrink-0"
+        className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg flex-shrink-0"
         style={{ backgroundColor: row.iconBg }}
       >
-        <row.icon className="h-4 w-4" style={{ color: row.iconColor }} />
+        <row.icon
+          className="h-4 w-4 sm:h-5 sm:w-5"
+          style={{ color: row.iconColor }}
+        />
       </div>
 
       {/* Details */}
-      <div className="flex-1">
-        <div className="flex items-center gap-2 mb-0.5">
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-2 mb-0.5">
           <h3
-            className="text-[14px] text-[#111827]"
+            className="text-sm sm:text-base text-[#111827] truncate"
             style={{ fontWeight: 600 }}
           >
             {row.title}
@@ -844,7 +855,7 @@ function SortablePaymentMethodRow({
           {/* "Primary" tag for your default */}
           {row.isDefault && (
             <span
-              className="text-[10px] px-2 py-0 rounded border"
+              className="text-xs px-2 py-0.5 rounded border whitespace-nowrap flex-shrink-0"
               style={{
                 fontWeight: 600,
                 backgroundColor: "#ECFDF5",
@@ -856,15 +867,17 @@ function SortablePaymentMethodRow({
             </span>
           )}
         </div>
-        <p className="text-[12px] text-[#6B7280]">{row.details}</p>
+        <p className="text-xs sm:text-sm text-[#6B7280] truncate">
+          {row.details}
+        </p>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         <button
           type="button"
           onClick={() => onRemove(row.id)}
-          className="text-[#DC2626] hover:text-[#B91C1C] hover:bg-red-50 text-[12px] h-8 px-3 rounded-lg"
+          className="text-[#DC2626] hover:text-[#B91C1C] hover:bg-red-50 text-xs sm:text-sm h-9 sm:h-10 px-3 rounded-lg whitespace-nowrap"
           style={{ fontWeight: 600 }}
         >
           Remove
@@ -892,7 +905,7 @@ function AddPaymentMethodModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.last4.length !== 4 || !/^\d{4}$/.test(formData.last4)) {
+    if (formData.last4.length !== 4 || !/^d{4}$/.test(formData.last4)) {
       alert("Please enter the last 4 digits");
       return;
     }
@@ -920,18 +933,18 @@ function AddPaymentMethodModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto">
-      <div className="relative mx-auto my-10 w-full max-w-lg px-4">
+      <div className="relative mx-auto my-4 sm:my-10 w-full max-w-lg px-4">
         <div className="bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">
               Add Payment Method
             </h2>
             <p className="text-sm text-gray-500 mt-1">
               Choose how you'd like to pay your bills.
             </p>
 
-            <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -947,13 +960,16 @@ function AddPaymentMethodModal({
                     ? "border-green-600 bg-green-50"
                     : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 }`}
+                style={{ minHeight: "76px" }}
               >
                 <div className="flex items-center gap-3">
                   <div className="bg-green-100 p-2 rounded-lg">
                     <Building2 className="w-5 h-5 text-green-700" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Bank account</p>
+                    <p className="font-medium text-gray-900 text-sm">
+                      Bank account
+                    </p>
                     <p className="text-xs text-gray-500">ACH (coming soon)</p>
                   </div>
                 </div>
@@ -970,13 +986,14 @@ function AddPaymentMethodModal({
                     ? "border-green-600 bg-green-50"
                     : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 }`}
+                style={{ minHeight: "76px" }}
               >
                 <div className="flex items-center gap-3">
                   <div className="bg-gray-100 p-2 rounded-lg">
                     <CreditCard className="w-5 h-5 text-gray-700" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Card</p>
+                    <p className="font-medium text-gray-900 text-sm">Card</p>
                     <p className="text-xs text-gray-500">Instant, via Stripe</p>
                   </div>
                 </div>
@@ -985,7 +1002,7 @@ function AddPaymentMethodModal({
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-5">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5">
             {paymentType === "card" ? (
               <div className="space-y-4">
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
@@ -1036,7 +1053,7 @@ function AddPaymentMethodModal({
                     onChange={(e) =>
                       setFormData({ ...formData, brand: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 h-12"
                   >
                     <option value="Bank of America">Bank of America</option>
                     <option value="Chase">Chase</option>
@@ -1053,13 +1070,13 @@ function AddPaymentMethodModal({
                     type="text"
                     required
                     maxLength={4}
-                    pattern="\d{4}"
+                    pattern="d{4}"
                     value={formData.last4}
                     onChange={(e) =>
                       setFormData({ ...formData, last4: e.target.value })
                     }
                     placeholder="1234"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 h-12"
                   />
                   <p className="text-xs text-gray-500 mt-1">Demo only.</p>
                 </div>
@@ -1068,12 +1085,12 @@ function AddPaymentMethodModal({
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-gray-200 bg-white">
-            <div className="flex gap-3">
+          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 bg-white">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -1088,7 +1105,7 @@ function AddPaymentMethodModal({
                     form?.requestSubmit();
                   }}
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50"
+                  className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 text-sm font-medium"
                 >
                   {isLoading ? "Adding..." : "Add Bank (Demo)"}
                 </button>

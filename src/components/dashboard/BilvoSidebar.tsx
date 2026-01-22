@@ -7,6 +7,7 @@ import {
   X,
   BarChart3,
   Link2,
+  Settings,
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -36,12 +37,6 @@ export function BilvoSidebar() {
       href: "/protected/dashboard/bills",
     },
     {
-      id: "insights",
-      label: "Insights",
-      icon: BarChart3,
-      href: "/protected/dashboard/insights",
-    },
-    {
       id: "payments",
       label: "Payments",
       icon: CreditCard,
@@ -52,6 +47,12 @@ export function BilvoSidebar() {
       label: "Household",
       icon: Users,
       href: "/protected/dashboard/household",
+    },
+    {
+      id: "insights",
+      label: "Insights",
+      icon: BarChart3,
+      href: "/protected/dashboard/insights",
     },
   ];
 
@@ -123,7 +124,8 @@ export function BilvoSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-5">
+        <nav className="flex-1 p-5 flex flex-col">
+          {/* Main Items */}
           <div className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -168,6 +170,58 @@ export function BilvoSidebar() {
               );
             })}
           </div>
+
+          {/* Spacer pushes settings to bottom */}
+          <div className="flex-1" />
+
+          {/* Divider */}
+          <div
+            className="my-4 border-t"
+            style={{ borderColor: "var(--border-light)" }}
+          />
+
+          {/* Settings */}
+          {(() => {
+            const Icon = Settings;
+            const active = isActive("/protected/dashboard/settings");
+
+            return (
+              <Link
+                href="/protected/dashboard/settings"
+                onClick={() => setIsMobileOpen(false)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group"
+                style={{
+                  backgroundColor: active
+                    ? "var(--bilvo-green)"
+                    : "transparent",
+                  color: active ? "white" : "var(--gray-500)",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.backgroundColor = "var(--gray-50)";
+                    e.currentTarget.style.color = "var(--gray-900)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--gray-500)";
+                  }
+                }}
+              >
+                <Icon
+                  className="h-5 w-5 flex-shrink-0"
+                  strokeWidth={2}
+                  style={{ color: active ? "white" : "var(--gray-400)" }}
+                />
+                <span
+                  style={{ fontSize: "14px", fontWeight: active ? 600 : 500 }}
+                >
+                  Settings
+                </span>
+              </Link>
+            );
+          })()}
         </nav>
 
         {/* Footer */}
@@ -229,7 +283,8 @@ export function BilvoSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-5">
+        <nav className="flex-1 p-5 flex flex-col">
+          {/* Main Items */}
           <div className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -264,6 +319,48 @@ export function BilvoSidebar() {
               );
             })}
           </div>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Divider */}
+          <div
+            className="my-4 border-t"
+            style={{ borderColor: "var(--border-light)" }}
+          />
+
+          {/* Settings */}
+          {(() => {
+            const Icon = Settings;
+            const active = isActive("/protected/dashboard/settings");
+
+            return (
+              <Link
+                href="/protected/dashboard/settings"
+                onClick={() => setIsMobileOpen(false)}
+                className="relative w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200"
+                style={{
+                  backgroundColor: active
+                    ? "var(--bilvo-green-bg)"
+                    : "transparent",
+                  color: active ? "var(--bilvo-green)" : "var(--gray-500)",
+                }}
+              >
+                {active && (
+                  <div
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full"
+                    style={{ backgroundColor: "var(--bilvo-green)" }}
+                  />
+                )}
+                <Icon className="h-5 w-5" strokeWidth={2} />
+                <span
+                  style={{ fontSize: "15px", fontWeight: active ? 600 : 500 }}
+                >
+                  Settings
+                </span>
+              </Link>
+            );
+          })()}
         </nav>
 
         {/* Footer */}

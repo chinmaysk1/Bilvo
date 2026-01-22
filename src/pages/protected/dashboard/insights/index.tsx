@@ -120,7 +120,7 @@ export default function InsightsPage({
     "overview" | "bills" | "payments" | "household" | "insights"
   >("insights");
 
-  // v1: treat “admin” as household insights view
+  // v1: treat "admin" as household insights view
   const isAdmin = household?.adminId === currentUserId;
 
   const currentUserName =
@@ -283,8 +283,8 @@ export default function InsightsPage({
 
   const splitImbalanceText = useMemo(() => {
     // v1 heuristic: compare each member's "yourShare" total vs how much they've actually paid (SUCCEEDED)
-    // Note: bills endpoint gives "yourShare" only for current user, so we can’t compute true “owes” per member from bills alone.
-    // With attempts, we can at least show “who has paid the most” in last 30 days.
+    // Note: bills endpoint gives "yourShare" only for current user, so we can't compute true "owes" per member from bills alone.
+    // With attempts, we can at least show "who has paid the most" in last 30 days.
     const paidByUser = new Map<string, number>();
     for (const a of attemptsLast30) {
       if (a.status !== "SUCCEEDED") continue;
@@ -413,22 +413,23 @@ export default function InsightsPage({
 
   return (
     <DashboardLayout>
-      <main className="mx-auto px-8 space-y-4">
-        <h1
-          style={{
-            fontSize: "22px",
-            fontWeight: 600,
-            color: "#111827",
-            fontFamily: "Inter, sans-serif",
-            lineHeight: "24px",
-          }}
-        >
-          Insights
-        </h1>
-        <div className="flex justify-end">
+      <main className="mx-auto px-4 sm:px-6 md:px-8 space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h1
+            style={{
+              fontSize: "20px",
+              fontWeight: 600,
+              color: "#111827",
+              fontFamily: "Inter, sans-serif",
+              lineHeight: "24px",
+            }}
+            className="sm:text-[22px]"
+          >
+            Insights
+          </h1>
           <Button
             variant="outline"
-            className="rounded-lg"
+            className="rounded-lg w-full sm:w-auto"
             style={{ fontWeight: 600 }}
             onClick={handleDownloadCsv}
           >
@@ -442,22 +443,22 @@ export default function InsightsPage({
           className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
         >
-          <div className="px-6 py-3">
+          <div className="px-4 sm:px-6 py-3 sm:py-4">
             <div className="flex items-center gap-2 mb-3">
-              <Lightbulb className="h-4 w-4 text-[#1E3A8A]" />
+              <Lightbulb className="h-4 w-4 text-[#1E3A8A] flex-shrink-0" />
               <h2
-                className="text-[16px] text-[#111827]"
+                className="text-[15px] sm:text-[16px] text-[#111827]"
                 style={{ fontWeight: 600, lineHeight: 1.3 }}
               >
                 Household Insights Summary
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-x-8 sm:gap-y-3">
               <div className="flex flex-col gap-1">
                 <div className="flex items-baseline gap-2">
                   <span
-                    className="text-[20px]"
+                    className="text-[18px] sm:text-[20px]"
                     style={{
                       fontWeight: 700,
                       lineHeight: 1.2,
@@ -476,7 +477,7 @@ export default function InsightsPage({
                         }`}
                   </span>
                   <span
-                    className="text-[14px] text-[#111827]"
+                    className="text-[13px] sm:text-[14px] text-[#111827]"
                     style={{ fontWeight: 600 }}
                   >
                     Household Spending
@@ -488,13 +489,13 @@ export default function InsightsPage({
               <div className="flex flex-col gap-1">
                 <div className="flex items-baseline gap-2">
                   <span
-                    className="text-[20px] text-[#111827]"
+                    className="text-[18px] sm:text-[20px] text-[#111827]"
                     style={{ fontWeight: 700, lineHeight: 1.2 }}
                   >
                     {topTwoPct}%
                   </span>
                   <span
-                    className="text-[14px] text-[#111827]"
+                    className="text-[13px] sm:text-[14px] text-[#111827] truncate"
                     style={{ fontWeight: 600 }}
                   >
                     {topTwoLabel}
@@ -505,13 +506,13 @@ export default function InsightsPage({
                 </p>
               </div>
 
-              <div className="col-span-2 border-t border-[#E5E7EB] my-1"></div>
+              <div className="col-span-1 sm:col-span-2 border-t border-[#E5E7EB] my-1"></div>
 
               <div className="flex flex-col gap-1">
-                <div className="flex items-baseline gap-2">
-                  <AlertCircle className="h-4 w-4 text-[#F59E0B] flex-shrink-0 mt-0.5" />
+                <div className="flex items-start sm:items-baseline gap-2">
+                  <AlertCircle className="h-4 w-4 text-[#F59E0B] flex-shrink-0 mt-0.5 sm:mt-0" />
                   <span
-                    className="text-[14px] text-[#111827]"
+                    className="text-[13px] sm:text-[14px] text-[#111827]"
                     style={{ fontWeight: 600 }}
                   >
                     {aboveAverageUtilityCosts
@@ -525,10 +526,10 @@ export default function InsightsPage({
               </div>
 
               <div className="flex flex-col gap-1">
-                <div className="flex items-baseline gap-2">
-                  <Zap className="h-4 w-4 text-[#16A34A] flex-shrink-0 mt-0.5" />
+                <div className="flex items-start sm:items-baseline gap-2">
+                  <Zap className="h-4 w-4 text-[#16A34A] flex-shrink-0 mt-0.5 sm:mt-0" />
                   <span
-                    className="text-[14px] text-[#111827]"
+                    className="text-[13px] sm:text-[14px] text-[#111827] break-words"
                     style={{ fontWeight: 600 }}
                   >
                     Autopay Suggested: {autopaySuggestedLabel}
@@ -542,7 +543,7 @@ export default function InsightsPage({
 
             <div className="flex justify-end mt-3 pt-3 border-t border-[#E5E7EB]">
               <button
-                className="text-[13px] text-[#16A34A] hover:text-[#15803D] transition-colors flex items-center gap-1"
+                className="text-[12px] sm:text-[13px] text-[#16A34A] hover:text-[#15803D] transition-colors flex items-center gap-1"
                 style={{ fontWeight: 600 }}
                 onClick={() =>
                   toast.success("Detailed recommendations coming soon")
@@ -555,27 +556,34 @@ export default function InsightsPage({
           </div>
         </Card>
 
-        {/* Charts */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Charts - Stack on mobile, side-by-side on tablet+ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
           <Card
             className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
-            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)", height: "260px" }}
+            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
           >
-            <div className="px-6 py-4 h-full flex flex-col">
+            <div
+              className="px-4 sm:px-6 py-4 h-full flex flex-col"
+              style={{ minHeight: "280px" }}
+            >
               <div className="mb-3">
                 <h3
-                  className="text-[16px] text-[#111827] mb-0.5"
+                  className="text-[15px] sm:text-[16px] text-[#111827] mb-0.5"
                   style={{ fontWeight: 600, lineHeight: 1.3 }}
                 >
                   Spending by Category
                 </h3>
-                <p className="text-[14px] text-[#6B7280]">Last 30 Days</p>
+                <p className="text-[13px] sm:text-[14px] text-[#6B7280]">
+                  Last 30 Days
+                </p>
               </div>
 
               {/* ✅ Client-only chart */}
-              <InsightsPieChartClient spendingData={spendingData} />
+              <div className="flex-1 min-h-0">
+                <InsightsPieChartClient spendingData={spendingData} />
+              </div>
 
-              <div className="mt-3 pt-3 border-t border-[#E5E7EB] flex items-center justify-between">
+              <div className="mt-3 pt-3 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2">
                 <div>
                   <p className="text-[12px] text-[#6B7280]">
                     Total household spend
@@ -587,7 +595,7 @@ export default function InsightsPage({
                     ${totalSpend.toFixed(2)}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="sm:text-right">
                   <p className="text-[12px] text-[#6B7280]">
                     Average per roommate
                   </p>
@@ -604,21 +612,28 @@ export default function InsightsPage({
 
           <Card
             className="rounded-xl border border-[#D1D5DB] bg-white overflow-hidden"
-            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)", height: "260px" }}
+            style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
           >
-            <div className="px-6 py-4 h-full flex flex-col">
+            <div
+              className="px-4 sm:px-6 py-4 h-full flex flex-col"
+              style={{ minHeight: "280px" }}
+            >
               <div className="mb-3">
                 <h3
-                  className="text-[16px] text-[#111827] mb-0.5"
+                  className="text-[15px] sm:text-[16px] text-[#111827] mb-0.5"
                   style={{ fontWeight: 600, lineHeight: 1.3 }}
                 >
                   Monthly Household Spend
                 </h3>
-                <p className="text-[14px] text-[#6B7280]">6-Month Trend</p>
+                <p className="text-[13px] sm:text-[14px] text-[#6B7280]">
+                  6-Month Trend
+                </p>
               </div>
 
               {/* ✅ Client-only chart */}
-              <InsightsLineChartClient trendData={trendData} />
+              <div className="flex-1 min-h-0">
+                <InsightsLineChartClient trendData={trendData} />
+              </div>
 
               <div className="mt-3 pt-3 border-t border-[#E5E7EB]">
                 <p
@@ -655,9 +670,9 @@ export default function InsightsPage({
           className="rounded-xl border border-[#E5E7EB] bg-white overflow-hidden"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}
         >
-          <div className="px-6 py-3">
+          <div className="px-4 sm:px-6 py-3 sm:py-4">
             <h3
-              className="text-[16px] text-[#111827] mb-3"
+              className="text-[15px] sm:text-[16px] text-[#111827] mb-3"
               style={{ fontWeight: 600, lineHeight: 1.3 }}
             >
               Household Recommendations
@@ -668,13 +683,13 @@ export default function InsightsPage({
                 return (
                   <div
                     key={index}
-                    className="flex items-center gap-4 py-3 border-b border-[#F3F4F6] last:border-b-0"
+                    className="flex items-start sm:items-center gap-3 sm:gap-4 py-3 border-b border-[#F3F4F6] last:border-b-0 sm:ml-[-24px] sm:mr-[-24px] sm:pl-[24px] sm:pr-[24px]"
                     style={{
                       backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#F9FAFB",
-                      marginLeft: "-24px",
-                      marginRight: "-24px",
-                      paddingLeft: "24px",
-                      paddingRight: "24px",
+                      marginLeft: "-16px",
+                      marginRight: "-16px",
+                      paddingLeft: "16px",
+                      paddingRight: "16px",
                       minHeight: "52px",
                     }}
                   >
@@ -692,9 +707,9 @@ export default function InsightsPage({
                       />
                     </div>
 
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p
-                        className="text-[14px] text-[#111827]"
+                        className="text-[13px] sm:text-[14px] text-[#111827]"
                         style={{ fontWeight: 500, lineHeight: 1.4 }}
                       >
                         {rec.text}
@@ -702,11 +717,11 @@ export default function InsightsPage({
                     </div>
 
                     <div
-                      className="text-right flex-shrink-0"
-                      style={{ minWidth: "140px" }}
+                      className="text-right flex-shrink-0 sm:min-w-[140px]"
+                      style={{ minWidth: "100px" }}
                     >
                       <p
-                        className="text-[12px]"
+                        className="text-[11px] sm:text-[12px]"
                         style={{
                           fontWeight: 600,
                           color:
@@ -729,7 +744,7 @@ export default function InsightsPage({
 
         <div className="bg-[#F9FAFB] border-t border-[#E5E7EB] rounded-lg px-4 py-3">
           <p
-            className="text-[12px] text-[#6B7280] text-center"
+            className="text-[11px] sm:text-[12px] text-[#6B7280] text-center"
             style={{ lineHeight: 1.5 }}
           >
             Based on the last 30 days,{" "}
