@@ -789,7 +789,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-    const billsRes = await fetch(`${baseUrl}/api/bills`, {
+    const billsRes = await fetch(`${baseUrl}/api/bills?fetchAll=true`, {
       headers: { Cookie: context.req.headers.cookie || "" },
     });
     if (!billsRes.ok) throw new Error("Failed to fetch bills");

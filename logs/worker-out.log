@@ -5570,3 +5570,620 @@ Invalid `prisma.$queryRawUnsafe()` invocation:
 Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
 
 Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpveb700001h3gwm9pkur8v provider: City of San Luis Obispo, CA
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → RUNNING: Navigating to SLO Water login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling username field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling password field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Clicking 'View My Bill' button...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on My Bill page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $170.12 | Due: 2/15/2026 | Acct: 055873-000
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpveb700001h3gwm9pkur8v → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkpveb700001h3gwm9pkur8v
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx1gx70001jr046hk5zyc6 provider: Pacific Gas & Electric
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Navigating to PG&E login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.pge.com/myaccount/
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Sign In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for transition (MFA or Dashboard)...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Two-factor authentication required
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] 2FA detected via selector. Selecting SMS Text option...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] SMS Button clicked. Waiting for code input field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Verifying security code
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Code received. Filling input...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Waiting for button to enable...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Confirming...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on Dashboard!
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $0 | Due: 1/14/2026 | Acct: 1393000909-0
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1gx70001jr046hk5zyc6 → SUCCESS: No balance due - account linked successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmkpx1gx70001jr046hk5zyc6
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx1h2w0003jr04pbf2tehf provider: City of San Luis Obispo, CA
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → RUNNING: Navigating to SLO Water login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://slocity.merchanttransact.com/Login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling username field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Filling password field...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Clicking 'View My Bill' button...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Landed on My Bill page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $170.12 | Due: 2/15/2026 | Acct: 055873-000
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h2w0003jr04pbf2tehf → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkpx1h2w0003jr04pbf2tehf
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx1h8o0005jr04hoqzrtkz provider: AT&T Internet
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Navigating to AT&T sign-in
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://www.att.com/acctmgmt/signin
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Entering AT&T User ID
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Entering AT&T password
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] AT&T password filled, clicking Sign in...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Auth outcome: OVERVIEW current URL: https://www.att.com/acctmgmt/overview?haloSuccess=true&lt=IV5PIkdDc09JbF16JVVGUXVaOEk8UXwmdFlqUEEqZ1xWZ2EyPHxTfHtnfTc_RlBsREpyWTI1JiQtTW8p
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Navigating to AT&T billing center
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Dashboard reached. Dwelling 5s for session stability...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1h8o0005jr04hoqzrtkz → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS (finalized in runner) cmkpx1h8o0005jr04hoqzrtkz
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx1hdt0007jr04ssr8f83b provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hdt0007jr04ssr8f83b → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hdt0007jr04ssr8f83b → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hdt0007jr04ssr8f83b → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hdt0007jr04ssr8f83b → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hdt0007jr04ssr8f83b → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on dashboard page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hdt0007jr04ssr8f83b → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hdt0007jr04ssr8f83b → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Saved error screenshot to error-snapshot-cmkpx1hdt0007jr04ssr8f83b.png
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job failed cmkpx1hdt0007jr04ssr8f83b page.waitForSelector: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.current-bill .due .wc-green.date') to be visible[22m
+
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx1hjv0009jr04eun00t8t provider: SoCalGas
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $33.53 | Due: 2/9/2026 | Acct: 03871620021
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx1hjv0009jr04eun00t8t → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkpx1hjv0009jr04eun00t8t
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx4vr30003js0461d4hofo provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx4vr30003js0461d4hofo → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx4vr30003js0461d4hofo → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx4vr30003js0461d4hofo → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx4vr30003js0461d4hofo → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx4vr30003js0461d4hofo → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Saved error screenshot to error-snapshot-cmkpx4vr30003js0461d4hofo.png
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job failed cmkpx4vr30003js0461d4hofo Login Failed - Invalid User ID/Password
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx557c0005js046k3nxkp9 provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx557c0005js046k3nxkp9 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx557c0005js046k3nxkp9 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx557c0005js046k3nxkp9 → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx557c0005js046k3nxkp9 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx557c0005js046k3nxkp9 → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Saved error screenshot to error-snapshot-cmkpx557c0005js046k3nxkp9.png
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job failed cmkpx557c0005js046k3nxkp9 Login Failed - Invalid User ID/Password
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx5i330007js04otbr4v0a provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx5i330007js04otbr4v0a → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx5i330007js04otbr4v0a → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx5i330007js04otbr4v0a → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx5i330007js04otbr4v0a → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx5i330007js04otbr4v0a → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on dashboard page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx5i330007js04otbr4v0a → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx5i330007js04otbr4v0a → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Saved error screenshot to error-snapshot-cmkpx5i330007js04otbr4v0a.png
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job failed cmkpx5i330007js04otbr4v0a page.waitForSelector: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.current-bill .due .wc-green.date') to be visible[22m
+
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpx6ump0009js04xbe6v4ve provider: San Luis Garbage
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx6ump0009js04xbe6v4ve → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx6ump0009js04xbe6v4ve → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx6ump0009js04xbe6v4ve → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx6ump0009js04xbe6v4ve → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Login...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx6ump0009js04xbe6v4ve → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on dashboard page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx6ump0009js04xbe6v4ve → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpx6ump0009js04xbe6v4ve → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Saved error screenshot to error-snapshot-cmkpx6ump0009js04xbe6v4ve.png
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job failed cmkpx6ump0009js04xbe6v4ve page.waitForSelector: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.current-bill .due .wc-green.date') to be visible[22m
+
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Processing job cmkpxh1kk0001ky04o3w1g803 provider: SoCalGas
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Initializing secure session
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Starting secure browser
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Navigating to SoCalGas login portal
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Submitting login credentials
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Fields filled, clicking Log In...
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Checking authentication status
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Login successful - on home page
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Extracting current bill information
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Scraped: $33.53 | Due: 2/9/2026 | Acct: 03871620021
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → RUNNING: Syncing bill to your account
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Bill saved and participants created successfully.
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job cmkpxh1kk0001ky04o3w1g803 → SUCCESS: Bill synced successfully
+[utility-worker 220eb2ee-43a2-4853-95d3-9156ba4940b4] Job SUCCESS cmkpxh1kk0001ky04o3w1g803
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Starting utility link worker
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] poll 3000 ms | headless: false
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Processing job cmkpy3y3t0003h3d0hdxicv2c provider: Spectrum Internet
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Initializing secure session
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Starting secure browser
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Navigating to Spectrum homepage
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Navigating to https://www.spectrum.net/
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Opening Spectrum sign-in
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Clicking Spectrum homepage Sign In...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Submitting login credentials
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Filling Spectrum username/password...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Clicking Spectrum Sign In...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Checking authentication status
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Spectrum auth outcome: MFA_SELECT url: https://id.spectrum.net/mfa
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Two-factor authentication required
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Spectrum MFA select: leaving default (Text) and clicking Next...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Verifying security code
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Spectrum code received. Filling and submitting...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy3y3t0003h3d0hdxicv2c → RUNNING: Authenticated - Spectrum linked (bill sync pending)
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job SUCCESS cmkpy3y3t0003h3d0hdxicv2c
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Processing job cmkpy8iok0005h3d09glqf69r provider: Spectrum Internet
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Initializing secure session
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Starting secure browser
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Navigating to Spectrum homepage
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Navigating to https://www.spectrum.net/
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Opening Spectrum sign-in
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Clicking Spectrum homepage Sign In...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Submitting login credentials
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Filling Spectrum username/password...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Clicking Spectrum Sign In...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Checking authentication status
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Spectrum auth outcome: MFA_SELECT url: https://id.spectrum.net/mfa
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Two-factor authentication required
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Spectrum MFA select: leaving default (Text) and clicking Next...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Verifying security code
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Spectrum code received. Filling and submitting...
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job cmkpy8iok0005h3d09glqf69r → RUNNING: Authenticated - Spectrum linked (bill sync pending)
+[utility-worker 7b628899-718d-414c-ab07-9036d87cf5c4] Job SUCCESS cmkpy8iok0005h3d09glqf69r
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Starting utility link worker
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] poll 3000 ms | headless: false
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Processing job cmkpyr13n0007h3d03okr94hp provider: Spectrum Internet
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Initializing secure session
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Starting secure browser
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Navigating to Spectrum homepage
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Navigating to https://www.spectrum.net/
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Opening Spectrum sign-in
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Clicking Spectrum homepage Sign In...
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Submitting login credentials
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Filling Spectrum username/password...
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Clicking Spectrum Sign In...
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Checking authentication status
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Spectrum auth outcome: UNKNOWN url: https://id.spectrum.net/login?account_type=RESIDENTIAL&client_id=consumer_portal&code_challenge=JEUVcsCLoVg3Efe8Zr-tsEhhez72sBSqwsRTKS5krLw&code_challenge_method=S256&exVisitID=202601222128P-ea56c33a-644e-4d56-a043-a4b43f6e1492&l10n=en&nonce=383521081410130275741858412753&redirect_uri=https:%2F%2Fwww.spectrum.net%2Fsign-in-redirect&state=eyJpc0RsYSI6ZmFsc2UsInRhcmdldFVybCI6Imh0dHBzOi8vd3d3LnNwZWN0cnVtLm5ldC9hY2NvdW50LXN1bW1hcnkiLCJ2aXNpdElkIjoiMjAyNjAxMjIyMTI4UC1lYTU2YzMzYS02NDRlLTRkNTYtYTA0My1hNGI0M2Y2ZTE0OTIiLCJ4c3JmIjoiTGw5dGJHOS1aRU16VFRGTFNraFVNRkpvWWtWUlUyZFFMVzFhTmxwa1pGOXljMzVmTVZoUlppMUJVZyIsInRpbWVzdGFtcCI6MTc2OTExNzI5MTI2OSwiaXNBdXRvQXV0aCI6ZmFsc2V9&client_device_id=095c7aae-ce19-4fc4-b061-acfb8701c914
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Navigating to Billing page
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Billing nav not found, jumping to /billing
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → RUNNING: Extracting current bill information
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpyr13n0007h3d03okr94hp → SUCCESS: No balance due - account linked successfully
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job SUCCESS (finalized in runner) cmkpyr13n0007h3d03okr94hp
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Processing job cmkpys7oz0009h3d0fo0cne6h provider: Spectrum Internet
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Initializing secure session
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Starting secure browser
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Navigating to Spectrum homepage
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Navigating to https://www.spectrum.net/
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Opening Spectrum sign-in
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Clicking Spectrum homepage Sign In...
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Submitting login credentials
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Filling Spectrum username/password...
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Clicking Spectrum Sign In...
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Checking authentication status
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Spectrum auth outcome: UNKNOWN url: https://id.spectrum.net/login?account_type=RESIDENTIAL&client_id=consumer_portal&code_challenge=F1L7yR_3LKucssAMEr9sMnw3BPDvrvPi2VDQ4VuSkeo&code_challenge_method=S256&exVisitID=202601222129P-d5d22de3-0041-4184-a0ab-4030ffd4ab95&l10n=en&nonce=451148647358268891874295383673&redirect_uri=https:%2F%2Fwww.spectrum.net%2Fsign-in-redirect&state=eyJpc0RsYSI6ZmFsc2UsInRhcmdldFVybCI6Imh0dHBzOi8vd3d3LnNwZWN0cnVtLm5ldC9hY2NvdW50LXN1bW1hcnkiLCJ2aXNpdElkIjoiMjAyNjAxMjIyMTI5UC1kNWQyMmRlMy0wMDQxLTQxODQtYTBhYi00MDMwZmZkNGFiOTUiLCJ4c3JmIjoiTmprd1RWRlhTbjV6UzNsLWMzcDJaWEJzV1hKQkxWVnFiRkJ5YkhONmF6WkxXWFJtU2w5aWNIUm9OQSIsInRpbWVzdGFtcCI6MTc2OTExNzM0MTMxOCwiaXNBdXRvQXV0aCI6ZmFsc2V9&client_device_id=46d95819-3560-43d6-b576-0be43865e88f
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Navigating to Billing page
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Billing nav not found, jumping to /billing
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → RUNNING: Extracting current bill information
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job cmkpys7oz0009h3d0fo0cne6h → SUCCESS: No balance due - account linked successfully
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] Job SUCCESS (finalized in runner) cmkpys7oz0009h3d0fo0cne6h
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Timed out fetching a new connection from the connection pool. More info: http://pris.ly/d/connection-pool (Current connection pool timeout: 10, connection limit: 29)
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Server has closed the connection.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker 545911f0-0f0f-47a3-bd86-fe2807272e1a] claim error: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+Can't reach database server at `aws-1-us-east-1.pooler.supabase.com:5432`
+
+Please make sure your database server is running at `aws-1-us-east-1.pooler.supabase.com:5432`.
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Starting utility link worker
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] poll 3000 ms | headless: false
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Processing job cmkx4n6470001h3xohgecxgn2 provider: Spectrum Internet
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Initializing secure session
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Starting secure browser
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Navigating to Spectrum homepage
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Navigating to https://www.spectrum.net/
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Opening Spectrum sign-in
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Clicking Spectrum homepage Sign In...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Submitting login credentials
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Filling Spectrum username/password...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Clicking Spectrum Sign In...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Checking authentication status
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Spectrum auth outcome: MFA_SELECT url: https://id.spectrum.net/mfa
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Two-factor authentication required
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Spectrum MFA select: leaving default (Text) and clicking Next...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Verifying security code
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Spectrum OTP attempt 1: submitting...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Spectrum OTP submit outcome: OK url: https://www.spectrum.net/account-summary
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Navigating to Billing page
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Clicking Billing nav...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → RUNNING: Extracting current bill information
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx4n6470001h3xohgecxgn2 → SUCCESS: No balance due - account linked successfully
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job SUCCESS (finalized in runner) cmkx4n6470001h3xohgecxgn2
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Processing job cmkx61j1q0003h3xosig34r3v provider: SoCalGas
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Initializing secure session
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Starting secure browser
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Navigating to SoCalGas login portal
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Navigating to https://myaccount.socalgas.com/ui/login
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Submitting login credentials
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Fields filled, clicking Log In...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Checking authentication status
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Login successful - on home page
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Successfully authenticated - accessing bill details
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Extracting current bill information
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Scraped: $33.53 | Due: 2/9/2026 | Acct: 03871620021
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → RUNNING: Syncing bill to your account
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Bill saved and participants created successfully.
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61j1q0003h3xosig34r3v → SUCCESS: Bill synced successfully
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job SUCCESS cmkx61j1q0003h3xosig34r3v
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Processing job cmkx61k230005h3xolcs901q8 provider: San Luis Garbage
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61k230005h3xolcs901q8 → RUNNING: Initializing secure session
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61k230005h3xolcs901q8 → RUNNING: Starting secure browser
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61k230005h3xolcs901q8 → RUNNING: Navigating to San Luis Garbage login portal
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Navigating to https://myaccount.wcicustomer.com/district/4110
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61k230005h3xolcs901q8 → RUNNING: Submitting login credentials
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Fields filled, clicking Login...
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61k230005h3xolcs901q8 → RUNNING: Checking authentication status
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Login successful - on dashboard page
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61k230005h3xolcs901q8 → RUNNING: Successfully authenticated - accessing dashboard
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job cmkx61k230005h3xolcs901q8 → RUNNING: Extracting current bill information
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Saved error screenshot to error-snapshot-cmkx61k230005h3xolcs901q8.png
+[utility-worker db13d1a6-0c01-4efb-970b-0be3d63b3dfd] Job failed cmkx61k230005h3xolcs901q8 page.waitForSelector: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.current-bill .due .wc-green.date') to be visible[22m
+

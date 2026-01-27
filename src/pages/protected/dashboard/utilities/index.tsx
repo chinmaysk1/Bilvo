@@ -103,7 +103,7 @@ const PHASE_INFO: Record<LinkingPhase, PhaseInfo> = {
   },
   NAVIGATING: {
     label: "Connecting",
-    description: "Navigating to PG&E login portal",
+    description: "Navigating to provider login portal",
     icon: ArrowRight,
   },
   AUTHENTICATING: {
@@ -118,12 +118,12 @@ const PHASE_INFO: Record<LinkingPhase, PhaseInfo> = {
   },
   NEEDS_2FA: {
     label: "Verification Required",
-    description: "PG&E requires two-factor authentication",
+    description: "The provider requires two-factor authentication",
     icon: ShieldCheck,
   },
   VERIFYING_2FA: {
     label: "Verifying Code",
-    description: "Confirming your security code with PG&E",
+    description: "Confirming your security code with the provider",
     icon: ShieldCheck,
   },
   AUTHENTICATED: {
@@ -321,7 +321,7 @@ function LinkingSession({
                   <p className="font-medium">Check your phone</p>
                   <p className="text-slate-600">
                     {progressMessage ||
-                      "PG&E sent a 6-digit code to your registered phone number"}
+                      "The provider sent a 6-digit code to your registered phone number"}
                   </p>
                 </div>
               </div>
@@ -357,7 +357,8 @@ function LinkingSession({
             <div className="flex items-center gap-3">
               <div className="h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
               <p className="text-sm text-slate-700">
-                {progressMessage || "Verifying your code with PG&E servers..."}
+                {progressMessage ||
+                  "Verifying your code with provider servers..."}
               </p>
             </div>
           </div>
@@ -393,7 +394,7 @@ function LinkingSession({
                 <ul className="text-xs text-red-600 list-disc list-inside space-y-0.5">
                   <li>Incorrect username or password</li>
                   <li>Account locked due to too many attempts</li>
-                  <li>PG&E website maintenance</li>
+                  <li>Provider website maintenance</li>
                 </ul>
               </div>
             </div>

@@ -11,7 +11,7 @@ const { decryptPassword } = CryptoUtils;
 // Immediate safety check
 if (typeof decryptPassword !== "function") {
   throw new Error(
-    `decryptPassword is still not a function. Type is: ${typeof decryptPassword}`
+    `decryptPassword is still not a function. Type is: ${typeof decryptPassword}`,
   );
 }
 
@@ -21,7 +21,7 @@ const prisma = new PrismaClient();
 const WORKER_ID = process.env.WORKER_ID || crypto.randomUUID();
 const POLL_MS = Number(process.env.UTILITY_WORKER_POLL_MS || 2000);
 const LOCK_STALE_SECONDS = Number(
-  process.env.UTILITY_WORKER_LOCK_STALE_SECONDS || 10 * 60
+  process.env.UTILITY_WORKER_LOCK_STALE_SECONDS || 10 * 60,
 ); // 10 min
 const HEADLESS = false;
 const DEBUG = true;
@@ -136,7 +136,7 @@ async function claimOnePendingJob() {
     RETURNING j.*;
   `,
     LOCK_STALE_SECONDS,
-    WORKER_ID
+    WORKER_ID,
   );
 
   return rows?.[0] ?? null;
@@ -245,7 +245,7 @@ async function markJobSuccess(job) {
 
 async function markJobSuccessNoBill(
   job,
-  note = "No bill available in current cycle"
+  note = "No bill available in current cycle",
 ) {
   await prisma.$transaction(async (tx) => {
     await tx.utilityLinkJob.update({
@@ -271,7 +271,14 @@ async function markJobSuccessNoBill(
 
 async function saveScrapedBill(
   prisma,
-  { amount, dueDate, accountNumber, utilityAccountId, householdId, ownerUserId }
+  {
+    amount,
+    dueDate,
+    accountNumber,
+    utilityAccountId,
+    householdId,
+    ownerUserId,
+  },
 ) {
   return await prisma.$transaction(async (tx) => {
     const externalId = `pge-${accountNumber}-${dueDate.getTime()}`;
@@ -357,7 +364,7 @@ async function runPgeLink(job) {
 
   const password = decryptPassword(
     utility.encryptedPassword,
-    utility.passwordIv
+    utility.passwordIv,
   );
 
   // Step 2: Launch browser
@@ -388,7 +395,7 @@ async function runPgeLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Navigating to PG&E login portal"
+      "Navigating to PG&E login portal",
     );
 
     if (DEBUG) log("Navigating to", PGE_LOGIN_URL);
@@ -416,7 +423,7 @@ async function runPgeLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Checking authentication status"
+      "Checking authentication status",
     );
 
     if (DEBUG) log("Waiting for transition (MFA or Dashboard)...");
@@ -439,7 +446,7 @@ async function runPgeLink(job) {
     ]).catch((e) => {
       if (DEBUG)
         log(
-          "Neither MFA nor Dashboard detected within 15s. Proceeding to fallback check."
+          "Neither MFA nor Dashboard detected within 15s. Proceeding to fallback check.",
         );
       return "UNKNOWN";
     });
@@ -449,7 +456,7 @@ async function runPgeLink(job) {
       await updateJobProgress(
         job.id,
         "RUNNING",
-        "Two-factor authentication required"
+        "Two-factor authentication required",
       );
 
       if (DEBUG) log("2FA detected via selector. Selecting SMS Text option...");
@@ -486,12 +493,12 @@ async function runPgeLink(job) {
       if (DEBUG) log("Waiting for button to enable...");
 
       const confirmButton = page.locator(
-        '.mfaFieldset button.PrimaryButton:has-text("Confirm")'
+        '.mfaFieldset button.PrimaryButton:has-text("Confirm")',
       );
       await confirmButton.waitFor({ state: "visible" });
       await page.waitForFunction(
         (btn) => !btn.disabled,
-        await confirmButton.elementHandle()
+        await confirmButton.elementHandle(),
       );
 
       if (DEBUG) log("Confirming...");
@@ -503,7 +510,7 @@ async function runPgeLink(job) {
             url.href.includes("dashboard") ||
             url.href.includes("/s/") ||
             url.href.includes("myaccount"),
-          { timeout: 30000 }
+          { timeout: 30000 },
         ),
       ]);
 
@@ -516,14 +523,14 @@ async function runPgeLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Successfully authenticated - accessing dashboard"
+      "Successfully authenticated - accessing dashboard",
     );
 
     // Step 9: Extract bill data
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Extracting current bill information"
+      "Extracting current bill information",
     );
 
     try {
@@ -562,7 +569,7 @@ async function runPgeLink(job) {
       if (!rawAmount || !rawDate || !rawAccount) {
         await markJobSuccessNoBill(
           job,
-          "Account linked - bill data not yet available"
+          "Account linked - bill data not yet available",
         );
         return { status: "SUCCESS", note: "Bill not ready", finalized: true };
       }
@@ -573,13 +580,13 @@ async function runPgeLink(job) {
 
       if (!accountClean || accountClean === "" || isNaN(amountClean)) {
         throw new Error(
-          `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}"`
+          `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}"`,
         );
       }
 
       if (DEBUG) {
         log(
-          `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`
+          `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`,
         );
       }
 
@@ -587,7 +594,7 @@ async function runPgeLink(job) {
         await updateJobProgress(
           job.id,
           "SUCCESS",
-          "No balance due - account linked successfully"
+          "No balance due - account linked successfully",
         );
         await markJobSuccess(job);
         return { status: "SUCCESS", note: "No balance due", finalized: true };
@@ -597,7 +604,7 @@ async function runPgeLink(job) {
       await updateJobProgress(
         job.id,
         "RUNNING",
-        "Syncing bill to your account"
+        "Syncing bill to your account",
       );
 
       const fullUtility = await prisma.utilityAccount.findUnique({
@@ -659,7 +666,7 @@ async function runSloWaterLink(job) {
 
   const password = decryptPassword(
     utility.encryptedPassword,
-    utility.passwordIv
+    utility.passwordIv,
   );
 
   // Step 2: Launch browser
@@ -690,7 +697,7 @@ async function runSloWaterLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Navigating to SLO Water login portal"
+      "Navigating to SLO Water login portal",
     );
 
     if (DEBUG) log("Navigating to", SLO_LOGIN_URL);
@@ -740,7 +747,7 @@ async function runSloWaterLink(job) {
       const currentUrl = page.url();
       if (!currentUrl.includes("/secure/home")) {
         throw new Error(
-          `Login failed or timed out. Current URL: ${currentUrl}`
+          `Login failed or timed out. Current URL: ${currentUrl}`,
         );
       }
     }
@@ -751,13 +758,13 @@ async function runSloWaterLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Successfully authenticated - accessing bill details"
+      "Successfully authenticated - accessing bill details",
     );
 
     if (DEBUG) log("Clicking 'View My Bill' button...");
 
     const viewBillButton = page.locator(
-      'a.cp-button.cp-button-raised.cp-button-outlined[href="/secure/MyBill"]'
+      'a.cp-button.cp-button-raised.cp-button-outlined[href="/secure/MyBill"]',
     );
     await viewBillButton.waitFor({ state: "visible" });
     await viewBillButton.click();
@@ -772,7 +779,7 @@ async function runSloWaterLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Extracting current bill information"
+      "Extracting current bill information",
     );
 
     try {
@@ -788,14 +795,14 @@ async function runSloWaterLink(job) {
 
       // Extract account number
       const accountNumberElement = page.locator(
-        '#accountInfoCollapse .col-auto:has(.cp-text-caption:text("Account Number"))'
+        '#accountInfoCollapse .col-auto:has(.cp-text-caption:text("Account Number"))',
       );
       const accountText = await accountNumberElement.textContent();
       const accountClean = accountText.replace(/Account Number/g, "").trim();
 
       // Extract due date from bill summary table
       const dueDateRow = page.locator(
-        'table#bill-summary-totals-table tbody tr:has-text("Current Charges Due By")'
+        'table#bill-summary-totals-table tbody tr:has-text("Current Charges Due By")',
       );
       const dueDateText = await dueDateRow.textContent();
 
@@ -803,19 +810,19 @@ async function runSloWaterLink(job) {
       if (!rawAmount || !dueDateText || !accountClean) {
         await markJobSuccessNoBill(
           job,
-          "Account linked - bill data not yet available"
+          "Account linked - bill data not yet available",
         );
         return { status: "SUCCESS", note: "Bill not ready", finalized: true };
       }
 
       // Parse "Current Charges Due By 1/15/2026" to get the date
       const dueDateMatch = dueDateText.match(
-        /Due By\s+(\d{1,2}\/\d{1,2}\/\d{4})/
+        /Due By\s+(\d{1,2}\/\d{1,2}\/\d{4})/,
       );
       if (!dueDateMatch) {
         await markJobSuccessNoBill(
           job,
-          "Account linked - bill data not yet available"
+          "Account linked - bill data not yet available",
         );
         return { status: "SUCCESS", note: "Bill not ready", finalized: true };
       }
@@ -830,13 +837,13 @@ async function runSloWaterLink(job) {
       // Validation
       if (!accountClean || accountClean === "" || isNaN(amountClean)) {
         throw new Error(
-          `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}"`
+          `Data extraction failed. Acct: "${accountClean}", Amt: "${rawAmount}"`,
         );
       }
 
       if (DEBUG) {
         log(
-          `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`
+          `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`,
         );
       }
 
@@ -849,7 +856,7 @@ async function runSloWaterLink(job) {
       await updateJobProgress(
         job.id,
         "RUNNING",
-        "Syncing bill to your account"
+        "Syncing bill to your account",
       );
 
       const fullUtility = await prisma.utilityAccount.findUnique({
@@ -965,7 +972,7 @@ async function runSoCalGasLink(job) {
 
   const password = decryptPassword(
     utility.encryptedPassword,
-    utility.passwordIv
+    utility.passwordIv,
   );
 
   // Step 2: Launch browser
@@ -996,7 +1003,7 @@ async function runSoCalGasLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Navigating to SoCalGas login portal"
+      "Navigating to SoCalGas login portal",
     );
     if (DEBUG) log("Navigating to", SCG_LOGIN_URL);
 
@@ -1025,7 +1032,7 @@ async function runSoCalGasLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Checking authentication status"
+      "Checking authentication status",
     );
 
     const homeHeader = page.locator('h2.page-description[aria-label*="Acct#"]');
@@ -1052,14 +1059,14 @@ async function runSoCalGasLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Successfully authenticated - accessing bill details"
+      "Successfully authenticated - accessing bill details",
     );
 
     // Step 6: Extract bill data
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Extracting current bill information"
+      "Extracting current bill information",
     );
 
     // Account number: aria-label="Residential Acct# 03871620021"
@@ -1079,7 +1086,7 @@ async function runSoCalGasLink(job) {
     const rawDue =
       (await tryText(
         page.locator('[data-testid="balance-due-date"] span.font-extrabold'),
-        8000
+        8000,
       )) ||
       (await tryText(page.locator('[data-testid="balance-due-date"]'), 8000)) ||
       null;
@@ -1089,7 +1096,7 @@ async function runSoCalGasLink(job) {
     // but the bill fields aren't present, treat as "no bill yet".
     if (!accountClean) {
       throw new Error(
-        `SoCalGas scrape failed: could not extract account number (aria="${aria}")`
+        `SoCalGas scrape failed: could not extract account number (aria="${aria}")`,
       );
     }
 
@@ -1097,11 +1104,11 @@ async function runSoCalGasLink(job) {
       await updateJobProgress(
         job.id,
         "SUCCESS",
-        "No bill available yet (missing amount/due widgets)"
+        "No bill available yet (missing amount/due widgets)",
       );
       await markJobSuccessNoBill(
         job,
-        "Account linked - bill data not yet available"
+        "Account linked - bill data not yet available",
       );
       return { status: "SUCCESS", note: "Bill not ready", finalized: true };
     }
@@ -1122,13 +1129,13 @@ async function runSoCalGasLink(job) {
     if (!Number.isFinite(amountClean) || Number.isNaN(dateClean.getTime())) {
       // If the widgets exist but parsing fails, that’s likely a real bug
       throw new Error(
-        `SoCalGas parse failed: amount="${rawAmount}" due="${rawDue}"`
+        `SoCalGas parse failed: amount="${rawAmount}" due="${rawDue}"`,
       );
     }
 
     if (DEBUG) {
       log(
-        `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`
+        `Scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`,
       );
     }
 
@@ -1248,7 +1255,7 @@ async function runSanLuisGarbageLink(job) {
 
   const password = decryptPassword(
     utility.encryptedPassword,
-    utility.passwordIv
+    utility.passwordIv,
   );
 
   // Step 2: Launch browser
@@ -1279,7 +1286,7 @@ async function runSanLuisGarbageLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Navigating to San Luis Garbage login portal"
+      "Navigating to San Luis Garbage login portal",
     );
 
     if (DEBUG) log("Navigating to", WCI_LOGIN_URL);
@@ -1310,7 +1317,7 @@ async function runSanLuisGarbageLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Checking authentication status"
+      "Checking authentication status",
     );
 
     const loginErrorSelector = ".server-error";
@@ -1345,7 +1352,7 @@ async function runSanLuisGarbageLink(job) {
       const currentUrl = page.url();
       if (!currentUrl.includes(WCI_DASHBOARD_URL_PART)) {
         throw new Error(
-          `Login failed or timed out. Current URL: ${currentUrl}`
+          `Login failed or timed out. Current URL: ${currentUrl}`,
         );
       }
     }
@@ -1355,14 +1362,14 @@ async function runSanLuisGarbageLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Successfully authenticated - accessing dashboard"
+      "Successfully authenticated - accessing dashboard",
     );
 
     // Step 6: Extract bill data
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Extracting current bill information"
+      "Extracting current bill information",
     );
 
     // due date: <span class="wc-green date">Jan 20, 2026</span>
@@ -1372,26 +1379,36 @@ async function runSanLuisGarbageLink(job) {
     // Account number
     const acctSelector = ".account-details .account-number-single";
 
-    await page.waitForSelector(dueDateSelector, {
-      state: "visible",
-      timeout: 30000,
-    });
-    await page.waitForSelector(amountSelector, {
-      state: "visible",
+    await page.waitForSelector(".current-bill, .account-details", {
       timeout: 30000,
     });
 
-    await page.waitForSelector(acctSelector, {
-      state: "visible",
-      timeout: 30000,
-    });
+    const rawDue = await page
+      .locator(dueDateSelector)
+      .first()
+      .textContent()
+      .catch(() => null);
+    const rawAmount = await page
+      .locator(amountSelector)
+      .first()
+      .textContent()
+      .catch(() => null);
+    const rawAcct = await page
+      .locator(acctSelector)
+      .first()
+      .textContent()
+      .catch(() => null);
 
-    const rawDue =
-      (await page.locator(dueDateSelector).first().textContent()) || "";
-    const rawAmount =
-      (await page.locator(amountSelector).first().textContent()) || "";
-    const rawAcct = await page.locator(acctSelector).first().textContent();
+    if (!rawAcct)
+      throw new Error("Account number missing (unexpected after login)");
 
+    if (!rawDue || !rawAmount) {
+      await markJobSuccessNoBill(
+        job,
+        "Account linked - bill data not yet available",
+      );
+      return { status: "SUCCESS", finalized: true };
+    }
     const dueStr = rawDue.trim(); // "Jan 20, 2026"
     const amountClean = parseFloat(rawAmount.replace(/[$,\s*]/g, "")); // "$163.12 *" -> 163.12
 
@@ -1401,7 +1418,7 @@ async function runSanLuisGarbageLink(job) {
     if (!rawAmount || !dueStr || !accountClean) {
       await markJobSuccessNoBill(
         job,
-        "Account linked - bill data not yet available"
+        "Account linked - bill data not yet available",
       );
       return { status: "SUCCESS", note: "Bill not ready", finalized: true };
     }
@@ -1417,7 +1434,7 @@ async function runSanLuisGarbageLink(job) {
       Number.isNaN(dateClean.getTime())
     ) {
       throw new Error(
-        `Data extraction failed. Due: "${rawDue}", Amt: "${rawAmount}"`
+        `Data extraction failed. Due: "${rawDue}", Amt: "${rawAmount}"`,
       );
     }
 
@@ -1543,7 +1560,7 @@ function parseMoney(text) {
 function parseAttBillRangeEndDate(rangeText, now = new Date()) {
   // Example: "Nov 26 - Dec 25"
   const m = String(rangeText || "").match(
-    /^\s*([A-Za-z]{3})\s+(\d{1,2})\s*-\s*([A-Za-z]{3})\s+(\d{1,2})\s*$/
+    /^\s*([A-Za-z]{3})\s+(\d{1,2})\s*-\s*([A-Za-z]{3})\s+(\d{1,2})\s*$/,
   );
   if (!m) return null;
 
@@ -1613,7 +1630,7 @@ async function runAttLink(job) {
 
   const password = decryptPassword(
     utility.encryptedPassword,
-    utility.passwordIv
+    utility.passwordIv,
   );
 
   await updateJobProgress(job.id, "RUNNING", "Starting secure browser");
@@ -1662,7 +1679,7 @@ async function runAttLink(job) {
       } catch (e) {
         log("Failed to dismiss popup, it might have closed itself:", e.message);
       }
-    }
+    },
   );
 
   try {
@@ -1708,7 +1725,7 @@ async function runAttLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Checking authentication status"
+      "Checking authentication status",
     );
 
     const outcome = await Promise.race([
@@ -1766,11 +1783,11 @@ async function runAttLink(job) {
       await updateJobProgress(
         job.id,
         "RUNNING",
-        "Two-factor authentication required"
+        "Two-factor authentication required",
       );
       await markJobNeeds2FA(
         job,
-        "AT&T requires a verification code. Please enter it."
+        "AT&T requires a verification code. Please enter it.",
       );
 
       const code = await waitForTwoFactorCode(job.id);
@@ -1784,7 +1801,7 @@ async function runAttLink(job) {
       // Try common submit buttons
       const verifyBtn = page
         .locator(
-          'button:has-text("Continue"), button:has-text("Verify"), button[type="submit"]'
+          'button:has-text("Continue"), button:has-text("Verify"), button[type="submit"]',
         )
         .first();
       await Promise.all([
@@ -1797,7 +1814,7 @@ async function runAttLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Navigating to AT&T billing center"
+      "Navigating to AT&T billing center",
     );
 
     // 1. Ensure we are actually on the dashboard before trying to use the navbar
@@ -1825,7 +1842,7 @@ async function runAttLink(job) {
         page
           .waitForURL(
             (url) => url.href.endsWith(".com/") || url.href.includes("login"),
-            { timeout: 20000 }
+            { timeout: 20000 },
           )
           .then(() => {
             throw new Error("KICKED_TO_HOME");
@@ -1844,7 +1861,7 @@ async function runAttLink(job) {
     await updateJobProgress(
       job.id,
       "RUNNING",
-      "Extracting current bill information"
+      "Extracting current bill information",
     );
 
     const balanceCard = page
@@ -1871,7 +1888,7 @@ async function runAttLink(job) {
     const amountClean = parseMoney(rawAmount);
     if (!Number.isFinite(amountClean)) {
       throw new Error(
-        `AT&T scrape failed: could not parse amount from "${rawAmount}"`
+        `AT&T scrape failed: could not parse amount from "${rawAmount}"`,
       );
     }
 
@@ -1892,7 +1909,7 @@ async function runAttLink(job) {
       .locator('[data-test-id^="bill_activity_card_"]')
       .first();
     const rangeLabel = activityCard.locator(
-      ".type-base.font-regular.rte-styles"
+      ".type-base.font-regular.rte-styles",
     );
 
     // Wait for the "Shimmer" to end and text to appear
@@ -1914,14 +1931,14 @@ async function runAttLink(job) {
     if (!amountClean || !dueDate || !accountClean) {
       await markJobSuccessNoBill(
         job,
-        "Account linked - bill data not yet available"
+        "Account linked - bill data not yet available",
       );
       return { status: "SUCCESS", note: "Bill not ready", finalized: true };
     }
 
     if (DEBUG) {
       log(
-        `AT&T scraped: $${amountClean} | Due (range end): ${dueDate.toLocaleDateString()} | Acct: ${accountClean}`
+        `AT&T scraped: $${amountClean} | Due (range end): ${dueDate.toLocaleDateString()} | Acct: ${accountClean}`,
       );
     }
 
@@ -2003,6 +2020,523 @@ async function runAttLink(job) {
       log(`Saved error screenshot to ${path}`);
     }
     throw e;
+  } finally {
+    await context.close().catch(() => {});
+    await browser.close().catch(() => {});
+  }
+}
+
+// =====================================================
+// SPECTRUM RUNNER (SMS 2FA via PG&E convention)
+// =====================================================
+
+async function runSpectrumLink(job) {
+  const SPECTRUM_HOME_URL = "https://www.spectrum.net/";
+  const SPECTRUM_ACCOUNT_SUMMARY_URL_PART = "/account-summary";
+  const ID_HOST = "id.spectrum.net";
+
+  // Step 1: Fetch utility account
+  await updateJobProgress(job.id, "RUNNING", "Initializing secure session");
+
+  const utility = await prisma.utilityAccount.findUnique({
+    where: { id: job.utilityAccountId },
+    select: {
+      id: true,
+      loginEmail: true,
+      encryptedPassword: true,
+      passwordIv: true,
+      householdId: true,
+      ownerUserId: true,
+    },
+  });
+
+  if (!utility) throw new Error("Utility account not found");
+  if (!utility.loginEmail) throw new Error("Missing login email (Username)");
+
+  const password = decryptPassword(
+    utility.encryptedPassword,
+    utility.passwordIv,
+  );
+
+  // Step 2: Launch browser
+  await updateJobProgress(job.id, "RUNNING", "Starting secure browser");
+
+  chromium.use(stealth());
+  const browser = await chromium.launch({ headless: HEADLESS });
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    deviceScaleFactor: 1,
+    hasTouch: false,
+    locale: "en-US",
+    timezoneId: "America/Los_Angeles",
+  });
+
+  await context.setExtraHTTPHeaders({
+    "Accept-Language": "en-US,en;q=0.9",
+  });
+
+  const page = await context.newPage();
+
+  try {
+    page.setDefaultTimeout(45_000);
+
+    // Step 3: Go to Spectrum homepage
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Navigating to Spectrum homepage",
+    );
+
+    if (DEBUG) log("Navigating to", SPECTRUM_HOME_URL);
+    await page.goto(SPECTRUM_HOME_URL, { waitUntil: "domcontentloaded" });
+
+    // Step 4: Click "Sign In" on homepage (id=login-button)
+    await updateJobProgress(job.id, "RUNNING", "Opening Spectrum sign-in");
+
+    const homepageSignIn = page.locator("#login-button button");
+    await homepageSignIn.waitFor({ state: "visible", timeout: 30_000 });
+
+    if (DEBUG) log("Clicking Spectrum homepage Sign In...");
+    await Promise.all([
+      homepageSignIn.click(),
+      page.waitForTimeout(800), // SPA -> redirect; don't rely on networkidle
+    ]);
+
+    // Step 5: Wait for login form on id.spectrum.net
+    await updateJobProgress(job.id, "RUNNING", "Submitting login credentials");
+
+    const usernameInput = page.locator(
+      '[data-e2etest="idm-sign-in-username-input"] input',
+    );
+    const passwordInput = page.locator(
+      '[data-e2etest="idm-sign-in-password-input"] input',
+    );
+    const signInBtn = page.locator("#signInBtn button[type='submit']");
+
+    // Wait until we’re on the ID domain and username input is visible
+    await Promise.race([
+      usernameInput.waitFor({ state: "visible", timeout: 30_000 }),
+      page
+        .waitForURL(
+          (url) => url.hostname === ID_HOST && url.href.includes("/login"),
+          {
+            timeout: 30_000,
+          },
+        )
+        .then(async () => {
+          await usernameInput.waitFor({ state: "visible", timeout: 30_000 });
+        }),
+    ]);
+
+    if (DEBUG) log("Filling Spectrum username/password...");
+    await usernameInput.fill(utility.loginEmail);
+    await passwordInput.fill(password);
+
+    if (DEBUG) log("Clicking Spectrum Sign In...");
+    await Promise.all([signInBtn.click(), page.waitForTimeout(1000)]);
+
+    // Step 6: Detect outcomes (MFA vs account summary vs login error)
+    await updateJobProgress(
+      job.id,
+      "RUNNING",
+      "Checking authentication status",
+    );
+
+    const verifyIdentityH1 = page.locator(
+      'h1:has-text("Verify Your Identity")',
+    );
+    const enterCodeH1 = page.locator('h1:has-text("Enter Verification Code")');
+
+    const outcome = await Promise.race([
+      // MFA method selection page
+      verifyIdentityH1
+        .waitFor({ state: "visible", timeout: 20_000 })
+        .then(() => "MFA_SELECT"),
+
+      // MFA code entry page (sometimes you land here quickly)
+      enterCodeH1
+        .waitFor({ state: "visible", timeout: 20_000 })
+        .then(() => "MFA_CODE"),
+
+      // Success path (Spectrum portal)
+      page
+        .waitForURL(
+          (url) =>
+            url.hostname === "www.spectrum.net" &&
+            url.href.includes(SPECTRUM_ACCOUNT_SUMMARY_URL_PART),
+          {
+            timeout: 20_000,
+          },
+        )
+        .then(() => "ACCOUNT_SUMMARY"),
+
+      // Basic “still on login page” fallback after a bit
+      page.waitForTimeout(6000).then(() => "UNKNOWN"),
+    ]).catch(() => "UNKNOWN");
+
+    if (DEBUG) log("Spectrum auth outcome:", outcome, "url:", page.url());
+
+    // If we’re still on login and sign in button is visible, likely bad creds.
+    if (outcome === "UNKNOWN") {
+      const stillOnLogin =
+        page.url().includes("/login") &&
+        (await signInBtn.isVisible().catch(() => false));
+
+      if (stillOnLogin) {
+        // Try to pull any inline error
+        const maybeErr =
+          (await page
+            .locator(".idm-card-alert-container")
+            .first()
+            .textContent()
+            .catch(() => null)) || "Login failed (check Spectrum credentials)";
+        throw new Error(`Spectrum login failed: ${String(maybeErr).trim()}`);
+      }
+    }
+
+    // Step 7: MFA selection page -> default option is Text, click Next
+    if (
+      outcome === "MFA_SELECT" ||
+      (await verifyIdentityH1.isVisible().catch(() => false))
+    ) {
+      await updateJobProgress(
+        job.id,
+        "RUNNING",
+        "Two-factor authentication required",
+      );
+
+      if (DEBUG)
+        log("Spectrum MFA select: leaving default (Text) and clicking Next...");
+
+      const nextBtn = page.locator(
+        '.idm-card-form-buttons button:has-text("Next")',
+      );
+      await nextBtn.waitFor({ state: "visible", timeout: 20_000 });
+
+      await Promise.all([nextBtn.click(), page.waitForTimeout(800)]);
+    }
+
+    // Step 8: MFA code entry -> NEEDS_2FA and wait for code (PG&E convention)
+    if (
+      outcome === "MFA_CODE" ||
+      (await enterCodeH1.isVisible().catch(() => false)) ||
+      page.url().includes("/mfa")
+    ) {
+      // Ensure we’re on the Enter Code screen
+      await Promise.race([
+        enterCodeH1.waitFor({ state: "visible", timeout: 20_000 }),
+        page.waitForTimeout(2000),
+      ]);
+
+      const codeInput = page
+        .locator(
+          "#verificationCode input, input#kite-label-input-15, input[autocomplete='one-time-code']",
+        )
+        .first();
+
+      await codeInput.waitFor({ state: "visible", timeout: 20_000 });
+
+      const codeNextBtn = page.locator(
+        '.idm-card-form-buttons button[type="submit"]:has-text("Next")',
+      );
+
+      // Common alert container on Spectrum ID pages
+      const alertBox = page.locator(".idm-card-alert-container");
+
+      // Allow a couple retries for wrong OTP
+      const MAX_OTP_ATTEMPTS = 3;
+
+      for (let attempt = 1; attempt <= MAX_OTP_ATTEMPTS; attempt++) {
+        await markJobNeeds2FA(
+          job,
+          attempt === 1
+            ? "Please enter the Spectrum verification code sent via SMS."
+            : `Invalid code. Please enter the new Spectrum verification code (attempt ${attempt}/${MAX_OTP_ATTEMPTS}).`,
+        );
+
+        const userProvidedCode = await waitForTwoFactorCode(job.id);
+        if (!userProvidedCode)
+          throw new Error("2FA entry was cancelled or timed out.");
+
+        await updateJobProgress(job.id, "RUNNING", "Verifying security code");
+
+        if (DEBUG) log(`Spectrum OTP attempt ${attempt}: submitting...`);
+
+        // Clear + fill
+        await codeInput.click();
+        await codeInput.fill("");
+        await codeInput.fill(String(userProvidedCode).trim());
+
+        await codeNextBtn.waitFor({ state: "visible", timeout: 20_000 });
+
+        await Promise.all([codeNextBtn.click(), page.waitForTimeout(1200)]);
+
+        // SUCCESS condition: we leave /mfa AND either land back on spectrum.net
+        // or at least leave the Enter Code screen
+        const otpOutcome = await Promise.race([
+          page
+            .waitForURL(
+              (url) =>
+                url.hostname === "www.spectrum.net" ||
+                (url.hostname === ID_HOST &&
+                  !url.href.includes("/mfa") &&
+                  !url.href.includes("/login")),
+              { timeout: 25_000 },
+            )
+            .then(() => "OK"),
+
+          // If still on the Enter Code header, we likely failed
+          enterCodeH1
+            .waitFor({ state: "visible", timeout: 8_000 })
+            .then(() => "STILL_ON_CODE"),
+
+          // If an alert appears, treat as failure
+          alertBox
+            .first()
+            .waitFor({ state: "visible", timeout: 8_000 })
+            .then(() => "ALERT"),
+
+          page.waitForTimeout(10_000).then(() => "TIMEOUT"),
+        ]).catch(() => "TIMEOUT");
+
+        if (DEBUG)
+          log("Spectrum OTP submit outcome:", otpOutcome, "url:", page.url());
+
+        if (otpOutcome === "OK") {
+          // verified
+          break;
+        }
+
+        // Try to detect a “wrong code” message (don’t rely on exact copy)
+        const alertText =
+          (await alertBox
+            .first()
+            .textContent()
+            .catch(() => null)) || "";
+
+        const stillOnMfa =
+          page.url().includes("/mfa") ||
+          (await enterCodeH1.isVisible().catch(() => false));
+
+        if (stillOnMfa) {
+          if (DEBUG) log("OTP appears invalid; alert:", alertText.trim());
+
+          // If we exhausted attempts, hard fail.
+          if (attempt === MAX_OTP_ATTEMPTS) {
+            throw new Error(
+              `Spectrum 2FA failed after ${MAX_OTP_ATTEMPTS} attempts. ${
+                alertText.trim() ? `Message: ${alertText.trim()}` : ""
+              }`.trim(),
+            );
+          }
+
+          // Otherwise loop and ask user for a new code.
+          continue;
+        }
+
+        // If we are NOT on MFA anymore but also not clearly authenticated, hard fail.
+        throw new Error(
+          `Spectrum verification state unclear after OTP submit. Current URL: ${page.url()}`,
+        );
+      }
+    }
+
+    // Step 9: Final auth check — DO NOT report success unless we actually left ID MFA flow
+    const finalUrl = page.url();
+    const isAuthed =
+      finalUrl.includes("www.spectrum.net") ||
+      (finalUrl.includes(ID_HOST) &&
+        !finalUrl.includes("/mfa") &&
+        !finalUrl.includes("/login"));
+
+    if (!isAuthed) {
+      throw new Error(
+        `Spectrum authentication not confirmed. Current URL: ${finalUrl}`,
+      );
+    }
+
+    // ------------------ CONTINUE: Navigate to Billing + Scrape ------------------
+    try {
+      await updateJobProgress(job.id, "RUNNING", "Navigating to Billing page");
+
+      // Prefer clicking the nav link (less brittle). Fallback to direct URL.
+      const billingNav = page
+        .locator('[data-e2etest="navigation-redesign-billing"]')
+        .first();
+      const didClickNav = await billingNav.isVisible().catch(() => false);
+
+      if (didClickNav) {
+        if (DEBUG) log("Clicking Billing nav...");
+        await Promise.all([billingNav.click(), page.waitForTimeout(600)]);
+        // Wait for billing URL or billing card content
+        await Promise.race([
+          page.waitForURL((url) => url.href.includes("/billing"), {
+            timeout: 25000,
+          }),
+          page.waitForSelector(
+            'billing-status-card, [data-e2etest="billing-status-card-container"]',
+            { timeout: 25000 },
+          ),
+        ]).catch(() => {});
+      } else {
+        if (DEBUG) log("Billing nav not found, jumping to /billing");
+        await page.goto("https://www.spectrum.net/billing", {
+          waitUntil: "domcontentloaded",
+        });
+      }
+
+      await updateJobProgress(
+        job.id,
+        "RUNNING",
+        "Extracting current bill information",
+      );
+
+      // Wait for the billing status container
+      await page
+        .waitForSelector(
+          'billing-status-card, [data-e2etest="billing-status-card-container"]',
+          { timeout: 30000 },
+        )
+        .catch(() => {});
+
+      // --- Amount due ---
+      const rawAmountText =
+        (await page
+          .locator(
+            'billing-status-card .amount-due, [data-e2etest="billing-status-card-amount-due"]',
+          )
+          .first()
+          .textContent()
+          .catch(() => null)) || "";
+
+      const amountClean = parseFloat(
+        String(rawAmountText || "").replace(/[$,\s]/g, ""),
+      );
+
+      // If amount isn't present or is zero => treat as "no bill yet / paid"
+      if (!rawAmountText || !Number.isFinite(amountClean) || amountClean <= 0) {
+        await updateJobProgress(
+          job.id,
+          "SUCCESS",
+          "No balance due - account linked successfully",
+        );
+        await markJobSuccessNoBill(job, "No balance due or bill not available");
+        return { status: "SUCCESS", note: "No balance due", finalized: true };
+      }
+
+      // --- Due date (may not exist when paid) ---
+      // Try a few plausible selectors. If none found, we fail parse (so we can detect bug).
+      const possibleDueLocators = [
+        "billing-status-card .due-date",
+        "billing-status-card .dueDate",
+        "billing-status-card .payment-due-date",
+        '[data-e2etest="billing-status-card-due-date"]',
+        "billing-status-card .payment-due-and-button-container .due",
+      ];
+      let rawDueText = null;
+      for (const sel of possibleDueLocators) {
+        rawDueText =
+          (await page
+            .locator(sel)
+            .first()
+            .textContent()
+            .catch(() => null)) || rawDueText;
+        if (rawDueText) break;
+      }
+
+      // If due date not found, treat as "no bill yet" (but we already ruled out zero amount above).
+      // Some Spectrum accounts show no explicit due date in the card; try page text fallback.
+      if (!rawDueText) {
+        // attempt to find any "Due" textual hints
+        rawDueText =
+          (await page
+            .locator(
+              'billing-status-card, [data-e2etest="billing-status-card-container"]',
+            )
+            .first()
+            .textContent()
+            .catch(() => null)) || null;
+      }
+
+      // Normalize due text and attempt parse. If parse fails, throw to surface an error.
+      let dateClean = null;
+      if (rawDueText) {
+        const m = String(rawDueText).match(
+          /(\w+\s+\d{1,2},\s*\d{4})|(\d{1,2}\/\d{1,2}\/\d{4})/,
+        );
+        if (m) {
+          dateClean = new Date(m[0]);
+        } else {
+          // try ISO-ish / month name variations
+          const alt = Date.parse(rawDueText);
+          if (!Number.isNaN(alt)) dateClean = new Date(alt);
+        }
+      }
+
+      if (!dateClean || Number.isNaN(dateClean.getTime())) {
+        // If we couldn't confidently parse a due date, fail so we don't save bogus data.
+        throw new Error(
+          `Spectrum parse failed: could not determine due date from "${String(rawDueText).slice(0, 200)}"`,
+        );
+      }
+
+      // --- Account number from Statements card ---
+      // Look for the statements subtitle which contains "Account Number:  8413120590912481"
+      const acctSubtitleSelector =
+        'billing-statements-card [data-e2etest="billing-statements-card-core-statements-subtitle"], billing-statements-card kite-subtitle, [data-e2etest="billing-page-statements-container"]';
+      const acctSubtitleText =
+        (await page
+          .locator(acctSubtitleSelector)
+          .first()
+          .textContent()
+          .catch(() => null)) || "";
+
+      const acctMatch = String(acctSubtitleText).match(
+        /Account Number[:\s]*([0-9\s\-]+)/i,
+      );
+      const accountClean = acctMatch ? acctMatch[1].replace(/\s|-/g, "") : null;
+
+      if (!accountClean) {
+        throw new Error(
+          `Spectrum parse failed: could not extract account number from "${String(acctSubtitleText).slice(0, 200)}"`,
+        );
+      }
+
+      if (DEBUG) {
+        log(
+          `Spectrum scraped: $${amountClean} | Due: ${dateClean.toLocaleDateString()} | Acct: ${accountClean}`,
+        );
+      }
+
+      // --- Save to DB via existing helper ---
+      const fullUtility = await prisma.utilityAccount.findUnique({
+        where: { id: job.utilityAccountId },
+      });
+      if (!fullUtility)
+        throw new Error("Utility record not found when saving Spectrum bill");
+
+      await saveScrapedBill(prisma, {
+        amount: amountClean,
+        dueDate: dateClean,
+        accountNumber: accountClean,
+        utilityAccountId: fullUtility.id,
+        householdId: fullUtility.householdId,
+        ownerUserId: fullUtility.ownerUserId || job.createdByUserId,
+      });
+
+      await updateJobProgress(job.id, "SUCCESS", "Bill synced successfully");
+      return { status: "SUCCESS" };
+    } catch (e) {
+      // Keep your screenshot & debug flow consistent with other runners
+      if (DEBUG) {
+        const path = `error-snapshot-${job.id}.png`;
+        await page.screenshot({ path, fullPage: true }).catch(() => {});
+        log(`Saved error screenshot to ${path}`);
+      }
+      throw e;
+    }
   } finally {
     await context.close().catch(() => {});
     await browser.close().catch(() => {});
@@ -2104,6 +2638,26 @@ async function processJob(job) {
       return;
     }
 
+    if (job.provider?.toLowerCase().includes("spectrum")) {
+      const result = await runSpectrumLink(job);
+
+      if (result?.status === "NEEDS_2FA") {
+        await markJobNeeds2FA(job, result.note);
+        log("Job NEEDS_2FA", job.id);
+        return;
+      }
+
+      // If runner already finalized, don't overwrite.
+      if (result?.finalized) {
+        log("Job SUCCESS (finalized in runner)", job.id);
+        return;
+      }
+
+      await markJobSuccess(job);
+      log("Job SUCCESS", job.id);
+      return;
+    }
+
     throw new Error(`Unsupported provider: ${job.provider}`);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -2147,7 +2701,7 @@ async function main() {
         log(`Critical failure on job ${job.id}:`, e.message);
         await markJobFailed(
           job,
-          `Worker caught unhandled exception: ${e.message}`
+          `Worker caught unhandled exception: ${e.message}`,
         ).catch(() => {});
       }
     }

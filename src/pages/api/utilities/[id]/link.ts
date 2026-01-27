@@ -10,7 +10,7 @@ import { encryptPassword } from "@/utils/common/crypto";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   try {
     const session = await getServerSession(req, res, authOptions);
@@ -62,11 +62,13 @@ export default async function handler(
       const updateData: any = {
         loginEmail,
         accountHolderName: accountHolderName ?? null,
-        isLinked: false, // stays false until worker succeeds
       };
 
       // Only update password if provided (new link, not re-sync)
       if (!isResync) {
+        // Only force unlink for initial link attempts
+        updateData.isLinked = false;
+
         const enc = encryptPassword(password);
         updateData.encryptedPassword = enc.encrypted;
         updateData.passwordIv = enc.iv;
