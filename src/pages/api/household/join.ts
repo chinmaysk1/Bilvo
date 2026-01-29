@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 import { prisma } from "@/lib/prisma";
+import { BillStatus } from "@prisma/client";
 
 type Data =
   | { error: string }
@@ -30,7 +31,7 @@ type Data =
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data>,
 ) {
   if (req.method === "POST") return postJoin(req, res);
   if (req.method === "GET") return getVerify(req, res);
@@ -88,12 +89,65 @@ async function postJoin(req: NextApiRequest, res: NextApiResponse<Data>) {
     }
 
     // Join + mark onboarding complete
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        householdId: household.id,
-        hasCompletedOnboarding: true,
-      },
+    // ALSO: after joining, recalc all household bills so the new member is included
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      const updated = await tx.user.update({
+        where: { id: user.id },
+        data: {
+          householdId: household.id,
+          hasCompletedOnboarding: true,
+        },
+      });
+
+      // Load the fresh member list (now includes the new user)
+      const members = await tx.user.findMany({
+        where: { householdId: household.id },
+        select: { id: true },
+      });
+      const memberIds = members.map((m) => m.id);
+      const memberCount = Math.max(memberIds.length, 1);
+
+      // Fetch all bills for the household with their participants
+      const bills = await tx.bill.findMany({
+        where: { householdId: household.id, status: { not: BillStatus.PAID } },
+        select: {
+          id: true,
+          amount: true,
+          participants: { select: { userId: true } },
+        },
+      });
+
+      // Recalculate each bill: ensure new participant exists, then equal-split shares
+      for (const b of bills) {
+        const split = Number(b.amount ?? 0) / memberCount;
+
+        const existingUserIds = new Set(b.participants.map((p) => p.userId));
+        const missingUserIds = memberIds.filter(
+          (id) => !existingUserIds.has(id),
+        );
+
+        if (missingUserIds.length) {
+          await tx.billParticipant.createMany({
+            data: missingUserIds.map((uid) => ({
+              billId: b.id,
+              userId: uid,
+              shareAmount: split,
+              autopayEnabled: false,
+            })),
+            skipDuplicates: true,
+          });
+        }
+
+        await tx.billParticipant.updateMany({
+          where: {
+            billId: b.id,
+            userId: { in: memberIds },
+          },
+          data: { shareAmount: split },
+        });
+      }
+
+      return updated;
     });
 
     return res.status(200).json({

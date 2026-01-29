@@ -18,10 +18,14 @@ export type HouseholdAuthContext = {
   user: {
     id: string;
     householdId: string;
+    name: string | null;
+    email: string;
   };
   household: {
     id: string;
     adminId: string | null;
+    name: string;
+    inviteCode: string | null;
   };
 };
 
@@ -31,7 +35,7 @@ export type HouseholdAuthContext = {
  */
 export async function assertHouseholdMember(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ): Promise<HouseholdAuthContext> {
   const session = await getServerSession(req, res, authOptions);
 
@@ -44,6 +48,8 @@ export async function assertHouseholdMember(
     select: {
       id: true,
       householdId: true,
+      name: true,
+      email: true,
     },
   });
 
@@ -56,6 +62,8 @@ export async function assertHouseholdMember(
     select: {
       id: true,
       adminId: true,
+      name: true,
+      inviteCode: true,
     },
   });
 
@@ -67,10 +75,14 @@ export async function assertHouseholdMember(
     user: {
       id: user.id,
       householdId: user.householdId,
+      name: session.user.name || null,
+      email: session.user.email,
     },
     household: {
       id: household.id,
       adminId: household.adminId,
+      name: household.name,
+      inviteCode: household.inviteCode,
     },
   };
 }
@@ -81,7 +93,7 @@ export async function assertHouseholdMember(
  */
 export async function assertHouseholdAdmin(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ): Promise<HouseholdAuthContext> {
   const ctx = await assertHouseholdMember(req, res);
 

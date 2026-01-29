@@ -743,7 +743,7 @@ function HouseholdContent() {
               className="h-10 sm:h-11 rounded-lg border-gray-300"
             />
           </div>
-          <div className="py-3 sm:py-4">
+          {/* <div className="py-3 sm:py-4">
             <Label
               className="text-sm text-gray-900 mb-2 block"
               style={{ fontWeight: 600 }}
@@ -795,7 +795,7 @@ function HouseholdContent() {
                 <SelectItem value="sms">SMS</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="outline"

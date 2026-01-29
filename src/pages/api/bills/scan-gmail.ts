@@ -24,12 +24,12 @@ function extractBody(part?: any): string {
   // direct children preference
   if (part.parts?.length) {
     const plain = part.parts.find((p: any) =>
-      p.mimeType?.startsWith("text/plain")
+      p.mimeType?.startsWith("text/plain"),
     );
     if (plain?.body?.data) return decodeB64Url(plain.body.data);
 
     const html = part.parts.find((p: any) =>
-      p.mimeType?.startsWith("text/html")
+      p.mimeType?.startsWith("text/html"),
     );
     if (html?.body?.data) {
       // naive html->text fallback (good enough for heuristics)
@@ -63,7 +63,7 @@ const BILL_KEYWORDS = [
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST")
     return res.status(405).json({ error: "Method not allowed" });
@@ -90,14 +90,12 @@ export default async function handler(
       `${baseUrl}/api/user/google-account`,
       {
         headers: { Cookie: req.headers.cookie || "" },
-      }
+      },
     );
     if (!googleAccountResponse.ok) {
       const errorData = await googleAccountResponse.json();
       return res.status(400).json({
-        error:
-          errorData.error ||
-          "No Gmail access token found. Please sign out and sign in again to grant Gmail permissions.",
+        error: errorData.error || "No Gmail access token found.",
       });
     }
 
@@ -110,7 +108,7 @@ export default async function handler(
     // --- Gmail client + refresh ---
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET
+      process.env.GOOGLE_CLIENT_SECRET,
     );
     oauth2Client.setCredentials({
       access_token: googleAccount.access_token,
@@ -180,7 +178,7 @@ export default async function handler(
           textForParse,
           body,
           from,
-          dateHeader
+          dateHeader,
         );
 
         console.log("[gmail] billInfo result:", {
@@ -243,7 +241,7 @@ export default async function handler(
       }
       if (error.message.includes("invalid_grant")) {
         return res.status(401).json({
-          error: "Gmail access expired. Please sign out and sign in again.",
+          error: "Gmail access expired.",
         });
       }
       if (error.message.includes("insufficient")) {
@@ -270,7 +268,7 @@ function isStatementReady(subject: string, from: string) {
     f.includes("merchanttransact.com") || s.includes("water and sewer");
   const ready =
     /statement is ready|is ready to view|statement available|your bill.*ready/i.test(
-      s
+      s,
     );
   return ready && (isPge || isBecu || isMerchantTransact);
 }
@@ -300,7 +298,7 @@ function parseBillFromEmail(
   subject: string,
   body: string,
   from: string,
-  dateHeader?: string
+  dateHeader?: string,
 ): {
   biller: string;
   billerType: string;

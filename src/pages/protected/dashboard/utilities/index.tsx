@@ -666,16 +666,25 @@ function UtilitiesContent() {
           const newPhase = parseBackendStatus(backendStatus, error);
           const message = extractProgressMessage(error);
 
-          setUtilityStates((prev) => ({
-            ...prev,
-            [utilityId]: {
-              ...prev[utilityId],
-              phase: newPhase,
-              progressMessage: message,
-              lastError:
-                backendStatus === "FAILED" ? error : prev[utilityId]?.lastError,
-            },
-          }));
+          setUtilityStates((prev) => {
+            const currentPhase = prev[utilityId]?.phase;
+            // Don't allow poll to bounce us back to NEEDS_2FA right after submit
+            if (currentPhase === "VERIFYING_2FA" && newPhase === "NEEDS_2FA") {
+              return prev;
+            }
+            return {
+              ...prev,
+              [utilityId]: {
+                ...prev[utilityId],
+                phase: newPhase,
+                progressMessage: message,
+                lastError:
+                  backendStatus === "FAILED"
+                    ? error
+                    : prev[utilityId]?.lastError,
+              },
+            };
+          });
 
           // Terminal states
           if (backendStatus === "SUCCESS") {
@@ -705,15 +714,6 @@ function UtilitiesContent() {
             );
             return;
           }
-
-          // Prevent 2FA state from reverting after code submission
-          const currentPhase = utilityStates[utilityId]?.phase;
-          if (
-            currentPhase === "VERIFYING_2FA" &&
-            backendStatus === "NEEDS_2FA"
-          ) {
-            return;
-          }
         } catch (error) {
           console.error("Polling error:", error);
         }
@@ -724,6 +724,20 @@ function UtilitiesContent() {
       Object.values(intervals).forEach((interval) => clearInterval(interval));
     };
   }, [syncingUtilities, fetchData, utilities]);
+
+  // Auto-expand the "current" syncing utility.
+  useEffect(() => {
+    if (syncingUtilities.size === 0) return;
+
+    // If nothing expanded OR expanded utility is no longer syncing, expand the next syncing one
+    if (!expandedUtility || !syncingUtilities.has(expandedUtility)) {
+      const nextId = Array.from(syncingUtilities)[0];
+      if (nextId) {
+        setExpandedUtility(nextId);
+        setEditingUtility(null);
+      }
+    }
+  }, [syncingUtilities, expandedUtility]);
 
   // ------------------------------------------------------
   // Handlers
@@ -1106,11 +1120,6 @@ function UtilitiesContent() {
                 elapsedTime: 0,
               },
             }));
-
-            // Auto-expand first syncing utility
-            if (successCount === 1) {
-              setExpandedUtility(utility.id);
-            }
           } else {
             failCount++;
           }
@@ -1957,7 +1966,7 @@ function UtilitiesContent() {
                 onClick={handleSyncAllUtilities}
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-6 sm:px-8 text-base"
+                className="w-full sm:w-auto border-[#008a4b] hover:bg-[#008a4b] text-[#008a4b] rounded-lg px-6 sm:px-8 text-base"
                 // className="border-[#008a4b] text-[#008a4b] hover:bg-[#008a4b] hover:text-white rounded-lg px-8"
                 style={{ fontWeight: 600 }}
                 disabled={isSyncing || linkedUtilitiesCount === 0}

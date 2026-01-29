@@ -83,7 +83,7 @@ type BillsGroup = {
   ownerUserId: string;
   owner: OwnerMeta;
   bills: Bill[];
-  earliestDueDateISO: string;
+  earliestDueDateISO: string | null;
   totalAmount: number;
   groupStatus: BillStatus;
 };
@@ -148,13 +148,15 @@ export function BatchedBillsTable({
 
     const out: BillsGroup[] = Object.entries(byOwner).map(
       ([ownerUserId, list]) => {
-        const sorted = [...list].sort(
-          (a, b) =>
-            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-        );
+        const sorted = [...list].sort((a, b) => {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        });
 
         const earliestDueDateISO =
-          sorted[0]?.dueDate || new Date().toISOString();
+          sorted.find((b) => !!b.dueDate)?.dueDate ?? null;
         const totalAmount = sorted.reduce(
           (sum, b) => sum + Number(b.yourShare || 0),
           0,
@@ -171,11 +173,15 @@ export function BatchedBillsTable({
       },
     );
 
-    out.sort(
-      (a, b) =>
+    out.sort((a, b) => {
+      if (!a.earliestDueDateISO && !b.earliestDueDateISO) return 0;
+      if (!a.earliestDueDateISO) return 1;
+      if (!b.earliestDueDateISO) return -1;
+      return (
         new Date(a.earliestDueDateISO).getTime() -
-        new Date(b.earliestDueDateISO).getTime(),
-    );
+        new Date(b.earliestDueDateISO).getTime()
+      );
+    });
     return out;
   }, [bills, householdMembers, currentUserId]);
 
@@ -347,7 +353,7 @@ function DesktopGroupRow({
           backgroundColor: isEven ? "transparent" : "#FAFBFC",
         }}
         onClick={(e) => {
-          if (!isSingle) toggleOwner(group.ownerUserId, e);
+          toggleOwner(group.ownerUserId, e);
         }}
         onMouseEnter={(e) =>
           (e.currentTarget.style.backgroundColor = "#F9FAFB")
@@ -372,24 +378,22 @@ function DesktopGroupRow({
                 justifyContent: "center",
               }}
             >
-              {!isSingle && (
-                <div
-                  onClick={(e) => toggleOwner(group.ownerUserId, e)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {isExpanded ? (
-                    <ChevronDown
-                      className="h-4 w-4"
-                      style={{ color: "#6B7280" }}
-                    />
-                  ) : (
-                    <ChevronRight
-                      className="h-4 w-4"
-                      style={{ color: "#6B7280" }}
-                    />
-                  )}
-                </div>
-              )}
+              <div
+                onClick={(e) => toggleOwner(group.ownerUserId, e)}
+                style={{ cursor: "pointer" }}
+              >
+                {isExpanded ? (
+                  <ChevronDown
+                    className="h-4 w-4"
+                    style={{ color: "#6B7280" }}
+                  />
+                ) : (
+                  <ChevronRight
+                    className="h-4 w-4"
+                    style={{ color: "#6B7280" }}
+                  />
+                )}
+              </div>
             </div>
 
             <Avatar style={{ width: 40, height: 40 }}>
@@ -438,8 +442,11 @@ function DesktopGroupRow({
                 fontFamily: "Inter, sans-serif",
               }}
             >
-              Due {formatMonthDay(group.earliestDueDateISO)} •{" "}
-              {isSingle ? "Single bill" : "Auto-grouped"}
+              Due{" "}
+              {group.earliestDueDateISO
+                ? formatMonthDay(group.earliestDueDateISO)
+                : "—"}{" "}
+              • {isSingle ? "Single bill" : "Auto-grouped"}
             </div>
           </div>
         </TableCell>
@@ -461,7 +468,9 @@ function DesktopGroupRow({
           <StatusBadge
             status={group.groupStatus}
             contextData={{
-              dueDate: formatMonthDay(group.earliestDueDateISO),
+              dueDate: group.earliestDueDateISO
+                ? formatMonthDay(group.earliestDueDateISO)
+                : "—",
               billOwnerName: group.owner.name,
             }}
           />
@@ -487,7 +496,8 @@ function DesktopGroupRow({
                   ownerInitials: group.owner.initials,
                   ownerColor: group.owner.color,
                   amount: group.totalAmount,
-                  dueDateISO: group.earliestDueDateISO,
+                  dueDateISO:
+                    group.earliestDueDateISO || new Date().toISOString(),
                   bills: group.bills,
                 },
                 e,
@@ -515,7 +525,9 @@ function DesktopGroupRow({
       {isExpanded &&
         group.bills.map((bill, billIdx) => {
           const isOverdue =
-            bill.myStatus === BillStatus.PENDING && isBillOverdue(bill.dueDate);
+            bill.myStatus === BillStatus.PENDING &&
+            !!bill.dueDate &&
+            isBillOverdue(bill.dueDate);
           const canPay = bill.ownerUserId !== currentUserId;
           const showPay =
             (bill.myStatus === BillStatus.PENDING ||
@@ -587,7 +599,7 @@ function DesktopGroupRow({
                         lineHeight: "16px",
                       }}
                     >
-                      {formatMonthDay(bill.dueDate)}
+                      {bill.dueDate ? formatMonthDay(bill.dueDate) : "—"}
                     </div>
                   </div>
                 </div>
@@ -601,7 +613,7 @@ function DesktopGroupRow({
                     fontFamily: "Inter, sans-serif",
                   }}
                 >
-                  Due {formatMonthDay(bill.dueDate)}
+                  Due {bill.dueDate ? formatMonthDay(bill.dueDate) : "—"}
                 </span>
               </TableCell>
 
@@ -622,10 +634,11 @@ function DesktopGroupRow({
                 <StatusBadge
                   status={bill.myStatus}
                   contextData={{
-                    dueDate: formatMonthDay(bill.dueDate),
-                    autopayDate: bill.myAutopayEnabled
-                      ? formatMonthDay(bill.dueDate)
-                      : undefined,
+                    dueDate: bill.dueDate ? formatMonthDay(bill.dueDate) : "—",
+                    autopayDate:
+                      bill.myAutopayEnabled && bill.dueDate
+                        ? formatMonthDay(bill.dueDate)
+                        : undefined,
                     isOverdue,
                     billOwnerName: group.owner.name,
                   }}
@@ -818,7 +831,10 @@ function MobileGroupCard({
               fontFamily: "Inter, sans-serif",
             }}
           >
-            Due {formatMonthDay(group.earliestDueDateISO)}
+            Due{" "}
+            {group.earliestDueDateISO
+              ? formatMonthDay(group.earliestDueDateISO)
+              : "—"}
           </div>
         </div>
 
@@ -837,7 +853,9 @@ function MobileGroupCard({
           <StatusBadge
             status={group.groupStatus}
             contextData={{
-              dueDate: formatMonthDay(group.earliestDueDateISO),
+              dueDate: group.earliestDueDateISO
+                ? formatMonthDay(group.earliestDueDateISO)
+                : "—",
               billOwnerName: group.owner.name,
             }}
           />
@@ -857,7 +875,8 @@ function MobileGroupCard({
                   ownerInitials: group.owner.initials,
                   ownerColor: group.owner.color,
                   amount: group.totalAmount,
-                  dueDateISO: group.earliestDueDateISO,
+                  dueDateISO:
+                    group.earliestDueDateISO || new Date().toISOString(),
                   bills: group.bills,
                 },
                 e,
@@ -938,7 +957,7 @@ function MobileGroupCard({
                         fontFamily: "Inter, sans-serif",
                       }}
                     >
-                      Due {formatMonthDay(bill.dueDate)}
+                      Due {bill.dueDate ? formatMonthDay(bill.dueDate) : "—"}
                     </div>
                   </div>
 
@@ -961,12 +980,16 @@ function MobileGroupCard({
                   <StatusBadge
                     status={bill.myStatus}
                     contextData={{
-                      dueDate: formatMonthDay(bill.dueDate),
-                      autopayDate: bill.myAutopayEnabled
+                      dueDate: bill.dueDate
                         ? formatMonthDay(bill.dueDate)
-                        : undefined,
+                        : "—",
+                      autopayDate:
+                        bill.myAutopayEnabled && bill.dueDate
+                          ? formatMonthDay(bill.dueDate)
+                          : undefined,
                       isOverdue:
                         bill.myStatus === BillStatus.PENDING &&
+                        !!bill.dueDate &&
                         isBillOverdue(bill.dueDate),
                       billOwnerName: group.owner.name,
                     }}

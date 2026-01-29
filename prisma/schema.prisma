@@ -202,7 +202,7 @@ model Bill {
   biller          String
   billerType      String
   amount          Float?
-  dueDate         DateTime
+  dueDate         DateTime?
   scheduledCharge DateTime?
   status          BillStatus        @default(SCHEDULED)
   createdAt       DateTime          @default(now())

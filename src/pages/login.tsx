@@ -10,15 +10,18 @@ export default function LoginPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      // Redirect signed-in users straight to the dashboard
-      router.replace("/protected/dashboard");
-    }
-  }, [status, router]);
+  // Use callbackUrl from query if present, otherwise default
+  const callbackUrl =
+    typeof router.query.callbackUrl === "string"
+      ? router.query.callbackUrl
+      : "/dashboard";
+
+  console.log("Callback URL: ", callbackUrl);
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/dashboard" });
+    const params = new URLSearchParams(window.location.search);
+    const callbackUrl = params.get("callbackUrl") || "/dashboard";
+    signIn("google", { callbackUrl });
   };
 
   return (

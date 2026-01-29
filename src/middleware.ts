@@ -16,6 +16,11 @@ const ONBOARDING_PATHS = new Set<string>([
   "/onboarding/join",
 ]);
 
+const PRE_HOUSEHOLD_ALLOWED_PATHS = new Set<string>([
+  ...ONBOARDING_PATHS,
+  "/onboarding/join", // <-- your join link page (e.g. /join?code=ABC123)
+]);
+
 function isSystemPath(pathname: string) {
   return (
     pathname.startsWith("/_next") ||
@@ -35,9 +40,15 @@ export async function middleware(req: NextRequest) {
   if (isSystemPath(pathname)) return NextResponse.next();
 
   // Normalize: treat /protected/* as its clean URL for gating logic
-  const cleanPath = pathname.startsWith("/protected")
+  const cleanPathRaw = pathname.startsWith("/protected")
     ? pathname.replace(/^\/protected/, "") || "/"
     : pathname;
+
+  // normalize trailing slash (except "/")
+  const cleanPath =
+    cleanPathRaw !== "/" && cleanPathRaw.endsWith("/")
+      ? cleanPathRaw.slice(0, -1)
+      : cleanPathRaw;
 
   // Skip public paths
   if (PUBLIC_PATHS.has(cleanPath)) return NextResponse.next();
@@ -48,7 +59,13 @@ export async function middleware(req: NextRequest) {
   if (!token) {
     const loginUrl = req.nextUrl.clone();
     loginUrl.pathname = "/login";
+
+    // clear any existing query params (like ?code=R4ULS4)
+    loginUrl.search = "";
+
+    // keep the intended destination (including querystring)
     loginUrl.searchParams.set("callbackUrl", cleanPath + search);
+
     return NextResponse.redirect(loginUrl);
   }
 
@@ -56,7 +73,7 @@ export async function middleware(req: NextRequest) {
   const inHousehold = !!token.householdId;
 
   // If NOT in a household: allow onboarding pages; otherwise redirect to onboarding
-  if (!inHousehold && !isOnboardingPath) {
+  if (!inHousehold && !PRE_HOUSEHOLD_ALLOWED_PATHS.has(cleanPath)) {
     const onboardingUrl = req.nextUrl.clone();
     onboardingUrl.pathname = "/onboarding";
     onboardingUrl.search = "";

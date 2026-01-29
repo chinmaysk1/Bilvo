@@ -65,17 +65,26 @@ export default async function handler(
           if (!existing) {
             uniqueMap[key] = b;
           } else {
-            const existingTime = new Date(existing.dueDate).getTime();
-            const bTime = new Date(b.dueDate).getTime();
-            // KEEP the LATEST dueDate
-            if (bTime > existingTime) uniqueMap[key] = b;
+            const existingHas = !!existing.dueDate;
+            const bHas = !!b.dueDate;
+
+            if (!existingHas && bHas) {
+              uniqueMap[key] = b; // prefer one with a dueDate
+            } else if (existingHas && bHas) {
+              const existingTime = existing.dueDate!.getTime();
+              const bTime = b.dueDate!.getTime();
+              if (bTime > existingTime) uniqueMap[key] = b; // keep latest dueDate
+            }
           }
         }
 
-        bills = Object.values(uniqueMap).sort(
-          (a, b) =>
-            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-        );
+        bills = Object.values(uniqueMap).sort((a, b) => {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1; // a goes after b
+          if (!b.dueDate) return -1; // a goes before b
+
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        });
       }
 
       const myOwnedBillIds = bills
@@ -196,7 +205,7 @@ export default async function handler(
           myStatus,
           pendingVenmoApprovals:
             b.ownerUserId === myUserId ? pendingByBillId.get(b.id) || [] : [],
-          dueDate: b.dueDate.toISOString(),
+          dueDate: b.dueDate ? b.dueDate.toISOString() : null,
           scheduledCharge: b.scheduledCharge
             ? b.scheduledCharge.toISOString()
             : null,
@@ -223,8 +232,16 @@ export default async function handler(
       const { biller, billerType, amount, dueDate, source, externalId } =
         req.body || {};
 
-      if (!biller || !billerType || amount == null || !dueDate) {
+      if (!biller || !billerType || amount == null) {
         return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const isMisc = billerType?.startsWith("MISC_");
+
+      if (!isMisc && !dueDate) {
+        return res
+          .status(400)
+          .json({ error: "dueDate required for this bill type" });
       }
 
       const amountNum = parseFloat(amount);
@@ -232,14 +249,16 @@ export default async function handler(
         return res.status(400).json({ error: "Invalid amount" });
       }
 
-      const dueDateObj = new Date(dueDate);
-      if (Number.isNaN(dueDateObj.getTime())) {
+      const dueDateObj = dueDate ? new Date(dueDate) : null;
+      if (dueDateObj && Number.isNaN(dueDateObj?.getTime())) {
         return res.status(400).json({ error: "Invalid dueDate" });
       }
 
       // Default scheduled charge: 3 days before due date (nullable in schema)
-      const scheduledChargeDate = new Date(dueDateObj);
-      scheduledChargeDate.setDate(scheduledChargeDate.getDate() - 3);
+      const scheduledChargeDate = dueDateObj ? new Date(dueDateObj) : null;
+      if (dueDate) {
+        scheduledChargeDate?.setDate(scheduledChargeDate.getDate() - 3);
+      }
 
       const bill = await prisma.$transaction(async (tx) => {
         // 1) create the bill; owner = uploader
@@ -248,7 +267,7 @@ export default async function handler(
             householdId,
             ownerUserId: myUserId,
             createdByUserId: myUserId,
-            source: source || "Manual",
+            source: source || "MANUAL",
             externalId: externalId ?? null,
             biller,
             billerType,
@@ -293,7 +312,7 @@ export default async function handler(
           description: "Bill uploaded",
           detail: `${biller} - $${amountNum.toFixed(2)}`,
           amount: amountNum,
-          source: source || "Manual",
+          source: source || "MANUAL",
         },
       });
 

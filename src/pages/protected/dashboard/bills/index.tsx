@@ -82,6 +82,18 @@ export default function BillsPage({
   const [billToDelete, setBillToDelete] = useState<Bill | null>(null);
 
   // -------------------------
+  // add bill (misc/manual) modal
+  // -------------------------
+  const [addBillOpen, setAddBillOpen] = useState(false);
+  const [addBillLoading, setAddBillLoading] = useState(false);
+
+  const [miscName, setMiscName] = useState(""); // biller
+  const [miscCategory, setMiscCategory] = useState<
+    "GROCERIES" | "TOILETRIES" | "HOUSEHOLD" | "OTHER"
+  >("GROCERIES"); // billerType
+  const [miscAmount, setMiscAmount] = useState(""); // string -> number
+
+  // -------------------------
   // shared store
   // -------------------------
   const { bills, setBills, patchBill, removeBill, upsertBills } =
@@ -230,6 +242,57 @@ export default function BillsPage({
     }
   };
 
+  const resetMiscForm = () => {
+    setMiscName("");
+    setMiscCategory("GROCERIES");
+    setMiscAmount("");
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+  };
+
+  const handleCreateMiscBill = async () => {
+    const biller = miscName.trim();
+    const amountNum = Number(miscAmount);
+
+    if (!biller) throw new Error("Please enter an item name.");
+    if (!Number.isFinite(amountNum) || amountNum < 0)
+      throw new Error("Please enter a valid amount.");
+
+    setAddBillLoading(true);
+    try {
+      // Create the bill
+      const createRes = await fetch("/api/bills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          biller,
+          billerType: `MISC_${miscCategory}`,
+          amount: amountNum,
+          source: "MANUAL", // matches your Prisma enum
+          externalId: null,
+        }),
+      });
+
+      if (!createRes.ok) {
+        const data = await createRes.json().catch(() => null);
+        throw new Error(data?.error || "Failed to add bill.");
+      }
+
+      // Refresh bills so UI uses the same "shaped" response as GET /api/bills
+      const refreshRes = await fetch("/api/bills");
+      if (!refreshRes.ok) throw new Error("Failed to refresh bills.");
+      const refreshed = await refreshRes.json();
+
+      setBills(refreshed?.bills || []);
+      setAddBillOpen(false);
+      resetMiscForm();
+    } finally {
+      setAddBillLoading(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       {/* Payment Confirmation Banner */}
@@ -347,19 +410,20 @@ export default function BillsPage({
               </SelectContent>
             </Select>
 
-            <ScanGmailUploadButton
-              householdMemberCount={householdMembers.length || 1}
-              onBillsImported={(imported: Bill[]) => upsertBills(imported)}
+            <Button
+              onClick={() => setAddBillOpen(true)}
               className="rounded-lg cursor-pointer flex-shrink-0"
               style={{
                 fontSize: 13,
                 fontWeight: 600,
                 backgroundColor: "#008a4b",
-                height: 44, // CHANGED: from 36
+                height: 44,
                 paddingLeft: 14,
                 paddingRight: 14,
               }}
-            />
+            >
+              Add Bill
+            </Button>
           </div>
         </div>
       </div>
@@ -889,6 +953,149 @@ export default function BillsPage({
               style={{ fontSize: 14, fontWeight: 600, minHeight: "44px" }}
             >
               Confirm & Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Bill (Misc) Modal */}
+      <Dialog
+        open={addBillOpen}
+        onOpenChange={(open) => {
+          setAddBillOpen(open);
+          if (!open) resetMiscForm();
+        }}
+      >
+        <DialogContent className="sm:max-w-[460px] mx-4 rounded-2xl">
+          <DialogHeader>
+            <DialogTitle
+              className="text-base sm:text-lg"
+              style={{ fontWeight: 600, color: "#111827" }}
+            >
+              Add a Misc Bill
+            </DialogTitle>
+            <DialogDescription
+              className="text-sm"
+              style={{ color: "#6B7280", marginTop: 8 }}
+            >
+              Add shared expenses like groceries, toilet paper, household items,
+              and more.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 mt-2">
+            {/* Item name */}
+            <div className="space-y-1">
+              <div
+                className="text-xs"
+                style={{ fontWeight: 600, color: "#374151" }}
+              >
+                Item / Description
+              </div>
+              <Input
+                value={miscName}
+                onChange={(e) => setMiscName(e.target.value)}
+                placeholder="e.g. Groceries, Toilet paper, Costco run"
+                className="rounded-lg border-gray-300"
+                style={{
+                  height: 44,
+                  fontSize: 14,
+                  backgroundColor: "#FFFFFF",
+                  borderColor: "#E5E7EB",
+                }}
+              />
+            </div>
+
+            {/* Category */}
+            <div className="space-y-1">
+              <div
+                className="text-xs"
+                style={{ fontWeight: 600, color: "#374151" }}
+              >
+                Category
+              </div>
+              <Select
+                value={miscCategory}
+                onValueChange={(v) => setMiscCategory(v as any)}
+              >
+                <SelectTrigger
+                  className="w-full"
+                  style={{
+                    height: 44,
+                    fontSize: 14,
+                    backgroundColor: "#FFFFFF",
+                    borderColor: "#E5E7EB",
+                  }}
+                >
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="GROCERIES">Groceries</SelectItem>
+                  <SelectItem value="TOILETRIES">Toiletries</SelectItem>
+                  <SelectItem value="HOUSEHOLD">Household Supplies</SelectItem>
+                  <SelectItem value="OTHER">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Amount */}
+            <div className="grid grid-cols-1 sm:grid-cols-1 gap-3">
+              <div className="space-y-1">
+                <div
+                  className="text-xs"
+                  style={{ fontWeight: 600, color: "#374151" }}
+                >
+                  Total Amount
+                </div>
+                <Input
+                  value={miscAmount}
+                  onChange={(e) => setMiscAmount(e.target.value)}
+                  placeholder="0.00"
+                  inputMode="decimal"
+                  className="rounded-lg border-gray-300"
+                  style={{
+                    height: 44,
+                    fontSize: 14,
+                    backgroundColor: "#FFFFFF",
+                    borderColor: "#E5E7EB",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter
+            className="flex-col sm:flex-row gap-2 sm:gap-0"
+            style={{ marginTop: 24 }}
+          >
+            <Button
+              variant="outline"
+              onClick={() => setAddBillOpen(false)}
+              className="rounded-lg w-full sm:w-auto"
+              style={{ fontSize: 14, fontWeight: 600, minHeight: "44px" }}
+              disabled={addBillLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  await handleCreateMiscBill();
+                } catch (e: any) {
+                  // basic UX: keep consistent with your current pattern (no toast in snippet)
+                  alert(e?.message || "Something went wrong.");
+                }
+              }}
+              className="rounded-lg w-full sm:w-auto"
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                minHeight: "44px",
+                backgroundColor: "#008a4b",
+              }}
+              disabled={addBillLoading}
+            >
+              {addBillLoading ? "Adding..." : "Add Bill"}
             </Button>
           </DialogFooter>
         </DialogContent>

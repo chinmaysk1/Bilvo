@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function JoinHouseholdPage() {
+  const router = useRouter();
   const { update } = useSession();
+
   const [inviteCode, setInviteCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,6 +16,31 @@ export default function JoinHouseholdPage() {
     address?: string;
     memberCount?: number;
   } | null>(null);
+
+  // Autofill from URL: /join?code=ABC123 (or ?inviteCode=ABC123)
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const raw =
+      (router.query.code as string | string[] | undefined) ??
+      (router.query.inviteCode as string | string[] | undefined);
+
+    const codeStr = Array.isArray(raw) ? raw[0] : raw;
+    if (!codeStr) return;
+
+    const cleaned = codeStr
+      .toUpperCase()
+      .trim()
+      .replace(/[^A-Z0-9]/g, "");
+    const six = cleaned.slice(0, 6);
+
+    if (six.length === 6) {
+      setInviteCode(six);
+      setError("");
+      // Optional: remove the query params after autofill (prevents re-running)
+      router.replace("/onboarding/join", undefined, { shallow: true });
+    }
+  }, [router.isReady, router.query, router]);
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -45,10 +73,8 @@ export default function JoinHouseholdPage() {
         return;
       }
 
-      // Refresh JWT so middleware sees hasCompletedOnboarding = true
       await update({ hasCompletedOnboarding: true });
 
-      // Show success UI (optionally display household info)
       setJoinedInfo({
         name: data?.household?.name,
         address: data?.household?.address,
