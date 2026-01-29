@@ -19,7 +19,7 @@ function parseDate(v: any): Date | null {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.email) {
@@ -154,7 +154,7 @@ export default async function handler(
               id: a.bill.id,
               biller: a.bill.biller,
               billerType: a.bill.billerType,
-              dueDate: a.bill.dueDate.toISOString(),
+              dueDate: a.bill.dueDate?.toISOString(),
               owner: a.bill.owner
                 ? {
                     id: a.bill.owner.id,
@@ -259,7 +259,7 @@ export default async function handler(
           currency: "usd",
           provider: "venmo",
           status: PaymentAttemptStatus.PROCESSING, // “Pending Approval”
-          scheduledFor: bill.dueDate, // required by schema
+          scheduledFor: bill.dueDate,
         },
         select: { id: true, status: true },
       });

@@ -310,7 +310,7 @@ model PaymentAttempt {
   failureCode    String?
   failureMessage String?
 
-  scheduledFor DateTime
+  scheduledFor DateTime?
   processedAt  DateTime?
 
   createdAt DateTime @default(now())

@@ -6,7 +6,7 @@ import { authOptions } from "../../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.email) {
@@ -57,7 +57,7 @@ export default async function handler(
       return res.status(200).json({
         bill: {
           ...bill,
-          dueDate: bill.dueDate.toISOString(),
+          dueDate: bill.dueDate?.toISOString(),
           scheduledCharge: bill.scheduledCharge
             ? bill.scheduledCharge.toISOString()
             : null,
@@ -148,7 +148,7 @@ export default async function handler(
         success: true,
         bill: {
           ...result!,
-          dueDate: result!.dueDate.toISOString(),
+          dueDate: result!.dueDate?.toISOString(),
           scheduledCharge: result!.scheduledCharge
             ? result!.scheduledCharge.toISOString()
             : null,

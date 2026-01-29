@@ -64,7 +64,7 @@ export type SelectedBillForPayment = {
   biller: string;
   category: string;
   yourShare: number;
-  dueDate: string; // "Jan 5"
+  dueDate: string | null; // "Jan 5"
   icon: any;
   iconColor: string;
   iconBg: string;
@@ -126,10 +126,12 @@ export function usePayFlow(params: {
         biller: bill.biller,
         category: bill.billerType,
         yourShare: Number(bill.yourShare || 0),
-        dueDate: new Date(bill.dueDate).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
+        dueDate: bill.dueDate
+          ? new Date(bill.dueDate).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })
+          : null,
         icon,
         iconColor,
         iconBg,
@@ -172,7 +174,7 @@ export function usePayFlow(params: {
       }
 
       // build venmo url
-      const note = `Bilvo • ${bill.biller} • ${formatMonthDay(bill.dueDate)}`;
+      const note = `Bilvo • ${bill.biller} • ${bill.dueDate ? formatMonthDay(bill.dueDate) : null}`;
       const url = buildVenmoPayUrl({
         handle,
         amount: Number(bill.yourShare),
@@ -248,7 +250,7 @@ export function usePayFlow(params: {
               bills: groupPendingMeta.bills.map((b) => ({
                 id: b.id,
                 yourShare: b.yourShare,
-                dueDate: b.dueDate,
+                dueDate: b.dueDate ?? null,
               })),
             });
 

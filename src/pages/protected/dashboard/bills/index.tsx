@@ -129,26 +129,37 @@ export default function BillsPage({
   // filter/sort
   // -------------------------
   const filteredBills = useMemo(() => {
+    // helper: treat missing/invalid dates as "far in the future" so they sort last
+    function safeTime(value?: string | Date | null) {
+      if (!value) return Number.POSITIVE_INFINITY;
+      const t = new Date(value).getTime();
+      return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;
+    }
+
     let list = [...bills];
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter((bill) =>
-        (bill.biller || "").toLowerCase().includes(q),
+        (bill.biller ?? "").toLowerCase().includes(q),
       );
     }
+
     if (statusFilter !== "all") {
-      list = list.filter((bill) => bill.myStatus === statusFilter);
+      // If statusFilter is a plain string, cast to BillStatus for TS compatibility
+      list = list.filter(
+        (bill) => bill.myStatus === (statusFilter as unknown as BillStatus),
+      );
     }
 
     list.sort((a, b) => {
       if (sortBy === "due-date") {
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        return safeTime(a.dueDate) - safeTime(b.dueDate);
       }
       if (sortBy === "amount") {
-        return (b.yourShare || 0) - (a.yourShare || 0);
+        return Number(b.yourShare ?? 0) - Number(a.yourShare ?? 0);
       }
-      return (a.biller || "").localeCompare(b.biller || "");
+      return (a.biller ?? "").localeCompare(b.biller ?? "");
     });
 
     return list;
@@ -498,7 +509,9 @@ export default function BillsPage({
                   fontFamily: "Inter, sans-serif",
                 }}
               >
-                {nextDueBill ? formatDate(nextDueBill.dueDate) : "—"}
+                {nextDueBill && nextDueBill.dueDate
+                  ? formatDate(nextDueBill.dueDate)
+                  : "—"}
               </p>
             </div>
             <p
@@ -625,7 +638,9 @@ export default function BillsPage({
                 style={{ color: "#008a4b" }}
               />
               <p className="text-base font-semibold text-gray-900">
-                {nextDueBill ? formatDate(nextDueBill.dueDate) : "—"}
+                {nextDueBill && nextDueBill.dueDate
+                  ? formatDate(nextDueBill.dueDate)
+                  : "—"}
               </p>
             </div>
             <p className="text-xs font-medium text-gray-600">Next Due</p>

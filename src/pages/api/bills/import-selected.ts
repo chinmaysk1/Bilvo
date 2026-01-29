@@ -144,7 +144,7 @@ export default async function handler(
           yourShare: created.myPart?.shareAmount ?? 0,
           myBillParticipantId: created.myPart?.id ?? null,
 
-          dueDate: created.bill.dueDate.toISOString(),
+          dueDate: created.bill.dueDate?.toISOString() ?? null,
           scheduledCharge: created.bill.scheduledCharge
             ? created.bill.scheduledCharge.toISOString()
             : null,

@@ -7,6 +7,12 @@ type Options = {
   yourShare?: number; // for remainingBalance
 };
 
+function safeTime(value?: string | Date | null) {
+  if (!value) return Number.POSITIVE_INFINITY;
+  const t = new Date(value).getTime();
+  return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;
+}
+
 export function useBillsSummary(bills: Bill[], opts: Options = {}) {
   const yourShare = Number(opts.yourShare ?? 0);
 
@@ -20,7 +26,7 @@ export function useBillsSummary(bills: Bill[], opts: Options = {}) {
   const unpaidBills = pendingBills.length;
 
   const totalDueThisMonth = useMemo(
-    () => pendingBills.reduce((acc, b) => acc + Number(b.yourShare || 0), 0),
+    () => pendingBills.reduce((acc, b) => acc + Number(b.yourShare ?? 0), 0),
     [pendingBills],
   );
 
@@ -31,9 +37,7 @@ export function useBillsSummary(bills: Bill[], opts: Options = {}) {
 
   const nextDueBill = useMemo(() => {
     const copy = [...pendingBills];
-    copy.sort(
-      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-    );
+    copy.sort((a, b) => safeTime(a.dueDate) - safeTime(b.dueDate));
     return copy[0] ?? null;
   }, [pendingBills]);
 
@@ -46,7 +50,7 @@ export function useBillsSummary(bills: Bill[], opts: Options = {}) {
   const paidAmount = useMemo(() => {
     return (bills || [])
       .filter((b) => b.myStatus === BillStatus.PAID)
-      .reduce((sum, b) => sum + Number(b.yourShare || 0), 0);
+      .reduce((sum, b) => sum + Number(b.yourShare ?? 0), 0);
   }, [bills]);
 
   const remainingBalance = useMemo(() => {
@@ -60,18 +64,18 @@ export function useBillsSummary(bills: Bill[], opts: Options = {}) {
       [...(bills || [])]
         .filter((b) => b.myStatus === BillStatus.SCHEDULED)
         .sort((a, b) => {
-          const dateA = new Date(a.scheduledCharge || a.dueDate).getTime();
-          const dateB = new Date(b.scheduledCharge || b.dueDate).getTime();
+          const dateA = safeTime(a.scheduledCharge ?? a.dueDate);
+          const dateB = safeTime(b.scheduledCharge ?? b.dueDate);
           return dateA - dateB;
         })[0] ?? null
     );
   }, [bills]);
 
-  const nextAutopayAmount = Number(nextAutoPayBill?.yourShare || 0);
-  const nextAutopayDate = nextAutoPayBill
+  const nextAutopayAmount = Number(nextAutoPayBill?.yourShare ?? 0);
+  const nextAutopayDate = nextAutoPayBill?.dueDate
     ? formatMonthDay(nextAutoPayBill.dueDate)
     : "";
-  const nextAutopayBiller = nextAutoPayBill?.biller || "";
+  const nextAutopayBiller = nextAutoPayBill?.biller ?? "";
 
   return {
     // counts

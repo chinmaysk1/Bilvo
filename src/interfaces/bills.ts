@@ -10,7 +10,7 @@ export interface Bill {
   myAutopayEnabled: boolean;
   myPaymentMethodId: string | null;
   myBillParticipantId?: string | null;
-  dueDate: string;
+  dueDate: string | null;
   scheduledCharge: string | null;
   status: BillStatus;
   myStatus: BillStatus;

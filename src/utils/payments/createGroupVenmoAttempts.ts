@@ -1,6 +1,6 @@
 // utils/payments/createGroupVenmoAttempts.ts
 
-type BillLike = { id: string; yourShare?: number; dueDate?: string };
+type BillLike = { id: string; yourShare?: number; dueDate: string | null };
 
 export type GroupAttemptResult = {
   ok: boolean;
