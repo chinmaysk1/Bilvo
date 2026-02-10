@@ -256,6 +256,8 @@ export default async function handler(
           billParticipantId: myPart.id,
           userId: me.id,
           amountCents,
+          feeCents: 0,
+          totalCents: amountCents,
           currency: "usd",
           provider: "venmo",
           status: PaymentAttemptStatus.PROCESSING, // “Pending Approval”
