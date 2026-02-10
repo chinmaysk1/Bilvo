@@ -96,6 +96,8 @@ export default function DashboardPage({
     patchBill,
   });
 
+  console.log("PAY FLOW: ", payFlow);
+
   return (
     <DashboardLayout>
       {/* Payment Confirmation Banner */}
@@ -138,19 +140,7 @@ export default function DashboardPage({
           currentUserId={currentUserId}
           onPayBill={(bill, e) => payFlow.startPayFlow(bill, e)}
           onPayGroup={(groupPayload, e) => {
-            const syntheticBill: any = {
-              id: `group-${groupPayload.ownerUserId}-${new Date().toISOString()}`,
-              ownerUserId: groupPayload.ownerUserId,
-              biller: `${groupPayload.bills.map((b) => b.biller).join(", ")}`,
-              billerType: "group",
-              yourShare: groupPayload.amount,
-              dueDate: groupPayload.dueDateISO,
-              myStatus: BillStatus.PENDING,
-              myHasPaid: false,
-              myAutopayEnabled: false,
-              participants: [],
-            };
-            payFlow.startPayFlow(syntheticBill, e);
+            payFlow.startGroupPay(groupPayload, e);
           }}
           onToggleAutopay={(billId) => toggleAutopay(billId)}
           hideDelete
@@ -195,6 +185,7 @@ export default function DashboardPage({
           open={payFlow.stripePayOpen}
           onOpenChange={payFlow.setStripePayOpen}
           billParticipantId={payFlow.stripeBillParticipantId}
+          groupBillParticipantIds={payFlow.stripeGroupBillParticipantIds}
           biller={payFlow.selectedBillForPayment.biller}
           amountDisplay={payFlow.selectedBillForPayment.yourShare.toFixed(2)}
           recipientName={payFlow.selectedBillForPayment.recipientName}

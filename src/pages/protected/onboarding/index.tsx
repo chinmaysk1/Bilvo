@@ -65,7 +65,7 @@ export default function OnboardingPage() {
               <span className="text-white text-xs font-bold">B</span>
             </div>
             <span className="text-sm text-gray-600">
-              © 2025 Bilvo. All rights reserved.
+              © 2026 Bilvo. All rights reserved.
             </span>
           </div>
 

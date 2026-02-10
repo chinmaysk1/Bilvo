@@ -57,7 +57,7 @@ export function BilvoFooter() {
               color: "var(--gray-400)",
             }}
           >
-            © 2025 Bilvo. All rights reserved.
+            © 2026 Bilvo. All rights reserved.
           </p>
 
           {/* Right: Links */}

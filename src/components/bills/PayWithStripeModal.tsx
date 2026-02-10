@@ -42,6 +42,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 
   billParticipantId: string | null;
+  groupBillParticipantIds?: string[];
 
   biller: string;
   amountDisplay: string;
@@ -62,6 +63,7 @@ export function PayWithStripeModal(props: Props) {
     open,
     onOpenChange,
     billParticipantId,
+    groupBillParticipantIds,
     biller,
     amountDisplay,
     recipientName,
@@ -139,9 +141,18 @@ export function PayWithStripeModal(props: Props) {
     }
   };
 
+  const isGroup = (groupBillParticipantIds?.length ?? 0) > 0;
+  const canPay = isGroup
+    ? groupBillParticipantIds!.length > 0
+    : !!billParticipantId;
+
   const continueToMethods = async () => {
-    if (!billParticipantId) {
-      toast.error("Missing billParticipantId");
+    if (!canPay) {
+      toast.error(
+        isGroup
+          ? "Missing group bill participants"
+          : "Missing billParticipantId",
+      );
       return;
     }
 
@@ -159,19 +170,31 @@ export function PayWithStripeModal(props: Props) {
   };
 
   const confirmCardPayment = async () => {
-    if (!billParticipantId) return;
     if (!selectedProviderPmId) {
       toast.error("Select a payment method first");
       return;
     }
 
     setIsConfirming(true);
+
+    const isGroup = (groupBillParticipantIds?.length ?? 0) > 0;
+
+    const ids = isGroup ? groupBillParticipantIds! : [billParticipantId!];
+
+    const endpoint = isGroup
+      ? "/api/payments/pay-now-group"
+      : "/api/payments/pay-now";
+
+    const payload = isGroup
+      ? { billParticipantIds: ids }
+      : { billParticipantId: ids[0] };
+
     try {
       // 1) Create PaymentIntent + attempt RIGHT NOW
-      const res = await fetch("/api/payments/pay-now", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ billParticipantId }),
+        body: JSON.stringify(payload),
       });
 
       if (res.status === 409) {
@@ -187,7 +210,9 @@ export function PayWithStripeModal(props: Props) {
         throw new Error(body?.error || "Failed to start payment");
       }
 
-      const start = body as { clientSecret: string; paymentAttemptId: string };
+      const start = body as
+        | { clientSecret: string; paymentAttemptId: string }
+        | { clientSecret: string; groupKey: string };
 
       const stripe = await stripePromise;
       if (!stripe) throw new Error("Stripe failed to initialize");

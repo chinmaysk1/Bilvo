@@ -341,6 +341,13 @@ export function usePayFlow(params: {
     );
   }, [bills, selectedBillForPayment]);
 
+  const stripeGroupBillParticipantIds = useMemo(() => {
+    if (!groupPendingMeta?.bills?.length) return [];
+    return groupPendingMeta.bills
+      .map((b) => b.myBillParticipantId)
+      .filter(Boolean) as string[];
+  }, [groupPendingMeta]);
+
   const onStripeSucceeded = useCallback(() => {
     if (!selectedBillForPayment) return;
     patchBill(selectedBillForPayment.id, {
@@ -357,12 +364,19 @@ export function usePayFlow(params: {
       ownerUserId: string;
       ownerName?: string;
       amount: number;
-      bills: Bill[];
+      bills: Bill[]; // may be a lightweight list; we ensure we use canonical bills
       dueDateISO?: string;
     },
     e?: React.MouseEvent,
   ) {
     if (e) e.stopPropagation();
+
+    // Ensure each bill in groupPendingMeta.bills is the canonical bill from `bills`
+    console.log("GROUP BILLS: ", group.bills);
+    const canonicalBills: Bill[] = group.bills.map((b) => {
+      const found = bills.find((full) => full.id === b.id);
+      return found ?? b;
+    });
 
     // Build synthetic selectedBillForPayment same shape as single bill flow expects
     const syntheticBill: any = {
@@ -376,15 +390,14 @@ export function usePayFlow(params: {
       myHasPaid: false,
       myAutopayEnabled: false,
       participants: [],
-      // optional: pass owner display name
       recipientName: group.ownerName,
     };
 
-    // set meta so later handler knows this is a group
+    // set meta so later handler knows this is a group — use canonical bills
     setGroupPendingMeta({
       ownerUserId: group.ownerUserId,
       ownerName: group.ownerName,
-      bills: group.bills,
+      bills: canonicalBills,
       amount: group.amount,
     });
 
@@ -405,6 +418,7 @@ export function usePayFlow(params: {
     selectedPaymentMethod,
     stripePaymentType,
     stripeBillParticipantId,
+    stripeGroupBillParticipantIds,
 
     // actions
     startPayFlow,

@@ -237,7 +237,7 @@ export function BilvoSidebar() {
               textAlign: "center",
             }}
           >
-            © 2025 Bilvo
+            © 2026 Bilvo
           </div>
         </div>
       </aside>
@@ -376,7 +376,7 @@ export function BilvoSidebar() {
               textAlign: "center",
             }}
           >
-            © 2025 Bilvo
+            © 2026 Bilvo
           </div>
         </div>
       </aside>

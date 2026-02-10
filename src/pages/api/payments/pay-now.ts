@@ -7,10 +7,11 @@ import { stripe } from "@/lib/stripe";
 import { PaymentAttemptStatus } from "@prisma/client";
 import { ensureStripeCustomerId } from "@/utils/payments/ensureStripeCustomerId";
 import { dollarsToCents } from "@/utils/payments/dollarsToCents";
+import { calcProcessingFeeCents } from "@/utils/payments/calcProcessingFeeCents";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST")
     return res.status(405).json({ error: "Method not allowed" });
@@ -61,10 +62,13 @@ export default async function handler(
       return res.status(404).json({ error: "Bill participant not found" });
     }
 
-    const amountCents = dollarsToCents(participant.shareAmount);
-    if (amountCents <= 0) {
+    const shareCents = dollarsToCents(participant.shareAmount);
+    if (shareCents <= 0) {
       return res.status(400).json({ error: "Invalid amount to charge" });
     }
+
+    const feeCents = calcProcessingFeeCents(shareCents);
+    const totalCents = shareCents + feeCents;
 
     const owner = participant.bill.owner;
 
@@ -112,7 +116,9 @@ export default async function handler(
         billId: participant.bill.id,
         billParticipantId: participant.id,
         userId: user.id,
-        amountCents,
+        amountCents: shareCents,
+        feeCents,
+        totalCents,
         currency: "usd",
         provider: "stripe",
         status: PaymentAttemptStatus.PROCESSING,
@@ -125,7 +131,7 @@ export default async function handler(
     let pi;
     try {
       pi = await stripe.paymentIntents.create({
-        amount: amountCents,
+        amount: totalCents,
         currency: "usd",
         customer: customerId,
         automatic_payment_methods: { enabled: true },
@@ -139,6 +145,9 @@ export default async function handler(
           userId: user.id,
           ownerUserId: owner.id,
           destinationAccountId: owner.stripeConnectedAccountId,
+          shareCents: String(shareCents),
+          feeCents: String(feeCents),
+          totalCents: String(totalCents),
         },
       });
     } catch (e: any) {
@@ -163,6 +172,9 @@ export default async function handler(
     return res.status(200).json({
       clientSecret: pi.client_secret,
       paymentAttemptId: attempt.id,
+      shareCents,
+      feeCents,
+      totalCents,
     });
   } catch (err: any) {
     console.error("Pay now error:", err);

@@ -389,7 +389,7 @@ async function runPgeLink(job) {
   const page = await context.newPage();
 
   try {
-    page.setDefaultTimeout(45_000);
+    page.setDefaultTimeout(30_000);
 
     // Step 3: Navigate to login
     await updateJobProgress(
@@ -510,7 +510,7 @@ async function runPgeLink(job) {
             url.href.includes("dashboard") ||
             url.href.includes("/s/") ||
             url.href.includes("myaccount"),
-          { timeout: 30000 },
+          { timeout: 15000 },
         ),
       ]);
 
@@ -542,11 +542,11 @@ async function runPgeLink(job) {
       await Promise.all([
         page.waitForSelector(cardSelector, {
           state: "visible",
-          timeout: 30000,
+          timeout: 15000,
         }),
         page.waitForSelector(accountSelectorTag, {
           state: "visible",
-          timeout: 30000,
+          timeout: 15000,
         }),
       ]);
 
@@ -691,7 +691,7 @@ async function runSloWaterLink(job) {
   const page = await context.newPage();
 
   try {
-    page.setDefaultTimeout(45_000);
+    page.setDefaultTimeout(30_000);
 
     // Step 3: Navigate to login
     await updateJobProgress(
@@ -786,7 +786,7 @@ async function runSloWaterLink(job) {
       // Wait for the bill details to load
       await page.waitForSelector("table#total", {
         state: "visible",
-        timeout: 30000,
+        timeout: 15000,
       });
 
       // Extract total amount due
@@ -997,7 +997,7 @@ async function runSoCalGasLink(job) {
   const page = await context.newPage();
 
   try {
-    page.setDefaultTimeout(45_000);
+    page.setDefaultTimeout(30_000);
 
     // Step 3: Navigate to login
     await updateJobProgress(
@@ -1280,7 +1280,7 @@ async function runSanLuisGarbageLink(job) {
   const page = await context.newPage();
 
   try {
-    page.setDefaultTimeout(45_000);
+    page.setDefaultTimeout(30_000);
 
     // Step 3: Navigate to login
     await updateJobProgress(
@@ -1380,7 +1380,7 @@ async function runSanLuisGarbageLink(job) {
     const acctSelector = ".account-details .account-number-single";
 
     await page.waitForSelector(".current-bill, .account-details", {
-      timeout: 30000,
+      timeout: 15000,
     });
 
     const rawDue = await page
@@ -1683,7 +1683,7 @@ async function runAttLink(job) {
   );
 
   try {
-    page.setDefaultTimeout(45_000);
+    page.setDefaultTimeout(30_000);
 
     // 1) Go to AT&T sign-in
     await updateJobProgress(job.id, "RUNNING", "Navigating to AT&T sign-in");
@@ -1819,7 +1819,7 @@ async function runAttLink(job) {
 
     // 1. Ensure we are actually on the dashboard before trying to use the navbar
     await page.waitForURL((url) => url.href.includes("/acctmgmt/overview"), {
-      timeout: 30000,
+      timeout: 15000,
     });
 
     // 2. Human Dwell: Let the SSO tokens hydrate
@@ -1870,7 +1870,7 @@ async function runAttLink(job) {
 
     // Final wait for content - if the survey popup appears here,
     // the addLocatorHandler we registered earlier will catch it.
-    await balanceCard.waitFor({ state: "visible", timeout: 30000 });
+    await balanceCard.waitFor({ state: "visible", timeout: 15000 });
 
     // Amount: your HTML includes <div class="hidden-spoken">$80.30</div>
     const rawAmount =
@@ -2080,7 +2080,7 @@ async function runSpectrumLink(job) {
   const page = await context.newPage();
 
   try {
-    page.setDefaultTimeout(45_000);
+    page.setDefaultTimeout(30_000);
 
     // Step 3: Go to Spectrum homepage
     await updateJobProgress(
@@ -2397,7 +2397,7 @@ async function runSpectrumLink(job) {
       await page
         .waitForSelector(
           'billing-status-card, [data-e2etest="billing-status-card-container"]',
-          { timeout: 30000 },
+          { timeout: 15000 },
         )
         .catch(() => {});
 

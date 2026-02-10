@@ -299,11 +299,15 @@ model PaymentAttempt {
   userId            String
 
   amountCents Int
+  feeCents           Int     @default(0)
+  totalCents         Int     // share + fee
   currency    String @default("usd")
 
   provider           String // "stripe" | "venmo"
   providerIntentId   String? @unique // pi_... (Stripe PaymentIntent id)
   providerTransferId String? @unique // tr_... Stripe Transfer id
+
+  groupKey          String?
 
   status PaymentAttemptStatus
 
@@ -324,4 +328,5 @@ model PaymentAttempt {
   @@index([billParticipantId, scheduledFor])
   @@index([billId])
   @@index([userId])
+  @@index([groupKey])
 }

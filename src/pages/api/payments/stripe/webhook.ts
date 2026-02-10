@@ -21,7 +21,7 @@ async function buffer(req: NextApiRequest) {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   console.log("🔔 webhook hit", req.method, req.url);
 
@@ -32,12 +32,114 @@ export default async function handler(
 
   let event: Stripe.Event;
 
+  async function handleGroupPaymentIntentSucceeded(pi: Stripe.PaymentIntent) {
+    const groupKey = pi.metadata?.groupKey;
+    if (!groupKey) return false;
+
+    const leaderId = pi.metadata?.leaderPaymentAttemptId || null;
+
+    const attempts = await prisma.paymentAttempt.findMany({
+      where: { groupKey },
+      select: {
+        id: true,
+        amountCents: true,
+        totalCents: true,
+        currency: true,
+        providerTransferId: true,
+        bill: {
+          select: { owner: { select: { stripeConnectedAccountId: true } } },
+        },
+      },
+    });
+
+    if (!attempts.length) return true;
+
+    const destination = attempts[0]?.bill?.owner?.stripeConnectedAccountId;
+    if (!destination) return true;
+
+    const sumShare = attempts.reduce((s, a) => s + (a.amountCents || 0), 0);
+    const sumTotal = attempts.reduce((s, a) => s + (a.totalCents || 0), 0);
+    const currency = attempts[0].currency || "usd";
+
+    if (typeof sumTotal === "number" && pi.amount !== sumTotal) {
+      throw new Error(
+        `Group PaymentIntent amount mismatch: pi.amount=${pi.amount} expected=${sumTotal}`,
+      );
+    }
+
+    // choose leader: metadata leader if present, else first attempt
+    const leaderAttempt =
+      (leaderId ? attempts.find((a) => a.id === leaderId) : null) ??
+      attempts[0];
+
+    // Create transfer exactly once (share only)
+    if (!leaderAttempt.providerTransferId) {
+      const transfer = await stripe.transfers.create(
+        {
+          amount: sumShare,
+          currency,
+          destination,
+          transfer_group: `group_${groupKey}`,
+          metadata: { groupKey, paymentIntentId: pi.id },
+        },
+        { idempotencyKey: `transfer_group_${groupKey}` },
+      );
+
+      // ONLY leader gets providerTransferId (because it's unique)
+      await prisma.paymentAttempt.update({
+        where: { id: leaderAttempt.id },
+        data: { providerTransferId: transfer.id },
+      });
+    }
+
+    // all attempts become SUCCEEDED
+    await prisma.paymentAttempt.updateMany({
+      where: { groupKey },
+      data: {
+        status: "SUCCEEDED",
+        processedAt: new Date(),
+        failureCode: null,
+        failureMessage: null,
+      },
+    });
+
+    return true;
+  }
+
+  async function handleGroupPaymentIntentFailed(pi: Stripe.PaymentIntent) {
+    const groupKey = pi.metadata?.groupKey;
+    if (!groupKey) return false;
+
+    const lastErr = pi.last_payment_error;
+    await prisma.paymentAttempt.updateMany({
+      where: { groupKey },
+      data: {
+        status: "FAILED",
+        processedAt: new Date(),
+        failureCode: lastErr?.code ?? null,
+        failureMessage: lastErr?.message ?? null,
+      },
+    });
+    return true;
+  }
+
+  async function handleGroupPaymentIntentCanceled(pi: Stripe.PaymentIntent) {
+    const groupKey = pi.metadata?.groupKey;
+    if (!groupKey) return false;
+
+    await prisma.paymentAttempt.updateMany({
+      where: { groupKey },
+      data: { status: "CANCELED", processedAt: new Date() },
+    });
+    return true;
+  }
+
   try {
     const rawBody = await buffer(req);
     event = stripe.webhooks.constructEvent(
       rawBody,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
   } catch (err: any) {
     console.error("Webhook signature verification failed:", err?.message);
@@ -48,6 +150,10 @@ export default async function handler(
     switch (event.type) {
       case "payment_intent.succeeded": {
         const pi = event.data.object as Stripe.PaymentIntent;
+
+        const handledGroup = await handleGroupPaymentIntentSucceeded(pi);
+        if (handledGroup) break;
+
         const paymentAttemptId = pi.metadata?.paymentAttemptId;
         if (!paymentAttemptId) break;
 
@@ -56,7 +162,9 @@ export default async function handler(
           where: { id: paymentAttemptId },
           select: {
             id: true,
-            amountCents: true,
+            amountCents: true, // SHARE
+            feeCents: true,
+            totalCents: true, // TOTAL CHARGED
             currency: true,
             providerTransferId: true,
             bill: {
@@ -68,6 +176,16 @@ export default async function handler(
 
         const destination = attempt.bill?.owner?.stripeConnectedAccountId;
         if (!destination) break;
+
+        // Sanity: ensure PI amount matches what we expect to have charged
+        if (
+          typeof attempt.totalCents === "number" &&
+          pi.amount !== attempt.totalCents
+        ) {
+          throw new Error(
+            `PaymentIntent amount mismatch: pi.amount=${pi.amount} expected=${attempt.totalCents}`,
+          );
+        }
 
         // Create transfer exactly once
         if (!attempt.providerTransferId) {
@@ -82,7 +200,7 @@ export default async function handler(
                 paymentIntentId: pi.id,
               },
             },
-            { idempotencyKey: `transfer_${attempt.id}` }
+            { idempotencyKey: `transfer_${attempt.id}` },
           );
 
           await prisma.paymentAttempt.update({
@@ -107,6 +225,10 @@ export default async function handler(
 
       case "payment_intent.payment_failed": {
         const pi = event.data.object as Stripe.PaymentIntent;
+
+        const handledGroup = await handleGroupPaymentIntentFailed(pi);
+        if (handledGroup) break;
+
         const paymentAttemptId = pi.metadata?.paymentAttemptId;
 
         if (!paymentAttemptId) break;
@@ -127,6 +249,10 @@ export default async function handler(
 
       case "payment_intent.canceled": {
         const pi = event.data.object as Stripe.PaymentIntent;
+
+        const handledGroup = await handleGroupPaymentIntentCanceled(pi);
+        if (handledGroup) break;
+
         const paymentAttemptId = pi.metadata?.paymentAttemptId;
 
         if (!paymentAttemptId) break;

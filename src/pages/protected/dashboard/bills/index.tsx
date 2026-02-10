@@ -924,6 +924,7 @@ export default function BillsPage({
           open={payFlow.stripePayOpen}
           onOpenChange={payFlow.setStripePayOpen}
           billParticipantId={payFlow.stripeBillParticipantId}
+          groupBillParticipantIds={payFlow.stripeGroupBillParticipantIds}
           biller={payFlow.selectedBillForPayment.biller}
           amountDisplay={payFlow.selectedBillForPayment.yourShare.toFixed(2)}
           recipientName={payFlow.selectedBillForPayment.recipientName}
